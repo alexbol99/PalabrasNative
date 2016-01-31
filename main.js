@@ -33,22 +33,8 @@ class MainComponent extends Component {
     }
 }
 
-var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF'
-    },
-    description: {
-        marginBottom: 20,
-        fontSize: 20,
-        textAlign: 'center',
-        color: '#656565'
-    }
-});
 
-/*
+
 var styles = StyleSheet.create({
     container: {
         padding:30,
@@ -71,6 +57,5 @@ var styles = StyleSheet.create({
         color: '#48BBEC'
     }
 });
-*/
 
 module.exports = MainComponent;

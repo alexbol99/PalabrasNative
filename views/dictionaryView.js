@@ -2,6 +2,9 @@
  * Created by alexanderbol on 21/01/2016.
  */
 var React = require('react-native');
+var HeaderComponent = require('../components/header').HeaderComponent;
+var ContentComponent = require('../components/content').ContentComponent;
+var FooterComponent = require('../components/footer').FooterComponent;
 
 var {
     Text,
@@ -11,10 +14,17 @@ var {
     TouchableHighlight
     } = React;
 
+// use http://fortawesome.github.io/Font-Awesome/icons/
+var { Icon,
+    } = require('react-native-icons');
+
 export const DictionaryView = React.createClass ({
     getInitialState() {
         return {
         };
+    },
+    _buttonBackPressed() {
+        this.props.onBackHomePressed();
     },
     renderRow(item) {
         return (
@@ -26,48 +36,51 @@ export const DictionaryView = React.createClass ({
     render() {
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(this.props.items);
-
+        var d = 'מילון';
+        var viewTitle = `${d} View`;
         return (
-            <View style={styles.container}>
-                <Text style={styles.description}>
-                    Dictionary View
-                </Text>
-                <ListView
-                    dataSource={dataSource}
-                    renderRow={(item) => this.renderRow(item)}
-                    renderSectionHeader={ () =>
-                        <Text style={styles.description}>
-                            {this.props.currentDictionary.get('name')}
-                        </Text>
-                    }
-                    renderFooter={ () =>
-                        <Text style={styles.description}>
-                            Footer
-                        </Text>
-                    }
+            <View style={styles.dictionaryViewContainer}>
+                <HeaderComponent
+                    currentDictionary = {this.props.currentDictionary}
+                    onBackHomePressed={this.props.onBackHomePressed}
                 />
+                <ContentComponent
+                    items = {this.props.items}
+                />
+
             </View>
         );
     }
 });
 
+ /*
+ <ListView
+ dataSource={dataSource}
+ renderRow={(item) => this.renderRow(item)}
+ renderSectionHeader={ () =>
+ <Text style={styles.description}>
+ {this.props.currentDictionary.get('name')}
+ </Text>
+ }
+ renderFooter={ () =>
+ <Text style={styles.description}>
+ Footer
+ </Text>
+ }
+ />
+ */
+
 var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    dictionaryViewContainer: {
         backgroundColor: '#F5FCFF'
     },
-    description: {
-        marginTop: 0,
-        fontSize: 20,
-        textAlign: 'center',
-        color: '#656565'
-    },
-    listView: {
-        flex: 1,
-        height: 400
+    headerContainer: {
+        backgroundColor:'#81c04d',
+        paddingTop:30,
+        paddingBottom:10,
+        flexDirection:'row'    //Step 1
     }
+
 });
 
 /*

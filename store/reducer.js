@@ -16,6 +16,10 @@ function app(state=initialAppState, action) {
                 currentDictionary: action.dictionary,
                 navigateTo: 'dictionaryView'
             });
+        case ActionTypes.BACK_HOME:
+            return Object.assign({}, state, {
+                navigateTo: 'homeView'
+            });
         default:
             return state;
     }

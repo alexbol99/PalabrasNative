@@ -56,7 +56,8 @@ export const HomeView = React.createClass ({
 var styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        marginTop:50,
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#F5FCFF'
     },

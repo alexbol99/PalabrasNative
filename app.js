@@ -70,6 +70,11 @@ var App = React.createClass ({
                 })
             });
     },
+    backHome() {
+        this.dispatch({
+            type: ActionTypes.BACK_HOME
+        })
+    },
     render() {
         var state = this.props.store.getState();
         var page;
@@ -86,6 +91,7 @@ var App = React.createClass ({
             case "dictionaryView":
                 page = (
                     <DictionaryView
+                        onBackHomePressed = {this.backHome}
                         currentDictionary = {state.app.currentDictionary}
                         items = {state.items}
                         ajaxState = {state.ajaxState}
@@ -97,7 +103,7 @@ var App = React.createClass ({
         }
 
         return (
-            <View style={styles.container}>
+            <View>
                 {page}
             </View>
         );
@@ -106,16 +112,8 @@ var App = React.createClass ({
 
 var styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        /*flex: 1,*/
         backgroundColor: '#F5FCFF'
-    },
-    description: {
-        marginBottom: 20,
-        fontSize: 20,
-        textAlign: 'center',
-        color: '#656565'
     }
 });
 
