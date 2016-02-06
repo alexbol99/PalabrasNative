@@ -16,7 +16,7 @@ var {
 class Palabras extends React.Component {
     render() {
         return (
-            <View>
+            <View style={{flex:1}}>
                 <MainComponent />
             </View>
         );

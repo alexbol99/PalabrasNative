@@ -6,7 +6,14 @@ var Redux = require('redux');
 
 const initialAppState = {
     navigateTo: 'homeView',
-    currentDictionary: ''
+    currentDictionary: '',
+    mode: 'edit',
+    editState: {
+        sortedBy: 'leftLanguage'
+    },
+    learnState: {
+        maxNumLearnItems: 8
+    }
 };
 
 function app(state=initialAppState, action) {
@@ -20,6 +27,36 @@ function app(state=initialAppState, action) {
             return Object.assign({}, state, {
                 navigateTo: 'homeView'
             });
+        case ActionTypes.SET_EDIT_MODE:
+            return Object.assign({}, state, {
+                mode: 'edit'
+            });
+        case ActionTypes.SET_LEARN_MODE:
+            return Object.assign({}, state, {
+                mode: 'learn'
+            });
+        case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+
+            });
+        default:
+            return state;
+    }
+}
+
+function editState(state=initialAppState.editState, action) {
+    switch (action.type) {
+        case ActionTypes.SET_SORTED_BY:
+            return Object.assign({}, state, {
+                sortedBy: action.sortedBy
+            });
+        default:
+            return state;
+    }
+}
+
+function learnState(state=initialAppState.learnState, action) {
+    switch (action.type) {
         default:
             return state;
     }
@@ -57,6 +94,8 @@ function items(state = [], action) {
 
 export var reducer = Redux.combineReducers({
     app,
+    editState,
+    learnState,
     ajaxState,
     dictionaries,
     items

@@ -28,6 +28,9 @@ var App = React.createClass ({
     componentDidMount() {
         this.fetchData();
     },
+    componentWillReceiveProps(nextProps) {
+        this.setState(nextProps.store.getState())
+    },
     fetchData() {
         Dictionaries.fetch().then(
             (dictionaries) => {
@@ -75,6 +78,31 @@ var App = React.createClass ({
             type: ActionTypes.BACK_HOME
         })
     },
+    setEditMode() {
+        this.dispatch({
+            type: ActionTypes.SET_EDIT_MODE
+        })
+    },
+    setLearnMode() {
+        this.dispatch({
+            type: ActionTypes.SET_LEARN_MODE
+        })
+    },
+    addItem() {
+        var state = this.props.store.getState();
+        Items.prototype.addEmptyItem(state).then( (item) => {
+            this.dispatch({
+                type: ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED,
+                item: item
+            });
+        });
+    },
+    setSortedBy(sortedBy) {
+        this.dispatch({
+            type: ActionTypes.SET_SORTED_BY,
+            sortedBy: sortedBy
+        })
+    },
     render() {
         var state = this.props.store.getState();
         var page;
@@ -92,8 +120,17 @@ var App = React.createClass ({
                 page = (
                     <DictionaryView
                         onBackHomePressed = {this.backHome}
-                        currentDictionary = {state.app.currentDictionary}
-                        items = {state.items}
+                        onEditButtonPressed = {this.setEditMode}
+                        onLearnButtonPressed = {this.setLearnMode}
+                        onLeftSortButtonPressed = {() => this.setSortedBy("leftLanguage")}
+                        onRightSortButtonPressed = {() => this.setSortedBy("rightLanguage")}
+                        onAddItemPressed = {this.addItem}
+                        dictionary = {state.app.currentDictionary}
+                        mode = {state.app.mode}
+                        editItems = {Items.prototype.getFiltered(state.items)}
+                        learnItems = {Items.prototype.getRandom(state.items,state.learnState.maxNumLearnItems)}
+                        editState = {state.editState}
+                        learnState = {state.learnState}
                         ajaxState = {state.ajaxState}
                     />
                 );
@@ -103,7 +140,7 @@ var App = React.createClass ({
         }
 
         return (
-            <View>
+            <View style={{flex:1}}>
                 {page}
             </View>
         );

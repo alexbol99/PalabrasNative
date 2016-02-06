@@ -21,16 +21,26 @@ export const HeaderComponent = React.createClass ({
             <View style={styles.headerContainer}>
                 <TouchableHighlight onPress={this.props.onBackHomePressed}>
                     <Icon
-                        name='fontawesome|arrow-circle-o-left'
-                        size={30}
+                        name='fontawesome|long-arrow-left'
+                        size={20}
                         color='#fff'
                         style={styles.icon}
                     />
                 </TouchableHighlight>
 
                 <Text style={styles.dictionaryTitle}>
-                    {this.props.currentDictionary.get('name')}
+                    {this.props.dictionary.get('name')}
                 </Text>
+
+                <TouchableHighlight onPress={this.props.onBackHomePressed}>
+                    <Icon
+                        name='fontawesome|share-alt'
+                        size={20}
+                        color='#fff'
+                        style={styles.icon}
+                    />
+                </TouchableHighlight>
+
             </View>
         );
     }
@@ -46,15 +56,17 @@ var styles = StyleSheet.create({
         flexDirection: 'row'
     },
     dictionaryTitle: {
+        flex: 4,
         fontSize: 20,
         color: '#fff',
         backgroundColor:'lemon',
-        textAlign:'center',
-        flex: 1
+        textAlign:'center'
     },
     icon: {
-        width: 28,
-        height: 28,
-        marginLeft: 5
+        flex: 1,
+        width: 20,
+        height: 20,
+        marginLeft: 10,
+        marginRight: 10
     }
 });

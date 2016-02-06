@@ -16,32 +16,95 @@ export class Items extends Parse.Object {
         var localeQuery = new Parse.Query(this.className);
         return localeQuery.find();
     }
-/*
-    sync(selectionMode, category, numWeeksBefore, orderedBy) {
-        if (selectionMode == "all") {
-            var numTiksBefore = (numWeeksBefore * 7 * 24 * 3600 * 1000);
-            var currentDate = new Date();
-            var newItemsDate = new Date(currentDate.getTime() - (numTiksBefore));
 
-            this.query.greaterThanOrEqualTo("createdAt", newItemsDate);
-            if (this.query._where.category) {
-                delete this.query._where.category;
-            }
-            this.query.limit(1000); // limit to at most 1000 results
-        }
-        else {
-            this.query.equalTo("category", category);
-            if (this.query._where.createdAt) {
-                delete this.query._where.createdAt
-            }
-        }
+    addEmptyItem() {
+        var item = new Item();
+        //var selectedCategory = this.get('categories').findWhere({"category": this.get('selectedCategory')});
+        //if (selectedCategory) {
+        //    item.set({
+        //        category_id: selectedCategory.get('category_id'),
+        //        category: selectedCategory.get('category')
+        //    });
+        //}
 
-        this.query.ascending(orderedBy);    // "spanish");
+        var dictionary = app.get("currentDictionary");
+        var language1 = dictionary.get('language1').get('name');
+        var language2 = dictionary.get('language2').get('name');
+        // http://stackoverflow.com/questions/9640253/how-to-set-a-dynamic-property-on-a-model-with-backbone-js
+        var map = {};
+        map[language1] = '';
+        map[language2] = '';
+        item.set(map);
 
-        return this.fetch({reset: true});
+        //item.set({
+        //    language1: '',
+        //    language2: ''
+        //});
 
+        item.on("added", function (item) {
+            // add empty item to the list of quiz items
+            var quizItems = this.get("quizItems");
+            quizItems.add(item, {at: 0});
+            // update counter
+            this.updateSelectedCategoryCounter();
+            // this cause view rendering
+            this.trigger("ready");
+        }, this);
+
+        item.addToParse();       // save to cloud and trigger event "added" on success
     }
-*/
+
+    getFiltered(items, filter) {
+        return items;
+    }
+
+    getRandom(items, maxnum) {
+        var newItems = [];
+        var inds = [];
+
+        if (items.length <= maxnum) {
+            items.forEach((item) => newItems.push(item));
+            return newItems;
+        }
+
+        while (inds.length < maxnum) {
+            let i = Math.floor((Math.random() * (items.length - 1)) + 1);
+            if (inds.indexOf(i) == -1) {
+                inds.push(i);
+            }
+        }
+
+        inds.forEach((i) => newItems.push(items[i]));
+
+        return newItems;
+    }
+
+    /*
+        sync(selectionMode, category, numWeeksBefore, orderedBy) {
+            if (selectionMode == "all") {
+                var numTiksBefore = (numWeeksBefore * 7 * 24 * 3600 * 1000);
+                var currentDate = new Date();
+                var newItemsDate = new Date(currentDate.getTime() - (numTiksBefore));
+
+                this.query.greaterThanOrEqualTo("createdAt", newItemsDate);
+                if (this.query._where.category) {
+                    delete this.query._where.category;
+                }
+                this.query.limit(1000); // limit to at most 1000 results
+            }
+            else {
+                this.query.equalTo("category", category);
+                if (this.query._where.createdAt) {
+                    delete this.query._where.createdAt
+                }
+            }
+
+            this.query.ascending(orderedBy);    // "spanish");
+
+            return this.fetch({reset: true});
+
+        }
+    */
 }
 
 /*
