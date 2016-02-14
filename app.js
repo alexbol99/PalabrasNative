@@ -29,7 +29,13 @@ var App = React.createClass ({
         this.fetchData();
     },
     componentWillReceiveProps(nextProps) {
-        this.setState(nextProps.store.getState())
+        var state = nextProps.store.getState();
+
+        if (state.learnState.itemsToBeRefreshed) {
+            this.refreshLearnItems();
+        }
+
+        this.setState(state);
     },
     fetchData() {
         Dictionaries.fetch().then(
@@ -70,7 +76,7 @@ var App = React.createClass ({
                 this.dispatch({
                     type: ActionTypes.FETCH_ITEMS_SUCCEED,
                     items: items
-                })
+                });
             });
     },
     backHome() {
@@ -84,9 +90,24 @@ var App = React.createClass ({
         })
     },
     setLearnMode() {
+        var {leftItems, rightItems} =
+            Items.prototype.getLearnItems(this.state.items, this.state.learnState.maxNumLearnItems);
+
         this.dispatch({
-            type: ActionTypes.SET_LEARN_MODE
-        })
+            type: ActionTypes.SET_LEARN_MODE,
+            leftItems: leftItems,
+            rightItems: rightItems
+        });
+    },
+    refreshLearnItems() {
+        var {leftItems, rightItems} =
+            Items.prototype.getLearnItems(this.state.items, this.state.learnState.maxNumLearnItems);
+
+        this.dispatch({
+            type: ActionTypes.REFRESH_LEARN_ITEMS,
+            leftItems: leftItems,
+            rightItems: rightItems
+        });
     },
     addItem() {
         var state = this.props.store.getState();
@@ -101,8 +122,50 @@ var App = React.createClass ({
         this.dispatch({
             type: ActionTypes.SET_SORTED_BY,
             sortedBy: sortedBy
-        })
+        });
     },
+    toggleLeftItemSelected(id) {
+        this.dispatch({
+            type: ActionTypes.LEFT_ITEM_CLICKED,
+            id: id
+        });
+        this.checkMatch();
+    },
+    toggleRightItemSelected(id) {
+        this.dispatch({
+            type: ActionTypes.RIGHT_ITEM_CLICKED,
+            id: id
+        });
+        this.checkMatch();
+    },
+    checkMatch: function() {
+        if (this.state.learnState.selectedLeftItemId == undefined || this.state.learnState.selectedRightItemId == undefined)
+            return;
+
+        if (this.state.learnState.selectedLeftItemId == this.state.learnState.selectedRightItemId) {
+            var id = this.state.learnState.selectedLeftItemId;
+            var leftInd = this.state.learnState.leftItems.findIndex( (item) => (item.id == id) );
+            var rightInd = this.state.learnState.rightItems.findIndex( (item) => (item.id == id) );
+
+            if (leftInd == undefined || rightInd == undefined)
+                return;
+
+            var itemLeft = this.state.learnState.leftItems[leftInd];
+            var itemRight = this.state.learnState.rightItems[rightInd];
+/*
+            if (this.state.sound == "on") {
+                var language = this.state.languageOnLeft;
+                itemLeft.sayIt(this.state.languageOnLeft, this.state.languageOnRight);           // "spanish");
+            }
+*/
+            this.dispatch({
+                type: ActionTypes.ITEMS_MATCHED,
+                leftInd: leftInd,
+                rightInd: rightInd
+            });
+        }
+    },
+
     render() {
         var state = this.props.store.getState();
         var page;
@@ -117,18 +180,20 @@ var App = React.createClass ({
                 );
                 break;
             case "dictionaryView":
+
                 page = (
-                    <DictionaryView
+                    <DictionaryView {... this.props}
                         onBackHomePressed = {this.backHome}
                         onEditButtonPressed = {this.setEditMode}
                         onLearnButtonPressed = {this.setLearnMode}
                         onLeftSortButtonPressed = {() => this.setSortedBy("leftLanguage")}
                         onRightSortButtonPressed = {() => this.setSortedBy("rightLanguage")}
+                        onLeftItemSelected = {this.toggleLeftItemSelected}
+                        onRightItemSelected = {this.toggleRightItemSelected}
                         onAddItemPressed = {this.addItem}
                         dictionary = {state.app.currentDictionary}
                         mode = {state.app.mode}
                         editItems = {Items.prototype.getFiltered(state.items)}
-                        learnItems = {Items.prototype.getRandom(state.items,state.learnState.maxNumLearnItems)}
                         editState = {state.editState}
                         learnState = {state.learnState}
                         ajaxState = {state.ajaxState}

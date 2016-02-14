@@ -12,7 +12,12 @@ const initialAppState = {
         sortedBy: 'leftLanguage'
     },
     learnState: {
-        maxNumLearnItems: 8
+        maxNumLearnItems: 8,
+        leftItems: [],
+        rightItems: [],
+        selectedLeftItemId: undefined,
+        selectedRightItemId: undefined,
+        itemsToBeRefreshed: false
     }
 };
 
@@ -21,7 +26,8 @@ function app(state=initialAppState, action) {
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
-                navigateTo: 'dictionaryView'
+                navigateTo: 'dictionaryView',
+                mode: 'edit'
             });
         case ActionTypes.BACK_HOME:
             return Object.assign({}, state, {
@@ -57,6 +63,36 @@ function editState(state=initialAppState.editState, action) {
 
 function learnState(state=initialAppState.learnState, action) {
     switch (action.type) {
+        case ActionTypes.SET_LEARN_MODE:
+            return Object.assign({}, state, {
+                leftItems: action.leftItems,
+                rightItems: action.rightItems
+            });
+        case ActionTypes.REFRESH_LEARN_ITEMS:
+            return Object.assign({}, state, {
+                leftItems: action.leftItems,
+                rightItems: action.rightItems,
+                itemsToBeRefreshed: false
+            });
+        case ActionTypes.LEFT_ITEM_CLICKED:
+            return Object.assign({}, state, {
+                selectedLeftItemId: state.selectedLeftItemId == action.id ? undefined : action.id
+            });
+        case ActionTypes.RIGHT_ITEM_CLICKED:
+            return Object.assign({}, state, {
+                selectedRightItemId: state.selectedRightItemId == action.id ? undefined : action.id
+            });
+        case ActionTypes.ITEMS_MATCHED:
+            let itemsToBeRefreshed = state.leftItems.length == 1 ? true : false;
+            return Object.assign({}, state, {
+                leftItems: state.leftItems
+                    .slice(0, action.leftInd)
+                    .concat(state.leftItems.slice(action.leftInd+1)),
+                rightItems: state.rightItems
+                    .slice(0, action.rightInd)
+                    .concat(state.rightItems.slice(action.rightInd+1)),
+                itemsToBeRefreshed: itemsToBeRefreshed
+            });
         default:
             return state;
     }

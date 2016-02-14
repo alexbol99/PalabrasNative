@@ -34,13 +34,21 @@ export const HeaderComponent = React.createClass ({
 
                 <TouchableHighlight onPress={this.props.onBackHomePressed}>
                     <Icon
-                        name='fontawesome|share-alt'
+                        name='fontawesome|cog'
                         size={20}
                         color='#fff'
                         style={styles.icon}
                     />
                 </TouchableHighlight>
 
+                <TouchableHighlight onPress={this.props.onBackHomePressed}>
+                    <Icon
+                        name='fontawesome|share-alt'
+                        size={20}
+                        color='#fff'
+                        style={styles.icon}
+                    />
+                </TouchableHighlight>
             </View>
         );
     }
@@ -56,7 +64,7 @@ var styles = StyleSheet.create({
         flexDirection: 'row'
     },
     dictionaryTitle: {
-        flex: 4,
+        flex: 5,
         fontSize: 20,
         color: '#fff',
         backgroundColor:'lemon',

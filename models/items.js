@@ -58,6 +58,12 @@ export class Items extends Parse.Object {
         return items;
     }
 
+    getLearnItems(items, maxnum) {
+        var leftItems = Items.prototype.getRandom(items, maxnum);
+        var rightItems = Items.prototype.shuffle(leftItems);
+        return {leftItems, rightItems};
+    }
+
     getRandom(items, maxnum) {
         var newItems = [];
         var inds = [];
@@ -75,6 +81,28 @@ export class Items extends Parse.Object {
         }
 
         inds.forEach((i) => newItems.push(items[i]));
+
+        return newItems;
+    }
+
+    // http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript
+    shuffle(items) {
+        var newItems = items.slice();
+        var counter = newItems.length, temp, index;
+
+        // While there are elements in the array
+        while (counter > 0) {
+            // Pick a random index
+            index = Math.floor(Math.random() * counter);
+
+            // Decrease counter by 1
+            counter--;
+
+            // And swap the last element with it
+            temp = newItems[counter];
+            newItems[counter] = newItems[index];
+            newItems[index] = temp;
+        }
 
         return newItems;
     }

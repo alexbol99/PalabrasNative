@@ -58,10 +58,6 @@ var styles = StyleSheet.create({
         textAlign: 'center',
         color: '#fff'
     },
-    listView: {
-        flex: 1,
-        height: 400
-    },
     icon: {
         width: 28,
         height: 28,
