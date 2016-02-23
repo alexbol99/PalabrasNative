@@ -17,4 +17,11 @@ export class Dictionaries extends Parse.Object {
             .include('createdBy');
         return localeQuery.find();
     }
+
+    updateName(dictionary, name) {
+        dictionary.set({
+            "name": name
+        });
+        return dictionary.save();
+    }
 }

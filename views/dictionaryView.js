@@ -3,7 +3,7 @@
  */
 var React = require('react-native');
 
-var HeaderComponent = require('../components/header').HeaderComponent;
+var DictionaryHeaderComponent = require('../components/dictionaryHeader').DictionaryHeaderComponent;
 var FooterComponent = require('../components/footer').FooterComponent;
 var EditView = require('../views/editView').EditView;
 var LearnView = require('../views/learnView').LearnView;
@@ -23,21 +23,16 @@ export const DictionaryView = React.createClass ({
     },
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
+        this.setState(this.props.store.getState());
     },
     componentDidMount() {
     },
     componentWillReceiveProps(nextProps) {
-        var state = nextProps.store.getState();
-        this.setState(state);
-    },
-    backHome() {
-        this.dispatch({
-            type: ActionTypes.BACK_HOME
-        })
+        this.setState(nextProps.store.getState());
     },
     setEditMode() {
         this.dispatch({
-            type: ActionTypes.SET_EDIT_MODE
+            type: ActionTypes.EDIT_MODE_BUTTON_PRESSED
         })
     },
     setLearnMode() {
@@ -45,25 +40,22 @@ export const DictionaryView = React.createClass ({
             Items.prototype.getLearnItems(this.state.items, this.state.learnState.maxNumLearnItems);
 
         this.dispatch({
-            type: ActionTypes.SET_LEARN_MODE,
+            type: ActionTypes.LEARN_MODE_BUTTON_PRESSED,
             leftItems: leftItems,
             rightItems: rightItems
         });
     },
     render() {
-        var state = this.props.store.getState();
-
-        var viewInstance = this.props.mode == 'edit' ? (
+        var viewInstance = this.state.app.mode == 'edit' ? (
             <EditView {... this.props} />
         ) : (
             <LearnView { ... this.props} />
         );
         return (
             <View style={{flex:1, flexDirection:'column'}}>
-                <HeaderComponent
+                <DictionaryHeaderComponent
                     {... this.props}
-                    onBackHomePressed = {this.backHome}
-                    dictionary = {state.app.currentDictionary}
+                    dictionary = {this.state.app.currentDictionary}
                 />
 
                 {viewInstance}

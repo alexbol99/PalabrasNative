@@ -2,7 +2,7 @@
  * Created by alexanderbol on 30/01/2016.
  */
 var React = require('react-native');
-
+var globalStyles = require('../styles/styles').styles;
 var {
     Text,
     StyleSheet,
@@ -44,7 +44,7 @@ var styles = StyleSheet.create({
         bottom:30,
         */
 
-        backgroundColor: '#81c04d',
+        backgroundColor: globalStyles.footer.backgroundColor,
         borderTopWidth: 1,
     },
     footerMenuItem: {
@@ -56,11 +56,6 @@ var styles = StyleSheet.create({
         fontSize: 25,
         fontWeight:'bold',
         textAlign: 'center',
-        color: '#fff'
-    },
-    icon: {
-        width: 28,
-        height: 28,
-        marginLeft: 5
+        color: globalStyles.footer.color
     }
 });

@@ -39,27 +39,12 @@ export const LearnView = React.createClass ({
 
         this.setState(state);
     },
-    setEditMode() {
-        this.dispatch({
-            type: ActionTypes.SET_EDIT_MODE
-        })
-    },
-    setLearnMode() {
-        var {leftItems, rightItems} =
-            Items.prototype.getLearnItems(this.state.items, this.state.learnState.maxNumLearnItems);
-
-        this.dispatch({
-            type: ActionTypes.SET_LEARN_MODE,
-            leftItems: leftItems,
-            rightItems: rightItems
-        });
-    },
     refreshLearnItems() {
         var {leftItems, rightItems} =
             Items.prototype.getLearnItems(this.state.items, this.state.learnState.maxNumLearnItems);
 
         this.dispatch({
-            type: ActionTypes.REFRESH_LEARN_ITEMS,
+            type: ActionTypes.LEARN_ITEMS_REFRESHED,
             leftItems: leftItems,
             rightItems: rightItems
         });
@@ -110,8 +95,6 @@ export const LearnView = React.createClass ({
         return (
             <View style={{flex:8}}>
                 <ContentComponent {... this.props}
-                    onEditButtonPressed = {this.setEditMode}
-                    onLearnButtonPressed = {this.setLearnMode}
                     onLeftItemSelected = {this.toggleLeftItemSelected}
                     onRightItemSelected = {this.toggleRightItemSelected}
                     dictionary = {state.app.currentDictionary}

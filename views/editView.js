@@ -26,17 +26,16 @@ export const EditView = React.createClass ({
     },
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
+        this.setState(this.props.store.getState());
     },
     componentDidMount() {
 
     },
     componentWillReceiveProps(nextProps) {
-        var state = nextProps.store.getState();
-        this.setState(state);
+        this.setState(nextProps.store.getState());
     },
     addItem() {
-        var state = this.props.store.getState();
-        Items.prototype.addEmptyItem(state).then( (item) => {
+        Items.prototype.addEmptyItem(this.state).then( (item) => {
             this.dispatch({
                 type: ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED,
                 item: item
@@ -45,24 +44,23 @@ export const EditView = React.createClass ({
     },
     setSortedBy(sortedBy) {
         this.dispatch({
-            type: ActionTypes.SET_SORTED_BY,
+            type: ActionTypes.BUTTON_SORTED_BY_CLICKED,
             sortedBy: sortedBy
         });
     },
     render() {
-        var state = this.props.store.getState();
         return (
             <View style={{flex:8}}>
                 <ContentComponent {... this.props}
                     onLeftSortButtonPressed = {() => this.setSortedBy("leftLanguage")}
                     onRightSortButtonPressed = {() => this.setSortedBy("rightLanguage")}
                     onAddItemPressed = {this.addItem}
-                    dictionary = {state.app.currentDictionary}
-                    mode = {state.app.mode}
-                    items = {Items.prototype.getFiltered(state.items)}
-                    editState = {state.editState}
-                    learnState = {state.learnState}
-                    ajaxState = {state.ajaxState}
+                    dictionary = {this.state.app.currentDictionary}
+                    mode = {this.state.app.mode}
+                    items = {Items.prototype.getFiltered(this.state.items)}
+                    editState = {this.state.editState}
+                    learnState = {this.state.learnState}
+                    ajaxState = {this.state.ajaxState}
                 />
             </View>
         );

@@ -1,13 +1,15 @@
 /**
- * Created by alexanderbol on 30/01/2016.
+ * Created by alexanderbol on 19/02/2016.
  */
 var React = require('react-native');
+var globalStyles = require('../styles/styles').styles;
+
+import * as ActionTypes from '../store/actionTypes';
 
 var {
     Text,
     StyleSheet,
     View,
-    ListView,
     TouchableHighlight
     } = React;
 
@@ -15,40 +17,28 @@ var {
 var { Icon,
     } = require('react-native-icons');
 
+var BackButton = ({onButtonPressed}) => {
+    return (
+        <TouchableHighlight onPress={onButtonPressed}>
+            <Icon
+                name='fontawesome|long-arrow-left'
+                size={20}
+                color={globalStyles.header.color}
+                style={styles.icon}
+            />
+        </TouchableHighlight>
+    );
+};
+var Title = ({title}) => {
+    return <Text style={styles.title}> {title} </Text>
+};
+
 export const HeaderComponent = React.createClass ({
     render() {
         return (
             <View style={styles.headerContainer}>
-                <TouchableHighlight onPress={this.props.onBackHomePressed}>
-                    <Icon
-                        name='fontawesome|long-arrow-left'
-                        size={20}
-                        color='#fff'
-                        style={styles.icon}
-                    />
-                </TouchableHighlight>
-
-                <Text style={styles.dictionaryTitle}>
-                    {this.props.dictionary.get('name')}
-                </Text>
-
-                <TouchableHighlight onPress={this.props.onBackHomePressed}>
-                    <Icon
-                        name='fontawesome|cog'
-                        size={20}
-                        color='#fff'
-                        style={styles.icon}
-                    />
-                </TouchableHighlight>
-
-                <TouchableHighlight onPress={this.props.onBackHomePressed}>
-                    <Icon
-                        name='fontawesome|share-alt'
-                        size={20}
-                        color='#fff'
-                        style={styles.icon}
-                    />
-                </TouchableHighlight>
+                <BackButton onButtonPressed={this.props.onBackButtonPressed} />
+                <Title title={this.props.title} />
             </View>
         );
     }
@@ -57,24 +47,12 @@ export const HeaderComponent = React.createClass ({
 
 var styles = StyleSheet.create({
     headerContainer: {
-        backgroundColor:'#81c04d',
+        backgroundColor:globalStyles.header.backgroundColor,
         paddingTop:30,
         paddingBottom:10,
         marginTop: 0,
         flexDirection: 'row'
     },
-    dictionaryTitle: {
-        flex: 5,
-        fontSize: 20,
-        color: '#fff',
-        backgroundColor:'lemon',
-        textAlign:'center'
-    },
-    icon: {
-        flex: 1,
-        width: 20,
-        height: 20,
-        marginLeft: 10,
-        marginRight: 10
-    }
+    title: globalStyles.header.title,
+    icon: globalStyles.header.icon
 });

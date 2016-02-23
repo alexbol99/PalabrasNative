@@ -8,7 +8,6 @@ var Parse = require('parse').Parse;
 
 var Reducer = require('./store/reducer');
 var App = require('./app');
-
 const store = Redux.createStore(Reducer.reducer);
 
 var {
@@ -32,8 +31,6 @@ class MainComponent extends Component {
         );
     }
 }
-
-
 
 var styles = StyleSheet.create({
     container: {

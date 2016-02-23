@@ -5,6 +5,7 @@
  * Created by alexanderbol on 30/01/2016.
  */
 var React = require('react-native');
+var globalStyles = require('../styles/styles').styles;
 
 var {
     Text,
@@ -80,25 +81,7 @@ export const LearnContentComponent = React.createClass ({
 var styles = StyleSheet.create({
     contentContainer: {
         flex:1,
-        backgroundColor: '#F5FCFF',
-    },
-    description: {
-        marginTop: 10,
-        fontSize: 20,
-        textAlign: 'center',
-        color: '#656565'
-    },
-    headerContainer: {
-        flexDirection: 'row'
-    },
-    header: {
-        flex:1,
-        paddingHorizontal: 10,
-        marginVertical: 5,
-        textAlign:'left',
-        fontSize: 20,
-        marginBottom: 3,
-        /*borderWidth: 1*/
+        backgroundColor: globalStyles.content.backgroundColor,
     },
     itemContainer: {
         flexDirection: 'row'
@@ -117,31 +100,12 @@ var styles = StyleSheet.create({
         backgroundColor: 'lightcyan',
         marginVertical:5,
     },
-    rightItemContainer: {
-        flex:1,
-        borderWidth: 1,
-        borderColor: 'white',
-        marginVertical:5,
-    },
     text: {
         paddingHorizontal: 10,
         paddingVertical: 15,
         textAlign:'left',
         fontSize: 20,
 
-    },
-    listView: {
-        flex: 1,
-        height: 400
-    },
-    iconAddItem: {
-        width: 40,
-        height: 40
-    },
-    addItemButton: {
-        position: 'absolute',
-        right: 75,
-        bottom: 75
     }
 });
 

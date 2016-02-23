@@ -5,7 +5,7 @@ import * as ActionTypes from '../store/actionTypes';
 var Redux = require('redux');
 
 const initialAppState = {
-    navigateTo: 'homeView',
+    navigateTo: 'loginView',
     currentDictionary: '',
     mode: 'edit',
     editState: {
@@ -21,25 +21,57 @@ const initialAppState = {
     }
 };
 
+const initialUserState = {
+    status: '',
+    username: '',
+    photo: null,
+    data: null
+};
+
 function app(state=initialAppState, action) {
     switch (action.type) {
+        case ActionTypes.USER_LOGIN_NOT_FOUND:
+            return Object.assign({}, state, {
+                navigateTo: 'loginView'
+            });
+        case ActionTypes.USER_LOGIN_FOUND:
+            return Object.assign({}, state, {
+                navigateTo: 'homeView'
+            });
+        case ActionTypes.USER_LOGGED_IN:
+            return Object.assign({}, state, {
+                navigateTo: 'homeView'
+            });
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
                 navigateTo: 'dictionaryView',
                 mode: 'edit'
             });
-        case ActionTypes.BACK_HOME:
+        case ActionTypes.BACK_HOME_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 navigateTo: 'homeView'
             });
-        case ActionTypes.SET_EDIT_MODE:
+        case ActionTypes.CONFIG_BUTTON_PRESSED: {
+            return Object.assign({}, state, {
+                navigateTo: 'configView'
+            })
+        }
+        case ActionTypes.EDIT_MODE_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 mode: 'edit'
             });
-        case ActionTypes.SET_LEARN_MODE:
+        case ActionTypes.LEARN_MODE_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 mode: 'learn'
+            });
+        case ActionTypes.BACK_TO_DICTIONARY_VIEW_PRESSED:
+            return Object.assign({}, state, {
+                navigateTo: 'dictionaryView'
+            });
+        case ActionTypes.DICTIONARY_NAME_UPDATED:
+            return Object.assign({}, state, {
+                currentDictionary: action.dictionary
             });
         case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
             return Object.assign({}, state, {
@@ -52,7 +84,7 @@ function app(state=initialAppState, action) {
 
 function editState(state=initialAppState.editState, action) {
     switch (action.type) {
-        case ActionTypes.SET_SORTED_BY:
+        case ActionTypes.BUTTON_SORTED_BY_PRESSED:
             return Object.assign({}, state, {
                 sortedBy: action.sortedBy
             });
@@ -63,12 +95,12 @@ function editState(state=initialAppState.editState, action) {
 
 function learnState(state=initialAppState.learnState, action) {
     switch (action.type) {
-        case ActionTypes.SET_LEARN_MODE:
+        case ActionTypes.LEARN_MODE_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 leftItems: action.leftItems,
                 rightItems: action.rightItems
             });
-        case ActionTypes.REFRESH_LEARN_ITEMS:
+        case ActionTypes.LEARN_ITEMS_REFRESHED:
             return Object.assign({}, state, {
                 leftItems: action.leftItems,
                 rightItems: action.rightItems,
@@ -114,6 +146,11 @@ function dictionaries(state = [], action) {
     switch (action.type) {
         case ActionTypes.FETCH_DICTIONARIES_REQUEST_SUCCEED:
             return action.dictionaries;
+        case ActionTypes.DICTIONARY_NAME_UPDATED:
+            return (state
+            .slice(0, action.index)
+            .concat([action.dictionary])
+            .concat(state.slice(action.index+1)));
         default:
             return state;
     }
@@ -128,11 +165,56 @@ function items(state = [], action) {
     }
 }
 
+function user(state = initialUserState, action) {
+    switch (action.type) {
+        case ActionTypes.USER_LOGGED_IN:
+            return Object.assign({}, state, {
+                status: action.type,
+                data: action.data
+            });
+        case ActionTypes.USER_LOGIN_FOUND:
+            return Object.assign({}, state, {
+                status: action.type,
+                data: action.data
+            });
+        case ActionTypes.USER_LOGIN_NOT_FOUND:
+            return Object.assign({}, state, {
+                status: action.type,
+                data: null
+            });
+        case ActionTypes.USER_LOGIN_CANCELLED:
+            return Object.assign({}, state, {
+                status: action.type
+            });
+        case ActionTypes.USER_LOGIN_ERROR:
+            return Object.assign({}, state, {
+                status: action.type,
+                data: action.data
+            });
+        case ActionTypes.USER_LOGIN_MISSING_PERMISSIONS:
+            return Object.assign({}, state, {
+                status: action.type,
+                data: action.data
+            });
+        case ActionTypes.USER_LOGGED_OUT:
+            return Object.assign({}, state, {
+                status: action.type
+            });
+        case ActionTypes.FETCH_USER_PHOTO_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+                photo : action.photo
+            })
+        default:
+            return state;
+    }
+}
+
 export var reducer = Redux.combineReducers({
     app,
     editState,
     learnState,
     ajaxState,
     dictionaries,
-    items
+    items,
+    user
 });
