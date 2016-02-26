@@ -5,7 +5,7 @@ var Parse = require('parse/react-native');
 
 Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");
 
-var FB_PHOTO_WIDTH = 200;
+var FB_PHOTO_WIDTH = 50;
 
 export class User extends Parse.Object {
     constructor() {
@@ -22,26 +22,23 @@ export class User extends Parse.Object {
             expiration_date: credentials.tokenExpirationDate
         };
 
-        Parse.FacebookUtils.logIn(authData, {
-            success: (user) => {
-                if (user.existed()) {
-                    console.log("user existed");
-                }
-            }
-        })
+        return Parse.FacebookUtils.logIn(authData);     // return promise
+    }
+
+    fbFetchData(credentials) {
+        var api = `https://graph.facebook.com/v2.3/${credentials.userId}?fields=name,picture&width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${credentials.token}`;
+
+        return fetch(api);                             // return promise
 
     }
 
-    fbFetchPhoto(credentials) {
-        var api = `https://graph.facebook.com/v2.3/${credentials.userId}/picture?width=${FB_PHOTO_WIDTH}&redirect=false&access_token=${credentials.token}`;
-
-        return fetch(api);
-        /*
-        .then( (response) => response.json() )
-        .then((responseData) => {
-            console.log(responseData);
-        })
-        .done();
-*/
+    updateName(name) {
+        var user = Parse.User.current();
+        if (user) {
+            user.set({
+                "name": name
+            });
+        }
+        return user.save();
     }
 }

@@ -4,8 +4,10 @@
 var React = require('react-native');
 var HeaderComponent = require('../components/header').HeaderComponent;
 
+var Shares = require('../models/share').Shares.prototype;
+var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
+var Languages = require('../models/languages').Languages.prototype;
 var Items = require('../models/items').Items;
-var User = require('../models/user').User;
 
 import * as ActionTypes from '../store/actionTypes';
 
@@ -31,29 +33,53 @@ export const HomeView = React.createClass ({
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
 
-        var state = this.props.store.getState();
-        if (state.user.data) {
-            User.prototype.parseLogin(state.user.data);
-
-            User.prototype.fbFetchPhoto(state.user.data)
-                .then( (response) => response.json() )
-                .then((responseData) => {
-                    this.dispatch( {
-                        type: ActionTypes.FETCH_USER_PHOTO_REQUEST_SUCCEED,
-                        photo: {
-                            url: responseData.data.url,
-                            height: responseData.data.height,
-                            width: responseData.data.width
-                        }
-                    });
-                })
-                .done();
+        var user = this.props.store.getState().user;
+        var needFetchData = this.props.store.getState().app.needFetchData;
+        if (user && needFetchData) {
+            this.fetchData(user);
         }
 
+        var state = this.props.store.getState();
         this.setState(state);
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    fetchData(user) {
+        Dictionaries.fetch(user.parseUser)
+            .then( (dictionaries) => {
+                this.dispatch({
+                    type: ActionTypes.FETCH_DICTIONARIES_REQUEST_SUCCEED,
+                    dictionaries: dictionaries
+                });
+                return Shares.fetch(user.parseUser);
+            })
+            .then( (shares) => {
+                this.dispatch({
+                    type: ActionTypes.FETCH_SHARES_REQUEST_SUCCEED,
+                    shares: shares
+                });
+                return Languages.fetch();
+            })
+            .then( (languages) => {
+                this.dispatch({
+                    type: ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEES,
+                    languages: languages
+                });
+                this.dispatch({
+                    type:ActionTypes.AJAX_REQUEST_RESET
+                })
+            }),
+
+            (error) => {
+                this.dispatch({
+                    type: ActionTypes.AJAX_REQUEST_FAILED
+                });
+            };
+
+        this.dispatch({
+            type: ActionTypes.AJAX_REQUEST_STARTED
+        })
     },
     dictionarySelected(dictionary) {
         this.dispatch({
@@ -76,58 +102,80 @@ export const HomeView = React.createClass ({
             });
         });
     },
-    render() {
-        var header = (
-            <View style={styles.headerContainer}>
-                <Text style={styles.appTitle}>
-                    Dictionaries
-                </Text>
-            </View>
-        );
-
+    renderHeader() {
         var userImage = null;
-        if (this.state.user && this.state.user.photo) {
-            var photo = this.state.user.photo;
 
+        if (this.state.user && this.state.user.url) {
             userImage = (
-                <Image
-                    style={photo &&
-                        {
-                          height: photo.height,
-                          width: photo.width,
-                        }
-                    }
-                    source={{uri: photo && photo.url}}
+                <Image  style={styles.userpic}
+                        source={{uri: this.state.user.url}}
                 />
             );
         }
 
+        return (
+            <View style={styles.headerContainer}>
+                {userImage}
+
+                <Text style={styles.appTitle}>
+                    Dictionaries
+                </Text>
+
+                <Icon
+                    name='fontawesome|bars'
+                    size={20}
+                    color='white'
+                    style={globalStyles.header.icon}
+                />
+            </View>
+        )
+    },
+    renderRow(dictionary) {
+        return (
+            <TouchableHighlight key={dictionary.id}
+                                onPress={() => this.dictionarySelected(dictionary)} >
+                <View style={styles.dictionaryContainer} >
+                    <Text style={styles.dictionaryName}>
+                        {dictionary.get('name')}
+                    </Text>
+                    <View style={styles.dictionarySubtitle} >
+                        <Text style={styles.createdBy}>
+                            {'Created by ' + dictionary.get('createdBy').get('name')}
+                        </Text>
+
+                        <Text style={styles.languages}>
+                            {dictionary.get('language1').get('name') + ' - ' + dictionary.get('language2').get('name')}
+                        </Text>
+                    </View>
+                </View>
+            </TouchableHighlight>
+        );
+    },
+    render() {
+        var addDirectoryButton = this.state.ajaxState == "" ? (
+            <TouchableHighlight style={styles.addDirectoryButton}>
+                <Icon
+                    name='fontawesome|plus-circle'
+                    size={50}
+                    color='#81c04d'
+                    style={globalStyles.iconAdd}
+                />
+            </TouchableHighlight>
+        ) : null;
+
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        var dataSource = ds.cloneWithRows(this.state.dictionaries);
         var content = this.state.dictionaries.length == 0 ? (
             <Text style={styles.description}>
                 Words in my pocket
             </Text>
         ) : (
-            this.state.dictionaries.map( (dictionary) => {
-                return (
-                    <TouchableHighlight key={dictionary.id}
-                          onPress={() => this.dictionarySelected(dictionary)} >
-                        <View style={styles.dictionaryContainer} >
-                            <Text style={styles.dictionaryName}>
-                                {dictionary.get('name')}
-                            </Text>
-                            <View style={styles.dictionarySubtitle} >
-                                <Text style={styles.createdBy}>
-                                    {'Created by ' + dictionary.get('createdBy').id}
-                                </Text>
-
-                                <Text style={styles.languages}>
-                                    {dictionary.get('language1').get('name') + ' - ' + dictionary.get('language2').get('name')}
-                                </Text>
-                            </View>
-                        </View>
-                    </TouchableHighlight>
-                    );
-            })
+            <ListView
+                dataSource={dataSource}
+                initialListSize = {20}
+                renderSectionHeader={() => this.renderHeader()}
+                renderRow={(dictionary) => this.renderRow(dictionary)}
+            />
         );
 
         if (this.state.ajaxState != "") {
@@ -149,9 +197,8 @@ export const HomeView = React.createClass ({
 
         return (
             <View style={styles.container}>
-                {header}
-                {userImage}
                 {content}
+                {addDirectoryButton}
             </View>
         );
     }
@@ -168,7 +215,6 @@ var styles = StyleSheet.create({
         flex:1,
         width: 50,
         height: 50,
-        margin: 50,
         color: 'green'
     },
     headerContainer: {
@@ -180,6 +226,20 @@ var styles = StyleSheet.create({
     },
 
     appTitle: globalStyles.header.title,
+
+    userpic: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginLeft: 10
+    },
+
+    menuIcon: {
+        flex:1,
+        width: 50,
+        height: 50,
+        color: 'fff'
+    },
 
     dictionaryContainer: globalStyles.item,
 
@@ -209,10 +269,20 @@ var styles = StyleSheet.create({
     },
     description: {
         marginBottom: 20,
+        marginTop: 250,
         fontSize: 20,
+        fontStyle: 'italic',
+        fontWeight: 'bold',
         textAlign: 'center',
         color: '#656565'
-    }
+    },
+
+    addDirectoryButton: {
+        position: 'absolute',
+        right: 30,
+        bottom: 30
+    },
+
 });
 
 /*

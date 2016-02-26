@@ -20,7 +20,8 @@ export const styles = {
             flex: 5,
             fontSize: 20,
             color: 'fff',
-            textAlign:'center'
+            textAlign:'center',
+            alignSelf:'center'
         },
         icon: {
             flex: 1,
@@ -28,7 +29,8 @@ export const styles = {
             height: 20,
             marginLeft: 10,
             marginRight: 10,
-            color: 'fff'
+            color: 'fff',
+            alignSelf: 'center'
         }
     },
     footer: {
@@ -41,6 +43,18 @@ export const styles = {
         borderColor: 'white',
         backgroundColor: 'honeydew',
         marginVertical: 5,
-    }
+    },
+    iconAdd: {
+        width: 50,
+        height: 50,
+        elevation: 1,
+        shadowColor:'darkgray',
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        shadowOffset: {
+            height:0,
+            width:0
+        }
+    },
 
     };

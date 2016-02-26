@@ -18,6 +18,8 @@ var {
 var { Icon,
     } = require('react-native-icons');
 
+var globalStyles = require('../styles/styles').styles;
+
 export const EditContentComponent = React.createClass ({
     getInitialState() {
         return {
@@ -105,9 +107,9 @@ export const EditContentComponent = React.createClass ({
                 <TouchableHighlight style={styles.addItemButton}>
                     <Icon
                         name='fontawesome|plus-circle'
-                        size={30}
+                        size={50}
                         color='#81c04d'
-                        style={styles.iconAddItem}
+                        style={globalStyles.iconAdd}
                     />
                 </TouchableHighlight>
             </View>
@@ -158,8 +160,16 @@ var styles = StyleSheet.create({
         bottom: 30
     },
     iconAddItem: {
-        width: 30,
-        height: 30
+        width: 50,
+        height: 50,
+        elevation: 1,
+        shadowColor:'darkgray',
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        shadowOffset: {
+            height:0,
+            width:0
+        }
     },
     iconSortActive: {
         width:30,

@@ -30,20 +30,10 @@ export const DictionaryHeaderComponent = React.createClass ({
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
-    onBackHomePressed() {
-        this.dispatch({
-            type: ActionTypes.BACK_HOME_BUTTON_PRESSED
-        })
-    },
-    onConfigButtonPressed() {
-        this.dispatch({
-            type: ActionTypes.CONFIG_BUTTON_PRESSED
-        })
-    },
     render() {
         return (
             <View style={styles.headerContainer}>
-                <TouchableHighlight onPress={this.onBackHomePressed}>
+                <TouchableHighlight onPress={this.props.onBackHomeButtonPressed}>
                     <Icon
                         name='fontawesome|long-arrow-left'
                         size={20}
@@ -56,7 +46,7 @@ export const DictionaryHeaderComponent = React.createClass ({
                     {this.props.dictionary.get('name')}
                 </Text>
 
-                <TouchableHighlight onPress={this.onConfigButtonPressed}>
+                <TouchableHighlight onPress={this.props.onConfigButtonPressed}>
                     <Icon
                         name='fontawesome|cog'
                         size={20}
@@ -65,7 +55,7 @@ export const DictionaryHeaderComponent = React.createClass ({
                     />
                 </TouchableHighlight>
 
-                <TouchableHighlight onPress={this.props.onBackHomePressed}>
+                <TouchableHighlight onPress={this.props.onShareButtonPressed}>
                     <Icon
                         name='fontawesome|share-alt'
                         size={20}

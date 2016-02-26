@@ -3,14 +3,12 @@
  */
 var React = require('react-native');
 
-var Dictionaries = require('./models/dictionaries').Dictionaries.prototype;
-var Items = require('./models/items').Items;
-
 import * as ActionTypes from './store/actionTypes';
 var LoginView = require('./views/loginView').LoginView;
 var HomeView = require('./views/homeView').HomeView;
 var DictionaryView = require('./views/dictionaryView').DictionaryView;
 var ConfigView = require('./views/configView').ConfigView;
+//var ShareActionSheet = require('./views/shareActionSheet').ShareActionSheet;
 
 var {
     Text,
@@ -29,31 +27,9 @@ var App = React.createClass ({
         this.setState(this.props.store.getState());
     },
     componentDidMount() {
-        this.fetchData();
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
-    },
-    fetchData() {
-        Dictionaries.fetch().then(
-            (dictionaries) => {
-                this.dispatch({
-                    type: ActionTypes.FETCH_DICTIONARIES_REQUEST_SUCCEED,
-                    dictionaries: dictionaries
-                });
-                this.dispatch({
-                    type:ActionTypes.AJAX_REQUEST_RESET
-                })
-            },
-            (error) => {
-                this.dispatch({
-                    type: ActionTypes.AJAX_REQUEST_FAILED
-                });
-            }
-        );
-        this.dispatch({
-            type: ActionTypes.AJAX_REQUEST_STARTED
-        })
     },
     render() {
         var page;

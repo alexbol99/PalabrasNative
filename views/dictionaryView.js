@@ -12,6 +12,7 @@ var Items = require('../models/items').Items;
 import * as ActionTypes from '../store/actionTypes';
 
 var {
+    ActionSheetIOS,
     StyleSheet,
     View
     } = React;
@@ -29,6 +30,45 @@ export const DictionaryView = React.createClass ({
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    onBackHomeButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.BACK_HOME_BUTTON_PRESSED
+        })
+    },
+    onConfigButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.CONFIG_BUTTON_PRESSED
+        })
+    },
+    onShareButtonPressed() {
+        /* on Android use https://github.com/EstebanFuentealba/react-native-share ? */
+        ActionSheetIOS.showShareActionSheetWithOptions({
+                url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
+                message: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
+                subject: 'Word In My Pocket App',
+                excludedActivityTypes: [
+                    'com.apple.UIKit.activity.PostToTwitter',
+                    'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
+                    'com.apple.UIKit.activity.UIActivityTypeAddToReadingList'
+                ]
+            },
+            (error) => {
+                console.error(error);
+            },
+            (success, method) => {
+                var text;
+                if (success) {
+                    text = `Shared via ${method}`;
+                } else {
+                    text = 'You didn\'t share';
+                }
+                console.log(text);
+            });
+        /*
+        this.dispatch({
+            type:ActionTypes.SHARE_DICTIONARY_BUTTON_PRESSED
+        })*/
     },
     setEditMode() {
         this.dispatch({
@@ -56,6 +96,9 @@ export const DictionaryView = React.createClass ({
                 <DictionaryHeaderComponent
                     {... this.props}
                     dictionary = {this.state.app.currentDictionary}
+                    onBackHomeButtonPressed = {this.onBackHomeButtonPressed}
+                    onConfigButtonPressed = {this.onConfigButtonPressed}
+                    onShareButtonPressed = {this.onShareButtonPressed}
                 />
 
                 {viewInstance}

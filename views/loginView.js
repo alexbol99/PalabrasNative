@@ -4,6 +4,7 @@
 var React = require('react-native');
 var FBLogin = require('react-native-facebook-login');
 var FBLoginManager = require('NativeModules').FBLoginManager;
+var User = require('../models/user').User;
 
 import * as ActionTypes from '../store/actionTypes';
 var globalStyles = require('../styles/styles').styles;
@@ -29,10 +30,35 @@ export const LoginView = React.createClass({
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
+    parseLogin(credentials) {
+        User.prototype.parseLogin(credentials)                       // login to Parse
+        .then( (user) => {                                           // login succeed
+            this.dispatch({
+                type: ActionTypes.USER_LOGGED_IN_TO_PARSE,
+                user: user
+            });
+            /*if (user.existed()) {*/
+                return User.prototype.fbFetchData(credentials);   // request user photo
+            /*}*/
+        })
+        .then( (response) => response.json() )
+        .then((responseData) => {
+            this.dispatch( {
+                type: ActionTypes.FETCH_USER_DATA_REQUEST_SUCCEED,
+                name: responseData.name,
+                url: responseData.picture.data.url
+            });
+            return User.prototype.updateName(responseData.name);
+        })
+        .done(),                        // what is .done() ?
+        (error) => console.log(error);
+    },
     onLogin(data) {
+        // Login to Parse with obtained credentials
+        this.parseLogin(data.credentials);
+
         this.dispatch({
-            type: ActionTypes.USER_LOGGED_IN,
-            data: data.credentials
+            type: ActionTypes.USER_LOGGED_IN
         });
     },
     onLogout() {
@@ -41,9 +67,10 @@ export const LoginView = React.createClass({
         });
     },
     onLoginFound(data) {
+        this.parseLogin(data.credentials);
+
         this.dispatch({
-            type: ActionTypes.USER_LOGIN_FOUND,
-            data: data.credentials
+            type: ActionTypes.USER_LOGIN_FOUND
         });
     },
     onLoginNotFound() {

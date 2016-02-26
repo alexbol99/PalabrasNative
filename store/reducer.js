@@ -18,13 +18,15 @@ const initialAppState = {
         selectedLeftItemId: undefined,
         selectedRightItemId: undefined,
         itemsToBeRefreshed: false
-    }
+    },
+    needFetchData: true
 };
 
 const initialUserState = {
+    parseUser: '',           // parse user object
     status: '',
-    username: '',
-    photo: null,
+    name: '',
+    url: '',
     data: null
 };
 
@@ -34,13 +36,10 @@ function app(state=initialAppState, action) {
             return Object.assign({}, state, {
                 navigateTo: 'loginView'
             });
-        case ActionTypes.USER_LOGIN_FOUND:
+        case ActionTypes.USER_LOGGED_IN_TO_PARSE:
             return Object.assign({}, state, {
-                navigateTo: 'homeView'
-            });
-        case ActionTypes.USER_LOGGED_IN:
-            return Object.assign({}, state, {
-                navigateTo: 'homeView'
+                navigateTo: 'homeView',
+                needFetchData: true
             });
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
@@ -50,7 +49,8 @@ function app(state=initialAppState, action) {
             });
         case ActionTypes.BACK_HOME_BUTTON_PRESSED:
             return Object.assign({}, state, {
-                navigateTo: 'homeView'
+                navigateTo: 'homeView',
+                needFetchData: false
             });
         case ActionTypes.CONFIG_BUTTON_PRESSED: {
             return Object.assign({}, state, {
@@ -145,7 +145,17 @@ function ajaxState( state = "", action ) {
 function dictionaries(state = [], action) {
     switch (action.type) {
         case ActionTypes.FETCH_DICTIONARIES_REQUEST_SUCCEED:
-            return action.dictionaries;
+            return (action.dictionaries);
+        case ActionTypes.FETCH_SHARES_REQUEST_SUCCEED:
+            var newDictionaries = state.slice();
+            // Add dictionaries shared to current user
+            // User can share to himself, check this is not in the list already
+            action.shares.forEach( (share) => {
+                if (!state.find( (dictionary) => dictionary.id = share.get('dictionary').id ) ) {
+                    newDictionaries.push(share.get('dictionary'));
+                }
+            });
+            return newDictionaries;
         case ActionTypes.DICTIONARY_NAME_UPDATED:
             return (state
             .slice(0, action.index)
@@ -169,13 +179,16 @@ function user(state = initialUserState, action) {
     switch (action.type) {
         case ActionTypes.USER_LOGGED_IN:
             return Object.assign({}, state, {
+                status: action.type
+            });
+        case ActionTypes.USER_LOGGED_IN_TO_PARSE:
+            return Object.assign({}, state, {
                 status: action.type,
-                data: action.data
+                parseUser: action.user
             });
         case ActionTypes.USER_LOGIN_FOUND:
             return Object.assign({}, state, {
-                status: action.type,
-                data: action.data
+                status: action.type
             });
         case ActionTypes.USER_LOGIN_NOT_FOUND:
             return Object.assign({}, state, {
@@ -200,21 +213,32 @@ function user(state = initialUserState, action) {
             return Object.assign({}, state, {
                 status: action.type
             });
-        case ActionTypes.FETCH_USER_PHOTO_REQUEST_SUCCEED:
+        case ActionTypes.FETCH_USER_DATA_REQUEST_SUCCEED:
             return Object.assign({}, state, {
-                photo : action.photo
-            })
+                name: action.name,
+                url : action.url
+            });
+        default:
+            return state;
+    }
+}
+
+function languages(state = [], action) {
+    switch (action.type) {
+        case ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEES:
+            return action.languages;
         default:
             return state;
     }
 }
 
 export var reducer = Redux.combineReducers({
+    ajaxState,
+    user,
     app,
     editState,
     learnState,
-    ajaxState,
     dictionaries,
     items,
-    user
+    languages
 });

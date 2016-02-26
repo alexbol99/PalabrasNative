@@ -44,7 +44,7 @@ export const EditView = React.createClass ({
     },
     setSortedBy(sortedBy) {
         this.dispatch({
-            type: ActionTypes.BUTTON_SORTED_BY_CLICKED,
+            type: ActionTypes.BUTTON_SORTED_BY_PRESSED,
             sortedBy: sortedBy
         });
     },
