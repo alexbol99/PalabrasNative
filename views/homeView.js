@@ -19,7 +19,8 @@ var {
     View,
     ListView,
     TouchableHighlight,
-    Image
+    Image,
+    Modal
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -88,6 +89,23 @@ export const HomeView = React.createClass ({
         });
         this.createItems(dictionary);
     },
+    addEmptyDictionary() {
+        var user = this.state.user.parseUser;
+        var language = this.state.languages[0];
+        if (!user) return;
+        Dictionaries.createEmptyDictionary(user, language, language)
+            .then( (dictionary) =>
+                this.dispatch({
+                    type: ActionTypes.NEW_DICTIONARY_SAVE_REQUEST_SUCCEED,
+                    dictionary: dictionary
+                })
+            ),
+            (error) => {
+                this.dispatch({
+                    type: ActionTypes.AJAX_REQUEST_FAILED
+                });
+            };
+    },
     createItems(dictionary) {
         var pref = '';
         if (dictionary.id.charAt(0) >= '0' && dictionary.id.charAt(0) <= '9') {
@@ -153,7 +171,8 @@ export const HomeView = React.createClass ({
     },
     render() {
         var addDirectoryButton = this.state.ajaxState == "" ? (
-            <TouchableHighlight style={styles.addDirectoryButton}>
+            <TouchableHighlight style={styles.addDirectoryButton}
+                                onPress={() => this.addEmptyDictionary()}>
                 <Icon
                     name='fontawesome|plus-circle'
                     size={50}
@@ -162,7 +181,16 @@ export const HomeView = React.createClass ({
                 />
             </TouchableHighlight>
         ) : null;
-
+/*
+        var modal = (
+            <Modal animated={true}
+                transparent={false}
+                visible={true} >
+                <View style={{top:100,left:50}}>
+                    <Text>MODAL MODAL MODAL</Text>
+                </View>
+            </Modal>
+        );*/
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(this.state.dictionaries);
         var content = this.state.dictionaries.length == 0 ? (
@@ -215,7 +243,7 @@ var styles = StyleSheet.create({
         flex:1,
         width: 50,
         height: 50,
-        color: 'green'
+        /*color: 'green'*/
     },
     headerContainer: {
         paddingTop:30,
@@ -238,7 +266,7 @@ var styles = StyleSheet.create({
         flex:1,
         width: 50,
         height: 50,
-        color: 'fff'
+        /*color: '#ffffff'*/
     },
 
     dictionaryContainer: globalStyles.item,
@@ -274,7 +302,7 @@ var styles = StyleSheet.create({
         fontStyle: 'italic',
         fontWeight: 'bold',
         textAlign: 'center',
-        color: '#656565'
+        /*color: '#656565'*/
     },
 
     addDirectoryButton: {

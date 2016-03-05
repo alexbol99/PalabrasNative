@@ -15,11 +15,11 @@ export const styles = {
     },
     header: {
         backgroundColor:'#81c04d',
-        color: 'fff',
+        color: '#ffffff',
         title: {
             flex: 5,
             fontSize: 20,
-            color: 'fff',
+            color: '#ffffff',
             textAlign:'center',
             alignSelf:'center'
         },
@@ -29,13 +29,13 @@ export const styles = {
             height: 20,
             marginLeft: 10,
             marginRight: 10,
-            color: 'fff',
+            color: '#ffffff',
             alignSelf: 'center'
         }
     },
     footer: {
         backgroundColor:'#81c04d',
-        color:'fff'
+        color:'#ffffff'
     },
     item: {
         flex: 1,
@@ -43,6 +43,13 @@ export const styles = {
         borderColor: 'white',
         backgroundColor: 'honeydew',
         marginVertical: 5,
+    },
+    itemSelected: {
+        flex:1,
+        borderWidth: 1,
+        borderColor: 'white',
+        backgroundColor: 'lightcyan',
+        marginVertical:5,
     },
     iconAdd: {
         width: 50,

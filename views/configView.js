@@ -7,13 +7,14 @@ var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
 var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
+var Shares = require('../models/share').Shares.prototype;
 
 var {
     Text,
     StyleSheet,
     View,
     TouchableHighlight,
-    TextInput
+    TextInput,
     } = React;
 
 export const ConfigView = React.createClass ({
@@ -37,13 +38,12 @@ export const ConfigView = React.createClass ({
     },
     dictionaryNameChanged({name}) {
         var dictionary = this.state.app.currentDictionary;
-        Dictionaries.updateName(dictionary, name).then(
+        dictionary.set('name', name);
+        Dictionaries.updateDictionary(dictionary).then(
             (dictionary) => {
-                var index = this.state.dictionaries.findIndex( (dictionary_tmp) => (dictionary_tmp.id == dictionary.id) );
                 this.dispatch({
-                    type: ActionTypes.DICTIONARY_NAME_UPDATED,
-                    dictionary: dictionary,
-                    index: index
+                    type: ActionTypes.DICTIONARY_UPDATED,
+                    dictionary: dictionary
                 })
             }),
             (error) => {
@@ -51,6 +51,34 @@ export const ConfigView = React.createClass ({
             }
 
 
+    },
+    deleteDictionary() {
+        // destroy dictionary itself
+        Dictionaries.deleteDictionary(this.state.app.currentDictionary)
+            .then( (dictionary) => {
+                this.dispatch({
+                    type: ActionTypes.DELETE_DICTIONARY_REQUEST_SUCCEED,
+                    dictionary: dictionary
+                });
+                return Shares.findShares(dictionary);
+            })
+            // destroy all share records related to this dictionary
+            .then( (shares) => {
+                shares.forEach((share) => {
+                        share.destroy()
+                            .then( (share) =>
+                                this.dispatch({
+                                    type: ActionTypes.DELETE_DICTIONARY_REQUEST_SUCCEED,
+                                    dictionary: share.get('dictionary')
+                                })
+                            )
+                    });
+            });
+
+        // This will close Config View and move to Home View
+        this.dispatch({
+            type: ActionTypes.DELETE_DICTIONARY_BUTTON_PRESSED
+        });
     },
     render() {
         return (
@@ -103,7 +131,16 @@ export const ConfigView = React.createClass ({
                             onChangeText={(text) => this.dictionaryNameChanged({text})}
                         />
                     </View>
+                </View>
 
+                {/* Delete Button */}
+                <View style={styles.deleteButton}>
+                    <TouchableHighlight
+                        onPress={() => this.deleteDictionary()}>
+                        <Text style={styles.description}>
+                            Delete dictionary
+                        </Text>
+                    </TouchableHighlight>
                 </View>
             </View>
         );
@@ -123,7 +160,7 @@ var styles = StyleSheet.create({
         marginBottom: 20,
         fontSize: 20,
         textAlign: 'center',
-        color: '#656565'
+        /*color: '#656565'*/
     },
     inputRow: {
         marginTop: 10,
@@ -176,6 +213,21 @@ var styles = StyleSheet.create({
         borderColor: 'lightgrey', /*'#48BBEC',*/
         borderRadius: 8,
         /*color: '#48BBEC'*/
+    },
+    deleteButton: {
+        flex:1,
+        height: 36,
+        padding: 4,
+        marginTop: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        /*flex: 4,*/
+        /*fontSize: 18,*/
+        borderWidth: 1,
+        borderColor: 'red',
+        borderRadius: 8,
+        position: 'absolute',
+        bottom: 50
     }
 });
 

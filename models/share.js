@@ -16,4 +16,22 @@ export class Shares extends Parse.Object {
             .select("dictionary");
         return localeQuery.find();
     }
+
+    findShares(dictionary) {
+        var sharedQuery = new Parse.Query(Shares)
+            .equalTo("dictionary", dictionary);
+
+        return sharedQuery.find();
+    }
+
+    // destroy all share records related to this dictionary
+    deleteShared(dictionary) {
+        var sharedQuery = new Parse.Query(Shares)
+            .equalTo("dictionary", dictionary);
+
+        sharedQuery.find()
+            .then( (respArr) =>
+                respArr.forEach( (share) => share.destroy() )
+            )
+    }
 }

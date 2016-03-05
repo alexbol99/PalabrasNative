@@ -9,7 +9,9 @@ const initialAppState = {
     currentDictionary: '',
     mode: 'edit',
     editState: {
-        sortedBy: 'leftLanguage'
+        sortedBy: 'leftLanguage',
+        selectedItem: undefined,
+        editItem: false
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -19,7 +21,9 @@ const initialAppState = {
         selectedRightItemId: undefined,
         itemsToBeRefreshed: false
     },
-    needFetchData: true
+    needFetchData: true,
+    displayLangage1Picker: false,
+    displayLanguage2Picker: false
 };
 
 const initialUserState = {
@@ -69,13 +73,31 @@ function app(state=initialAppState, action) {
             return Object.assign({}, state, {
                 navigateTo: 'dictionaryView'
             });
-        case ActionTypes.DICTIONARY_NAME_UPDATED:
+        case ActionTypes.DICTIONARY_UPDATED:
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary
             });
         case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
             return Object.assign({}, state, {
 
+            });
+        case ActionTypes.NEW_DICTIONARY_SAVE_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+                currentDictionary: action.dictionary,
+                navigateTo: 'addNewDictionaryView'
+            });
+        case ActionTypes.TOGGLE_LANGUAGE1_PICKER_PRESSED:
+            return Object.assign({}, state, {
+                displayLangage1Picker: !state.displayLangage1Picker
+            });
+        case ActionTypes.TOGGLE_LANGUAGE2_PICKER_PRESSED:
+            return Object.assign({}, state, {
+                displayLangage2Picker: !state.displayLangage2Picker
+            });
+        case ActionTypes.DELETE_DICTIONARY_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                navigateTo: 'homeView',
+                needFetchData: true
             });
         default:
             return state;
@@ -87,6 +109,24 @@ function editState(state=initialAppState.editState, action) {
         case ActionTypes.BUTTON_SORTED_BY_PRESSED:
             return Object.assign({}, state, {
                 sortedBy: action.sortedBy
+            });
+        case ActionTypes.ITEM_PRESSED:
+            // if none selected - select
+            // if same selected - unselect
+            // if other selected - change selection to current
+            return Object.assign({}, state, {
+                selectedItem: state.selectedItem == undefined ? action.item :
+                    (state.selectedItem.id == action.item.id ? undefined : action.item),
+                editItem: false
+            });
+        case ActionTypes.EDIT_ITEM_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                editItem: !state.editItem
+            });
+        case ActionTypes.DELETE_ITEM_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+                selectedItem: undefined,
+                editItem: false
             });
         default:
             return state;
@@ -146,6 +186,7 @@ function dictionaries(state = [], action) {
     switch (action.type) {
         case ActionTypes.FETCH_DICTIONARIES_REQUEST_SUCCEED:
             return (action.dictionaries);
+
         case ActionTypes.FETCH_SHARES_REQUEST_SUCCEED:
             var newDictionaries = state.slice();
             // Add dictionaries shared to current user
@@ -156,11 +197,25 @@ function dictionaries(state = [], action) {
                 }
             });
             return newDictionaries;
-        case ActionTypes.DICTIONARY_NAME_UPDATED:
+
+        case ActionTypes.NEW_DICTIONARY_SAVE_REQUEST_SUCCEED:
             return (state
-            .slice(0, action.index)
+            .slice()
+            .concat([action.dictionary]));
+
+        case ActionTypes.DICTIONARY_UPDATED:
+            var index = state.findIndex( (dictionary_tmp) => (dictionary_tmp.id == action.dictionary.id) );
+            return (state
+            .slice(0, index)
             .concat([action.dictionary])
-            .concat(state.slice(action.index+1)));
+            .concat(state.slice(index+1)));
+
+        case ActionTypes.DELETE_DICTIONARY_REQUEST_SUCCEED:
+            var index = state.findIndex( (dictionary_tmp) => (dictionary_tmp.id == action.dictionary.id) );
+            return (state
+                .slice(0, index)
+                .concat(state.slice(index+1)));
+
         default:
             return state;
     }
@@ -170,6 +225,17 @@ function items(state = [], action) {
     switch (action.type) {
         case ActionTypes.FETCH_ITEMS_SUCCEED:
             return action.items;
+        case ActionTypes.ITEM_CHANGED:
+            var index = state.findIndex( (item_tmp) => (item_tmp.id == action.item.id) );
+            return (state
+                .slice(0, index)
+                .concat([action.item])
+                .concat(state.slice(index+1)));
+        case ActionTypes.DELETE_ITEM_REQUEST_SUCCEED:
+            var index = state.findIndex( (item_tmp) => (item_tmp.id == action.item.id) );
+            return (state
+                .slice(0, index)
+                .concat(state.slice(index+1)));
         default:
             return state;
     }

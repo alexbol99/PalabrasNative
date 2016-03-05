@@ -3,8 +3,6 @@
  */
 var React = require('react-native');
 var Redux = require('redux');
-// var ReactRedux = require('react-redux');
-var Parse = require('parse').Parse;
 
 var Reducer = require('./store/reducer');
 var App = require('./app');
@@ -13,6 +11,8 @@ const store = Redux.createStore(Reducer.reducer);
 var {
     StyleSheet,
     Component,
+    View,
+    Text
     } = React;
 
 class MainComponent extends Component {
@@ -27,8 +27,7 @@ class MainComponent extends Component {
     render() {
         return (
             <App store={store}
-            />
-        );
+            />);
     }
 }
 

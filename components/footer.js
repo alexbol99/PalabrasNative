@@ -56,6 +56,6 @@ var styles = StyleSheet.create({
         fontSize: 25,
         fontWeight:'bold',
         textAlign: 'center',
-        color: globalStyles.footer.color
+        /*color: globalStyles.footer.color*/
     }
 });

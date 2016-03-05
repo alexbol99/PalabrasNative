@@ -11,6 +11,7 @@ var {
     AppRegistry,
     StyleSheet,
     View,
+    Text
     } = React;
 
 class Palabras extends React.Component {

@@ -5,13 +5,18 @@
  * Created by alexanderbol on 30/01/2016.
  */
 var React = require('react-native');
+var Items = require('../models/items').Items;
+
+import * as ActionTypes from '../store/actionTypes';
 
 var {
+    Alert,
     Text,
     StyleSheet,
     View,
     ListView,
-    TouchableHighlight
+    TouchableHighlight,
+    TextInput
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -25,61 +30,210 @@ export const EditContentComponent = React.createClass ({
         return {
         };
     },
+    componentWillMount() {
+        this.dispatch = this.props.store.dispatch;
+        this.setState(this.props.store.getState());
+    },
+    componentDidMount() {
+    },
+    componentWillReceiveProps(nextProps) {
+        this.setState(nextProps.store.getState());
+    },
+    toggleSelectItem(item) {
+        this.dispatch({
+            type: ActionTypes.ITEM_PRESSED,
+            item: item
+        })
+    },
+    onEditItemButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.EDIT_ITEM_BUTTON_PRESSED
+        })
+    },
+    itemLeftChanged({value}) {
+        var item = this.state.editState.selectedItem;
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        item.set(langLeft, value);
+        this.dispatch({
+            type: ActionTypes.ITEM_CHANGED,
+            item: item
+        });
+        Items.prototype.updateItem(item)
+            .then( (item) => {/*do nothing*/}),
+            (error) => {
+                alert("Problems with connection to server");
+            }
+    },
+    itemRightChanged({value}) {
+        var item = this.state.editState.selectedItem;
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        item.set(langRight, value);
+        this.dispatch({
+            type: ActionTypes.ITEM_CHANGED,
+            item: item
+        });
+        Items.prototype.updateItem(item)
+            .then( (item) => {/*do nothing*/}),
+            (error) => {
+                alert("Problems with connection to server");
+            }
+    },
+    onDeleteItemButtonPressed() {
+        var item = this.state.editState.selectedItem;
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        Alert.alert(
+            'Are you sure?',
+            `Item ${item.get(langLeft)} - ${item.get(langRight)} will be deleted`,
+            [
+                {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+                {text: 'OK', onPress: () => this.deleteItem()},
+            ]
+        )
+    },
+    deleteItem() {
+        var item = this.state.editState.selectedItem;
+        Items.prototype.deleteItem(item)
+            .then( (item) => {
+                this.dispatch({
+                    type: ActionTypes.DELETE_ITEM_REQUEST_SUCCEED,
+                    item: item
+                })
+            }),
+            (error) => {
+                alert("Problems with connection to server");
+            }
+
+    },
     renderHeader() {
-        var langLeft = this.props.dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
-        var iconSortStyleLeft = this.props.editState.sortedBy == "leftLanguage" ?
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var iconSortStyleLeft = this.state.editState.sortedBy == "leftLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
-        var iconSortStyleRight = this.props.editState.sortedBy == "rightLanguage" ?
+        var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
 
         return (
             <View style={styles.headerContainer}>
-                <Text style={styles.header}>
-                    {langLeft}
-                </Text>
-                <TouchableHighlight onPress = {this.props.onLeftSortButtonPressed}>
-                    <Icon
-                        name='fontawesome|sort-desc'
-                        size={20}
-                        color='#81c04d'
-                        style={iconSortStyleLeft}
-                    />
-                </TouchableHighlight>
-                <Text style={styles.header}>
-                    {langRight}
-                </Text>
-                <TouchableHighlight onPress = {this.props.onRightSortButtonPressed}>
-                    <Icon
-                        name='fontawesome|sort-desc'
-                        size={20}
-                        color='#81c04d'
-                        style={iconSortStyleRight}
-                    />
-                </TouchableHighlight>
+
+                {/* Edit Item Toolbar opened when item selected*/}
+                {
+                    this.state.editState.selectedItem ? (
+                        <View style={styles.editToolbar}>
+                            <TouchableHighlight style={{flex:1}}
+                                                onPress = {() => this.onEditItemButtonPressed()}>
+                                <Icon
+                                    name='fontawesome|pencil'
+                                    size={20}
+                                    color='#81c04d'
+                                    style={globalStyles.header.icon}
+                                />
+                            </TouchableHighlight>
+
+                            <TouchableHighlight style={{flex:1}}
+                                                onPress = {this.props.onSayItButtonPressed}>
+                                <Icon
+                                    name='fontawesome|volume-up'
+                                    size={20}
+                                    color='#81c04d'
+                                    style={globalStyles.header.icon}
+                                />
+                            </TouchableHighlight>
+
+                            <TouchableHighlight style={{flex:1}}
+                                                onPress = {this.props.onGoWebButtonPressed}>
+                                <Icon
+                                    name='fontawesome|globe'
+                                    size={20}
+                                    color='#81c04d'
+                                    style={globalStyles.header.icon}
+                                />
+                            </TouchableHighlight>
+
+                            <TouchableHighlight style={{flex:1}}
+                                                onPress = {() => this.onDeleteItemButtonPressed()}>
+                                <Icon
+                                    name='fontawesome|trash-o'
+                                    size={20}
+                                    color='#81c04d'
+                                    style={globalStyles.header.icon}
+                                />
+                            </TouchableHighlight>
+
+                        </View>
+                    ) : null
+                }
+
+                <View style={styles.sortToolbarContainer}>
+                    <Text style={styles.languageTitle}>
+                        {langLeft}
+                    </Text>
+                    <TouchableHighlight onPress = {this.props.onLeftSortButtonPressed}>
+                        <Icon
+                            name='fontawesome|sort-desc'
+                            size={20}
+                            color='#81c04d'
+                            style={iconSortStyleLeft}
+                        />
+                    </TouchableHighlight>
+                    <Text style={styles.languageTitle}>
+                        {langRight}
+                    </Text>
+                    <TouchableHighlight onPress = {this.props.onRightSortButtonPressed}>
+                        <Icon
+                            name='fontawesome|sort-desc'
+                            size={20}
+                            color='#81c04d'
+                            style={iconSortStyleRight}
+                        />
+                    </TouchableHighlight>
+                </View>
             </View>
         )
     },
     renderRow(item) {
-        var langLeft = this.props.dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
-        return (
-            <View style={styles.itemContainer}>
-                <Text style={styles.item}>
-                    {item.get(langLeft)}
-                </Text>
-                <Text style={styles.item}>
-                    {item.get(langRight)}
-                </Text>
-            </View>
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var style = this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id ?
+            [styles.itemContainer, styles.itemSelected] : [styles.itemContainer, styles.itemUnselected];
 
+        return (
+            <TouchableHighlight
+                onPress={() => this.toggleSelectItem(item)}>
+                {
+                    this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id &&
+                    this.state.editState.editItem ? (
+                        <View style={style}>
+                            <TextInput
+                                style={{flex:1, height: 40}}
+                                value={item.get(langLeft)}
+                                onChangeText={(value) => this.itemLeftChanged({value})}
+                            />
+                            <TextInput
+                                style={{flex:1, height: 40}}
+                                value={item.get(langRight)}
+                                onChangeText={(value) => this.itemRightChanged({value})}
+                            />
+                        </View>
+                    ) : (
+                        <View style={style}>
+                            <Text style={styles.item}>
+                                {item.get(langLeft)}
+                            </Text>
+                            <Text style={styles.item}>
+                                {item.get(langRight)}
+                            </Text>
+                        </View>
+                    )
+                }
+            </TouchableHighlight>
         )
     },
     render() {
-        var langLeft = this.props.dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
-        var sortedBy = this.props.editState.sortedBy;
-        var sortedItems = this.props.items.sort((item1, item2) => {
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var sortedBy = this.state.editState.sortedBy;
+        var sortedItems = this.state.items.sort((item1, item2) => {
             let val1 = sortedBy == "leftLanguage" ? item1.get(langLeft) : item1.get(langRight);
             let val2 = sortedBy == "leftLanguage" ? item2.get(langLeft) : item2.get(langRight);
 
@@ -126,12 +280,20 @@ var styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 20,
         textAlign: 'center',
-        color: '#656565'
+        /*color: '#656565'*/
     },
     headerContainer: {
-        flexDirection: 'row'
+        flex: 1,
     },
-    header: {
+    editToolbar: {
+        flexDirection: 'row',
+        marginVertical: 10
+    },
+    sortToolbarContainer: {
+        flexDirection: 'row',
+        marginTop:0
+    },
+    languageTitle: {
         flex:1,
         paddingHorizontal: 10,
         marginVertical: 5,
@@ -141,13 +303,19 @@ var styles = StyleSheet.create({
         /*borderWidth: 1*/
     },
     itemContainer: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        padding: 10,
+        borderWidth: globalStyles.item.borderWidth,
+        borderColor: globalStyles.item.borderColor
+    },
+    itemUnselected: {
+        backgroundColor: globalStyles.item.backgroundColor
+    },
+    itemSelected: {
+        backgroundColor: globalStyles.itemSelected.backgroundColor
     },
     item: {
         flex:1,
-        paddingHorizontal: 10,
-        marginVertical: 5,
-        textAlign:'left',
         fontSize: 15
     },
     listView: {

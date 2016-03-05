@@ -2,7 +2,7 @@
  * Created by alexanderbol on 21/01/2016.
  */
 
-var Speech = require('react-native-speech');
+// var Speech = require('react-native-speech');
 var Parse = require('parse/react-native');
 
 Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");
@@ -52,6 +52,14 @@ export class Items extends Parse.Object {
         }, this);
 
         item.addToParse();       // save to cloud and trigger event "added" on success
+    }
+
+    updateItem(item) {
+        return item.save();
+    }
+
+    deleteItem(item) {
+        return item.destroy();
     }
 
     getFiltered(items, filter) {
