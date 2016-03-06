@@ -2,7 +2,7 @@
  * Created by alexanderbol on 21/01/2016.
  */
 
-// var Speech = require('react-native-speech');
+var Speech = require('react-native-speech');
 var Parse = require('parse/react-native');
 
 Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");
@@ -19,6 +19,7 @@ export class Items extends Parse.Object {
 
     addEmptyItem() {
         var item = new Item();
+
         //var selectedCategory = this.get('categories').findWhere({"category": this.get('selectedCategory')});
         //if (selectedCategory) {
         //    item.set({
@@ -27,31 +28,16 @@ export class Items extends Parse.Object {
         //    });
         //}
 
-        var dictionary = app.get("currentDictionary");
-        var language1 = dictionary.get('language1').get('name');
-        var language2 = dictionary.get('language2').get('name');
+        //var dictionary = app.get("currentDictionary");
+        //var language1 = dictionary.get('language1').get('name');
+        //var language2 = dictionary.get('language2').get('name');
         // http://stackoverflow.com/questions/9640253/how-to-set-a-dynamic-property-on-a-model-with-backbone-js
-        var map = {};
-        map[language1] = '';
-        map[language2] = '';
-        item.set(map);
+        //var map = {};
+        //map[language1] = '';
+        //map[language2] = '';
+        //item.set(map);
 
-        //item.set({
-        //    language1: '',
-        //    language2: ''
-        //});
-
-        item.on("added", function (item) {
-            // add empty item to the list of quiz items
-            var quizItems = this.get("quizItems");
-            quizItems.add(item, {at: 0});
-            // update counter
-            this.updateSelectedCategoryCounter();
-            // this cause view rendering
-            this.trigger("ready");
-        }, this);
-
-        item.addToParse();       // save to cloud and trigger event "added" on success
+        return item.save();             // save to cloud and trigger event "added" on success
     }
 
     updateItem(item) {
@@ -113,6 +99,17 @@ export class Items extends Parse.Object {
         }
 
         return newItems;
+    }
+
+    sayItInLanguage(item, language) {
+        var langName = language.get('name');
+        var voice = language.get('lcid');
+        if (Speech && voice) {
+            Speech.speak({
+                text: item.get(langName),
+                voice: voice
+            });
+        }
     }
 
     /*

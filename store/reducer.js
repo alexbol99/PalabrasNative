@@ -77,10 +77,6 @@ function app(state=initialAppState, action) {
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary
             });
-        case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
-            return Object.assign({}, state, {
-
-            });
         case ActionTypes.NEW_DICTIONARY_SAVE_REQUEST_SUCCEED:
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
@@ -99,6 +95,10 @@ function app(state=initialAppState, action) {
                 navigateTo: 'homeView',
                 needFetchData: true
             });
+        case ActionTypes.GO_WEB_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                navigateTo: 'goWebView'
+            });
         default:
             return state;
     }
@@ -110,7 +110,7 @@ function editState(state=initialAppState.editState, action) {
             return Object.assign({}, state, {
                 sortedBy: action.sortedBy
             });
-        case ActionTypes.ITEM_PRESSED:
+        case ActionTypes.SELECT_ITEM_PRESSED:
             // if none selected - select
             // if same selected - unselect
             // if other selected - change selection to current
@@ -127,6 +127,11 @@ function editState(state=initialAppState.editState, action) {
             return Object.assign({}, state, {
                 selectedItem: undefined,
                 editItem: false
+            });
+        case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+                selectedItem: action.item,
+                editItem: true
             });
         default:
             return state;
@@ -236,6 +241,9 @@ function items(state = [], action) {
             return (state
                 .slice(0, index)
                 .concat(state.slice(index+1)));
+        case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
+            /* insert item to be first in the list */
+            return ([action.item].concat(state.slice()));
         default:
             return state;
     }

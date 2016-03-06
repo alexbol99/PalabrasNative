@@ -41,7 +41,7 @@ export const EditContentComponent = React.createClass ({
     },
     toggleSelectItem(item) {
         this.dispatch({
-            type: ActionTypes.ITEM_PRESSED,
+            type: ActionTypes.SELECT_ITEM_PRESSED,
             item: item
         })
     },
@@ -99,11 +99,39 @@ export const EditContentComponent = React.createClass ({
                     type: ActionTypes.DELETE_ITEM_REQUEST_SUCCEED,
                     item: item
                 })
-            }),
+            },
             (error) => {
                 alert("Problems with connection to server");
-            }
+            });
 
+    },
+    onAddNewItemButtonPressed() {
+        // Items.prototype.addNewItem()
+        this.state.items.addEmptyItem()        // items should got className when instantiated in HomeView on select dictionary
+            .then( (item) => {
+                this.dispatch({
+                    type: ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED,
+                    item: item
+                })
+            },
+            (error) => {
+                alert("Problems with connection to server");
+            });
+    },
+    onSayItButtonPressed() {
+        var item = this.state.editState.selectedItem;
+        if (!item) return;
+        var lang1 = this.state.app.currentDictionary.get('language1');
+        var lang2 = this.state.app.currentDictionary.get('language2');
+        Items.prototype.sayItInLanguage(item, lang1);
+        Items.prototype.sayItInLanguage(item, lang2);
+    },
+    onGoWebButtonPressed() {       // go search web for additional info
+        if (this.state.editState.selectedItem == undefined) return;
+        this.dispatch({
+            type: ActionTypes.GO_WEB_BUTTON_PRESSED,
+            item: this.state.editState.selectedItem
+        })
     },
     renderHeader() {
         var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
@@ -116,7 +144,7 @@ export const EditContentComponent = React.createClass ({
         return (
             <View style={styles.headerContainer}>
 
-                {/* Edit Item Toolbar opened when item selected*/}
+                {/* Edit Item Toolbar opened when item selected */}
                 {
                     this.state.editState.selectedItem ? (
                         <View style={styles.editToolbar}>
@@ -258,7 +286,8 @@ export const EditContentComponent = React.createClass ({
                     renderSectionHeader={() => this.renderHeader()}
                     renderRow={(item) => this.renderRow(item)}
                 />
-                <TouchableHighlight style={styles.addItemButton}>
+                <TouchableHighlight style={styles.addItemButton}
+                    onPress={() => this.onAddNewItemButtonPressed()}>
                     <Icon
                         name='fontawesome|plus-circle'
                         size={50}
