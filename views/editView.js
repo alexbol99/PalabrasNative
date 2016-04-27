@@ -16,8 +16,7 @@ var {
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
-var { Icon,
-    } = require('react-native-icons');
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 export const EditView = React.createClass ({
     getInitialState() {

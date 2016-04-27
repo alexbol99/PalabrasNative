@@ -20,12 +20,59 @@ var {
     ListView,
     TouchableHighlight,
     Image,
-    Modal
+    ActionSheetIOS
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
-var { Icon,
-    } = require('react-native-icons');
+
+var Icon = require('react-native-vector-icons/FontAwesome');
+
+const LocalMenu = ({sharePressed, logoutPressed}) => {
+    return (
+        <View style={styles.localMenu}>
+            <TouchableHighlight onPress={sharePressed}>
+                <Text style={globalStyles.menuItem}>
+                    Share
+                </Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={logoutPressed}>
+                <Text style={globalStyles.menuItem}>
+                    Log Out
+                </Text>
+            </TouchableHighlight>
+        </View>
+    )
+};
+
+
+const Header = ({uri, onMenuButtonPressed}) => {
+    var userImage = null;
+
+    if (uri) {
+        userImage = (
+            <Image  style={styles.userpic}
+                    source={{uri: uri}}
+            />
+        );
+    }
+
+    return (
+        <View style={styles.headerContainer}>
+            {userImage}
+
+            <Text style={styles.appTitle}>
+                Dictionaries
+            </Text>
+
+            <TouchableHighlight onPress={onMenuButtonPressed}>
+                <Icon name='bars' size={20} color='white' style={globalStyles.header.icon}>
+                </Icon>
+            </TouchableHighlight>
+        </View>
+    )
+};
+
+/* */
 
 export const HomeView = React.createClass ({
     getInitialState() {
@@ -120,33 +167,40 @@ export const HomeView = React.createClass ({
             });
         });
     },
-    renderHeader() {
-        var userImage = null;
-
-        if (this.state.user && this.state.user.url) {
-            userImage = (
-                <Image  style={styles.userpic}
-                        source={{uri: this.state.user.url}}
-                />
-            );
-        }
-
-        return (
-            <View style={styles.headerContainer}>
-                {userImage}
-
-                <Text style={styles.appTitle}>
-                    Dictionaries
-                </Text>
-
-                <Icon
-                    name='fontawesome|bars'
-                    size={20}
-                    color='white'
-                    style={globalStyles.header.icon}
-                />
-            </View>
-        )
+    toggleHomeMenu() {
+        this.dispatch({
+            type: ActionTypes.HOME_MENU_BUTTON_PRESSED
+        })
+    },
+    sharePressed() {
+        /* on Android use https://github.com/EstebanFuentealba/react-native-share ? */
+        ActionSheetIOS.showShareActionSheetWithOptions({
+                url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html`,
+                message: `Learn new words`,
+                subject: 'Word In My Pocket App',
+                excludedActivityTypes: [
+                    'com.apple.UIKit.activity.PostToTwitter',
+                    'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
+                    'com.apple.UIKit.activity.UIActivityTypeAddToReadingList'
+                ]
+            },
+            (error) => {
+                console.error(error);
+            },
+            (success, method) => {
+                var text;
+                if (success) {
+                    text = `Shared via ${method}`;
+                } else {
+                    text = 'You didn\'t share';
+                }
+                console.log(text);
+            });
+    },
+    logoutPressed() {
+        this.dispatch({
+            type: ActionTypes.MENU_ITEM_LOGOUT_PRESSED
+        })
     },
     renderRow(dictionary) {
         return (
@@ -174,7 +228,7 @@ export const HomeView = React.createClass ({
             <TouchableHighlight style={styles.addDirectoryButton}
                                 onPress={() => this.addEmptyDictionary()}>
                 <Icon
-                    name='fontawesome|plus-circle'
+                    name='plus-circle'
                     size={50}
                     color='#81c04d'
                     style={globalStyles.iconAdd}
@@ -193,6 +247,9 @@ export const HomeView = React.createClass ({
         );*/
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(this.state.dictionaries);
+
+        var contentWrapperStyle = this.state.app.showHomeMenu ? styles.contentShifted : styles.contentRegular;
+
         var content = this.state.dictionaries.length == 0 ? (
             <Text style={styles.description}>
                 Words in my pocket
@@ -201,10 +258,17 @@ export const HomeView = React.createClass ({
             <ListView
                 dataSource={dataSource}
                 initialListSize = {20}
-                renderSectionHeader={() => this.renderHeader()}
                 renderRow={(dictionary) => this.renderRow(dictionary)}
             />
         );
+
+        uri = this.state.user && this.state.user.url ? this.state.user.url : undefined;
+        var header = (
+            <Header uri={uri}
+                    onMenuButtonPressed={() => this.toggleHomeMenu()}
+            /> );
+
+        /*renderSectionHeader={() => this.renderHeader()}*/
 
         if (this.state.ajaxState != "") {
             content = (
@@ -214,7 +278,7 @@ export const HomeView = React.createClass ({
                         Connecting to server ...
                     </Text>
                     <Icon
-                        name='fontawesome|spinner'
+                        name='spinner'
                         size={50}
                         color='darkgray'
                         style={styles.spinner}
@@ -223,10 +287,21 @@ export const HomeView = React.createClass ({
             );
         }
 
+        var localMenu = this.state.app.showHomeMenu ? (
+            <LocalMenu
+                sharePressed={() => this.sharePressed()}
+                logoutPressed={() => this.logoutPressed()}
+            />
+        ) : null;
+
         return (
             <View style={styles.container}>
-                {content}
-                {addDirectoryButton}
+                {header}
+                <View style={contentWrapperStyle}>
+                    {content}
+                    {addDirectoryButton}
+                </View>
+                {localMenu}
             </View>
         );
     }
@@ -238,6 +313,11 @@ var styles = StyleSheet.create({
         justifyContent: 'flex-start',
         /*alignItems: 'center',*/
         backgroundColor: '#F5FCFF'
+    },
+    contentRegular: {
+    },
+    contentShifted: {
+        right: 100
     },
     spinner: {
         flex:1,
@@ -311,6 +391,16 @@ var styles = StyleSheet.create({
         bottom: 30
     },
 
+    localMenu: {
+        position: 'absolute',
+        right: 0,
+        top: 80,
+        /*backgroundColor: '#F5FCFF',*/
+        backgroundColor: globalStyles.header.backgroundColor,
+        borderLeftWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: '#ffffff'
+    }
 });
 
 /*

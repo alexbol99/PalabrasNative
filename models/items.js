@@ -2,10 +2,12 @@
  * Created by alexanderbol on 21/01/2016.
  */
 
-var Speech = require('react-native-speech');
+// var Speech = require('react-native-speech');
 var Parse = require('parse/react-native');
 
-Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");
+// Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");
+Parse.initialize('nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H', 'unused');
+Parse.serverURL = 'https://palabras99.herokuapp.com/parse';
 
 export class Items extends Parse.Object {
     constructor(ItemsClassName) {
@@ -17,8 +19,13 @@ export class Items extends Parse.Object {
         return localeQuery.find();
     }
 
-    addEmptyItem() {
-        var item = new Item();
+    addEmptyItem(dictionary) {
+        var pref = '';
+        if (dictionary.id.charAt(0) >= '0' && dictionary.id.charAt(0) <= '9') {
+            pref = 'a';
+        }
+        var itemsClassName = pref + dictionary.id;
+        var item = new Items(itemsClassName);
 
         //var selectedCategory = this.get('categories').findWhere({"category": this.get('selectedCategory')});
         //if (selectedCategory) {
@@ -101,16 +108,40 @@ export class Items extends Parse.Object {
         return newItems;
     }
 
-    sayItInLanguage(item, language) {
+    sayIt(item, language) {
         var langName = language.get('name');
         var voice = language.get('lcid');
-        if (Speech && voice) {
-            Speech.speak({
-                text: item.get(langName),
-                voice: voice
-            });
-        }
+        return Speech.speak({
+            text: item.get(langName),
+            voice: voice,
+            rate: 0.4
+        });
     }
+
+    //sayIt(item, language1, language2) {
+    //    var langName1 = language1.get('name');
+    //    var voice1 = language1.get('lcid');
+    //    var langName2 = language2.get('name');
+    //    var voice2 = language2.get('lcid');
+    //    Speech.speak({
+    //        text: item.get(langName1),
+    //        voice: voice1,
+    //        rate: 0.4
+    //    })
+    //    .then( started => {
+    //        return Speech.isSpeaking()
+    //    })
+    //    .then( speaking => {
+    //        return Speech.speak({
+    //                text: item.get(langName2),
+    //                voice: voice2,
+    //                rate: 0.4
+    //            })
+    //    })
+    //    .catch(error => {
+    //        console.log(error);
+    //    })
+    //}
 
     /*
         sync(selectionMode, category, numWeeksBefore, orderedBy) {

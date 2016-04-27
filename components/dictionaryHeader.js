@@ -13,8 +13,7 @@ var {
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
-var { Icon,
-    } = require('react-native-icons');
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 export const DictionaryHeaderComponent = React.createClass ({
     getInitialState() {
@@ -35,7 +34,7 @@ export const DictionaryHeaderComponent = React.createClass ({
             <View style={styles.headerContainer}>
                 <TouchableHighlight onPress={this.props.onBackHomeButtonPressed}>
                     <Icon
-                        name='fontawesome|long-arrow-left'
+                        name='long-arrow-left'
                         size={20}
                         color={globalStyles.header.color}
                         style={styles.icon}
@@ -48,7 +47,7 @@ export const DictionaryHeaderComponent = React.createClass ({
 
                 <TouchableHighlight onPress={this.props.onConfigButtonPressed}>
                     <Icon
-                        name='fontawesome|cog'
+                        name='cog'
                         size={20}
                         color={globalStyles.header.color}
                         style={styles.icon}
@@ -57,7 +56,7 @@ export const DictionaryHeaderComponent = React.createClass ({
 
                 <TouchableHighlight onPress={this.props.onShareButtonPressed}>
                     <Icon
-                        name='fontawesome|share-alt'
+                        name='share-alt'
                         size={20}
                         color={globalStyles.header.color}
                         style={styles.icon}

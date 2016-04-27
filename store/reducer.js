@@ -8,6 +8,7 @@ const initialAppState = {
     navigateTo: 'loginView',
     currentDictionary: '',
     mode: 'edit',
+    showHomeMenu: false,
     editState: {
         sortedBy: 'leftLanguage',
         selectedItem: undefined,
@@ -43,7 +44,16 @@ function app(state=initialAppState, action) {
         case ActionTypes.USER_LOGGED_IN_TO_PARSE:
             return Object.assign({}, state, {
                 navigateTo: 'homeView',
-                needFetchData: true
+                needFetchData: true,
+                showHomeMenu: false
+            });
+        case ActionTypes.HOME_MENU_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                showHomeMenu: !state.showHomeMenu
+            });
+        case ActionTypes.MENU_ITEM_LOGOUT_PRESSED:
+            return Object.assign({}, state, {
+                navigateTo: 'loginView'
             });
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
@@ -283,10 +293,12 @@ function user(state = initialUserState, action) {
                 status: action.type,
                 data: action.data
             });
-        case ActionTypes.USER_LOGGED_OUT:
+        case ActionTypes.MENU_ITEM_LOGOUT_PRESSED:
             return Object.assign({}, state, {
                 status: action.type
             });
+        case ActionTypes.USER_LOGGED_OUT:
+            return initialUserState;
         case ActionTypes.FETCH_USER_DATA_REQUEST_SUCCEED:
             return Object.assign({}, state, {
                 name: action.name,

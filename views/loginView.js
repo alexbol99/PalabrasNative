@@ -13,7 +13,8 @@ var {
     Text,
     StyleSheet,
     View,
-    TouchableHighlight
+    TouchableHighlight,
+    Platform
     } = React;
 
 export const LoginView = React.createClass({
@@ -23,14 +24,33 @@ export const LoginView = React.createClass({
     },
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
+
+        // On LogOut requested do nothing
+        if (this.props.store.getState().user.status != "MENU_ITEM_LOGOUT_PRESSED") {
+            /* On Android use FBLoginManager because for some reason
+            FBLogin component does not trigger "login found" event */
+            if (Platform.OS === 'android' && FBLoginManager.loginWithPermissions) {
+                FBLoginManager.loginWithPermissions(["email", "user_friends"],
+                    (error, data) => {
+                        if (!error) {
+                            // for some reason data.profile obtained stringified
+                            this.onLoginFound(Object.assign({}, data, {profile: JSON.parse(data.profile)}));
+                        }
+                        else {
+                            console.log(error);
+                        }
+                    })
+            }
+        }
         this.setState(this.props.store.getState());
+
     },
     componentDidMount() {
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
-    parseLogin(credentials) {
+    parseLoginIOS(credentials) {
         User.prototype.parseLogin(credentials)                       // login to Parse
         .then( (user) => {                                           // login succeed
             this.dispatch({
@@ -49,25 +69,64 @@ export const LoginView = React.createClass({
                 url: responseData.picture.data.url
             });
             return User.prototype.updateName(responseData.name);
-        })
-        .done(),                        // what is .done() ?
+        }),
+                                // what is .done() ?
         (error) => console.log(error);
+    },
+    parseLoginAndroid(data) {
+        var credentials = {
+            userId : data.profile.id,
+            token : data.token,
+            tokenExpirationDate : data.expiration
+        };
+
+        User.prototype.parseLogin(credentials)                           // login to Parse
+            .then( (user) => {                                           // login succeed
+                this.dispatch({
+                    type: ActionTypes.USER_LOGGED_IN_TO_PARSE,
+                    user: user
+                });
+                return User.prototype.updateName(data.profile.name);
+            });
+
+        this.dispatch({
+            type: ActionTypes.FETCH_USER_DATA_REQUEST_SUCCEED,
+                    name: data.profile.name,
+                    url: data.profile.picture.data.url
+                });
     },
     onLogin(data) {
         // Login to Parse with obtained credentials
-        this.parseLogin(data.credentials);
-
+        if (data.credentials) {  // IOS style
+            this.parseLoginIOS(data.credentials);
+        }
+        else {                   // Android style
+            this.parseLoginAndroid(data);
+        }
         this.dispatch({
             type: ActionTypes.USER_LOGGED_IN
         });
     },
     onLogout() {
-        this.dispatch({
-            type: ActionTypes.USER_LOGGED_OUT
+        User.prototype.parseLogout()
+            .then(() => {
+                this.dispatch({
+                    type: ActionTypes.USER_LOGGED_OUT
+                });
         });
     },
     onLoginFound(data) {
-        this.parseLogin(data.credentials);
+        // On LogOut requested do nothing
+        if (this.state.user.status == "MENU_ITEM_LOGOUT_PRESSED")
+            return;
+
+        // Login to Parse with obtained credentials
+        if (data.credentials) {  // IOS style
+            this.parseLoginIOS(data.credentials);
+        }
+        else {                   // Android style
+            this.parseLoginAndroid(data);
+        }
 
         this.dispatch({
             type: ActionTypes.USER_LOGIN_FOUND
@@ -100,11 +159,12 @@ export const LoginView = React.createClass({
     },
     render() {
         var _this = this;
+        var loginBehaviour = FBLoginManager.LoginBehaviors ? FBLoginManager.LoginBehaviors.SystemAccount : undefined;
         return (
             <View style={styles.container}>
                 <FBLogin style={styles.loginButton}
                          permissions={["email","user_friends"]}
-                         loginBehavior={FBLoginManager.LoginBehaviors.SystemAccount}
+                         loginBehavior={loginBehaviour}
                          onLogin={(data) => this.onLogin(data)}
                          onLogout={this.onLogout}
                          onLoginFound={(data) => this.onLoginFound(data)}
@@ -130,3 +190,16 @@ var styles = StyleSheet.create({
     }
 
 });
+/*
+<FBLogin style={styles.loginButton}
+         permissions={["email","user_friends"]}
+         loginBehavior={FBLoginManager.LoginBehaviors.SystemAccount}
+         onLogin={(data) => this.onLogin(data)}
+         onLogout={this.onLogout}
+         onLoginFound={(data) => this.onLoginFound(data)}
+         onLoginNotFound={this.onLoginNotFound}
+         onError={(data) => this.onError(data)}
+         onCancel={this.onCancel}
+         onPermissionsMissing={(data) => this.onPermissionMissing(data)}
+/>
+*/

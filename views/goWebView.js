@@ -2,6 +2,8 @@
  * Created by alexbol on 3/6/2016.
  */
 var React = require('react-native');
+var HeaderComponent = require('../components/header').HeaderComponent;
+
 import * as ActionTypes from '../store/actionTypes';
 
 var {
@@ -12,8 +14,7 @@ var {
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
-var { Icon,
-    } = require('react-native-icons');
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 export const GoWebView = React.createClass ({
     getInitialState() {
@@ -31,7 +32,12 @@ export const GoWebView = React.createClass ({
         this.setState(nextProps.store.getState());
     },
     onNavigationStateChange(navState) {
-        console.log(navState);
+        // console.log(navState);
+    },
+    backToDictionaryView() {
+        this.dispatch({
+            type: ActionTypes.BACK_TO_DICTIONARY_VIEW_PRESSED
+        })
     },
     render() {
         var item = this.state.editState.selectedItem;
@@ -41,10 +47,15 @@ export const GoWebView = React.createClass ({
             return null;
 
         var langLeft = currentDictionary.get('language1').get('name');
-        var url = currentDictionary.get('learnMore') + item.get('langLeft');
+        var url = currentDictionary.get('learnMore') + item.get(langLeft);
 
         return (
             <View style={styles.webView}>
+                <HeaderComponent
+                    title={`${item.get(langLeft)} in WEB`}
+                    onBackButtonPressed={this.backToDictionaryView}
+                />
+
                 <WebView
                     source={{uri: url}}
                     automaticallyAdjustContentInsets={false}

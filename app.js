@@ -9,6 +9,7 @@ var HomeView = require('./views/homeView').HomeView;
 var DictionaryView = require('./views/dictionaryView').DictionaryView;
 var ConfigView = require('./views/configView').ConfigView;
 var AddNewDictionaryView = require('./views/addNewDictionaryView').AddNewDictionaryView;
+var GoWebView = require('./views/goWebView').GoWebView;
 //var ShareActionSheet = require('./views/shareActionSheet').ShareActionSheet;
 
 var {
@@ -59,6 +60,11 @@ var App = React.createClass ({
                 page = (
                     <AddNewDictionaryView {... this.props} />
                 )
+                break;
+            case "goWebView":
+                page = (
+                    <GoWebView {... this.props} />
+                );
                 break;
             default:
                 page = (

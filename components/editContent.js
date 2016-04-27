@@ -16,14 +16,16 @@ var {
     View,
     ListView,
     TouchableHighlight,
-    TextInput
+    TextInput,
+    Timers
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
-var { Icon,
-    } = require('react-native-icons');
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 var globalStyles = require('../styles/styles').styles;
+
+var intervalId;
 
 export const EditContentComponent = React.createClass ({
     getInitialState() {
@@ -35,15 +37,18 @@ export const EditContentComponent = React.createClass ({
         this.setState(this.props.store.getState());
     },
     componentDidMount() {
+        this.scrollToItem();
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    componentDidUpdate() {
     },
     toggleSelectItem(item) {
         this.dispatch({
             type: ActionTypes.SELECT_ITEM_PRESSED,
             item: item
-        })
+        });
     },
     onEditItemButtonPressed() {
         this.dispatch({
@@ -106,8 +111,7 @@ export const EditContentComponent = React.createClass ({
 
     },
     onAddNewItemButtonPressed() {
-        // Items.prototype.addNewItem()
-        this.state.items.addEmptyItem()        // items should got className when instantiated in HomeView on select dictionary
+        Items.prototype.addEmptyItem(this.state.app.currentDictionary)
             .then( (item) => {
                 this.dispatch({
                     type: ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED,
@@ -117,14 +121,24 @@ export const EditContentComponent = React.createClass ({
             (error) => {
                 alert("Problems with connection to server");
             });
+        // Scroll to top of list view
+        this.refs.itemsList.getScrollResponder().scrollTo({x:0, y:0, animated: true})
     },
     onSayItButtonPressed() {
         var item = this.state.editState.selectedItem;
         if (!item) return;
         var lang1 = this.state.app.currentDictionary.get('language1');
         var lang2 = this.state.app.currentDictionary.get('language2');
-        Items.prototype.sayItInLanguage(item, lang1);
-        Items.prototype.sayItInLanguage(item, lang2);
+        Items.prototype.sayIt(item, lang1)
+            .then(started => {
+                intervalId = setTimeout(() => {
+                    Items.prototype.sayIt(item, lang2)
+                      .then( started => {
+                          clearTimeout(intervalId)
+                      })
+                }, 2000);
+            })
+            .catch(error => console.log(error));
     },
     onGoWebButtonPressed() {       // go search web for additional info
         if (this.state.editState.selectedItem == undefined) return;
@@ -132,6 +146,19 @@ export const EditContentComponent = React.createClass ({
             type: ActionTypes.GO_WEB_BUTTON_PRESSED,
             item: this.state.editState.selectedItem
         })
+    },
+    // Scroll to selected item
+    scrollToItem() {
+        var selectedItem = this.state.editState.selectedItem;
+        if (!selectedItem) return;
+
+        var scroller = this.refs.itemsList.getScrollResponder();
+        var metrics = this.refs.itemsList.getMetrics();
+        var index = this.state.items.findIndex(item => item.id == selectedItem.id);
+        // var y = (metrics.contentLength / metrics.renderedRows) * index - 100;
+        var y = 41 * index - 100;
+
+        scroller.scrollTo({x:0, y:y, animated: true})
     },
     renderHeader() {
         var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
@@ -141,81 +168,90 @@ export const EditContentComponent = React.createClass ({
         var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
 
+        var langTitles = (
+            <View style={styles.sortToolbarContainer}>
+                <Text style={styles.languageTitle}>
+                    {langLeft}
+                </Text>
+                <TouchableHighlight onPress = {this.props.onLeftSortButtonPressed}>
+                    <Icon
+                        name='sort-desc'
+                        size={20}
+                        color='#81c04d'
+                        style={iconSortStyleLeft}
+                    />
+                </TouchableHighlight>
+                <Text style={styles.languageTitle}>
+                    {langRight}
+                </Text>
+                <TouchableHighlight onPress = {this.props.onRightSortButtonPressed}>
+                    <Icon
+                        name='sort-desc'
+                        size={20}
+                        color='#81c04d'
+                        style={iconSortStyleRight}
+                    />
+                </TouchableHighlight>
+            </View>
+        );
+
+        /* Edit Item Toolbar opened when item selected */
+        var editToolbar = (
+            <View style={styles.editToolbar}>
+                <TouchableHighlight style={{flex:1}}
+                                    onPress = {() => this.onEditItemButtonPressed()}>
+                    <Icon
+                        name='pencil'
+                        size={20}
+                        color='#81c04d'
+                        style={globalStyles.header.icon}
+                    />
+                </TouchableHighlight>
+
+                <TouchableHighlight style={{flex:1}}
+                                    onPress = {() => this.onSayItButtonPressed()}>
+                    <Icon
+                        name='volume-up'
+                        size={20}
+                        color='#81c04d'
+                        style={globalStyles.header.icon}
+                    />
+                </TouchableHighlight>
+
+                <TouchableHighlight style={{flex:1}}
+                                    onPress = {() => this.onGoWebButtonPressed()}>
+                    <Icon
+                        name='globe'
+                        size={20}
+                        color='#81c04d'
+                        style={globalStyles.header.icon}
+                    />
+                </TouchableHighlight>
+
+                <TouchableHighlight style={{flex:1}}
+                                    onPress = {() => this.onDeleteItemButtonPressed()}>
+                    <Icon
+                        name='trash-o'
+                        size={20}
+                        color='#81c04d'
+                        style={globalStyles.header.icon}
+                    />
+                </TouchableHighlight>
+
+            </View>
+        );
+/*
+ {
+ this.state.editState.selectedItem ? (
+
+ ) : null
+ }
+
+ */
         return (
             <View style={styles.headerContainer}>
-
-                {/* Edit Item Toolbar opened when item selected */}
-                {
-                    this.state.editState.selectedItem ? (
-                        <View style={styles.editToolbar}>
-                            <TouchableHighlight style={{flex:1}}
-                                                onPress = {() => this.onEditItemButtonPressed()}>
-                                <Icon
-                                    name='fontawesome|pencil'
-                                    size={20}
-                                    color='#81c04d'
-                                    style={globalStyles.header.icon}
-                                />
-                            </TouchableHighlight>
-
-                            <TouchableHighlight style={{flex:1}}
-                                                onPress = {this.props.onSayItButtonPressed}>
-                                <Icon
-                                    name='fontawesome|volume-up'
-                                    size={20}
-                                    color='#81c04d'
-                                    style={globalStyles.header.icon}
-                                />
-                            </TouchableHighlight>
-
-                            <TouchableHighlight style={{flex:1}}
-                                                onPress = {this.props.onGoWebButtonPressed}>
-                                <Icon
-                                    name='fontawesome|globe'
-                                    size={20}
-                                    color='#81c04d'
-                                    style={globalStyles.header.icon}
-                                />
-                            </TouchableHighlight>
-
-                            <TouchableHighlight style={{flex:1}}
-                                                onPress = {() => this.onDeleteItemButtonPressed()}>
-                                <Icon
-                                    name='fontawesome|trash-o'
-                                    size={20}
-                                    color='#81c04d'
-                                    style={globalStyles.header.icon}
-                                />
-                            </TouchableHighlight>
-
-                        </View>
-                    ) : null
-                }
-
-                <View style={styles.sortToolbarContainer}>
-                    <Text style={styles.languageTitle}>
-                        {langLeft}
-                    </Text>
-                    <TouchableHighlight onPress = {this.props.onLeftSortButtonPressed}>
-                        <Icon
-                            name='fontawesome|sort-desc'
-                            size={20}
-                            color='#81c04d'
-                            style={iconSortStyleLeft}
-                        />
-                    </TouchableHighlight>
-                    <Text style={styles.languageTitle}>
-                        {langRight}
-                    </Text>
-                    <TouchableHighlight onPress = {this.props.onRightSortButtonPressed}>
-                        <Icon
-                            name='fontawesome|sort-desc'
-                            size={20}
-                            color='#81c04d'
-                            style={iconSortStyleRight}
-                        />
-                    </TouchableHighlight>
-                </View>
+                {editToolbar}
+                {langTitles}
             </View>
         )
     },
@@ -233,12 +269,12 @@ export const EditContentComponent = React.createClass ({
                     this.state.editState.editItem ? (
                         <View style={style}>
                             <TextInput
-                                style={{flex:1, height: 40}}
+                                style={{flex:1, height: 30, backgroundColor: 'white'}}
                                 value={item.get(langLeft)}
                                 onChangeText={(value) => this.itemLeftChanged({value})}
                             />
                             <TextInput
-                                style={{flex:1, height: 40}}
+                                style={{flex:1, height: 30, backgroundColor: 'white'}}
                                 value={item.get(langRight)}
                                 onChangeText={(value) => this.itemRightChanged({value})}
                             />
@@ -278,9 +314,14 @@ export const EditContentComponent = React.createClass ({
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(sortedItems);
 
+        /* does not work in version 0.20
+        stickyIndices = this.state.editState.selectedItem ?
+            sortedItems.findIndex( item => item.id == this.state.editState.selectedItem.id ) :
+            [];*/
+
         return (
             <View style={styles.contentContainer}>
-                <ListView
+                <ListView ref='itemsList'
                     dataSource={dataSource}
                     initialListSize = {20}
                     renderSectionHeader={() => this.renderHeader()}
@@ -289,7 +330,7 @@ export const EditContentComponent = React.createClass ({
                 <TouchableHighlight style={styles.addItemButton}
                     onPress={() => this.onAddNewItemButtonPressed()}>
                     <Icon
-                        name='fontawesome|plus-circle'
+                        name='plus-circle'
                         size={50}
                         color='#81c04d'
                         style={globalStyles.iconAdd}
@@ -313,6 +354,7 @@ var styles = StyleSheet.create({
     },
     headerContainer: {
         flex: 1,
+        backgroundColor: '#F5FCFF'
     },
     editToolbar: {
         flexDirection: 'row',

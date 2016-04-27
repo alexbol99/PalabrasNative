@@ -5,25 +5,36 @@
 'use strict';
 
 var React = require('react-native');
-var {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-} = React;
+var MainComponent = require('./main');
 
+var {
+    AppRegistry,
+    View,
+    } = React;
+
+class Palabras extends React.Component {
+    render() {
+        return (
+            <View style={{flex:1}}>
+                <MainComponent />
+            </View>
+        );
+    }
+}
+
+/*
 var Palabras = React.createClass({
   render: function() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to React Native!
+          Welcome to My Pocket Dictionary!
         </Text>
         <Text style={styles.instructions}>
-          To get started, edit index.android.js
+          To get started change something
         </Text>
         <Text style={styles.instructions}>
-          Shake or press menu button for dev menu
+          Shake shake shake or press menu button for dev menu
         </Text>
       </View>
     );
@@ -48,5 +59,6 @@ var styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
-
+*/
+debugger;
 AppRegistry.registerComponent('Palabras', () => Palabras);

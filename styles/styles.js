@@ -29,7 +29,6 @@ export const styles = {
             height: 20,
             marginLeft: 10,
             marginRight: 10,
-            color: '#ffffff',
             alignSelf: 'center'
         }
     },
@@ -63,5 +62,11 @@ export const styles = {
             width:0
         }
     },
-
+    menuItem: {
+        fontSize: 20,
+        color: '#ffffff',
+        textAlign:'center',
+        alignSelf:'center',
+        padding: 10,
+    },
     };

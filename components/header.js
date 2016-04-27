@@ -14,14 +14,13 @@ var {
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
-var { Icon,
-    } = require('react-native-icons');
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 var BackButton = ({onButtonPressed}) => {
     return (
         <TouchableHighlight onPress={onButtonPressed}>
             <Icon
-                name='fontawesome|long-arrow-left'
+                name='long-arrow-left'
                 size={20}
                 color={globalStyles.header.color}
                 style={styles.icon}
