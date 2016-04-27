@@ -10,6 +10,7 @@ var Languages = require('../models/languages').Languages.prototype;
 var Items = require('../models/items').Items;
 
 import * as ActionTypes from '../store/actionTypes';
+import Share from 'react-native-share';
 
 var globalStyles = require('../styles/styles').styles;
 
@@ -20,7 +21,8 @@ var {
     ListView,
     TouchableHighlight,
     Image,
-    ActionSheetIOS
+    ActionSheetIOS,
+    Platform
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -174,28 +176,39 @@ export const HomeView = React.createClass ({
     },
     sharePressed() {
         /* on Android use https://github.com/EstebanFuentealba/react-native-share ? */
-        ActionSheetIOS.showShareActionSheetWithOptions({
-                url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html`,
-                message: `Learn new words`,
-                subject: 'Word In My Pocket App',
-                excludedActivityTypes: [
-                    'com.apple.UIKit.activity.PostToTwitter',
-                    'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
-                    'com.apple.UIKit.activity.UIActivityTypeAddToReadingList'
-                ]
-            },
-            (error) => {
-                console.error(error);
-            },
-            (success, method) => {
-                var text;
-                if (success) {
-                    text = `Shared via ${method}`;
-                } else {
-                    text = 'You didn\'t share';
-                }
-                console.log(text);
+        if (Platform.OS === 'android') {
+            Share.open({
+                share_text: "Learn new words",
+                share_URL: "https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html",
+                title: "Word In My Pocket"
+            },(e) => {
+                console.log(e);
             });
+        }
+        else {
+            ActionSheetIOS.showShareActionSheetWithOptions({
+                    url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html`,
+                    message: `Learn new words`,
+                    subject: 'Word In My Pocket',
+                    excludedActivityTypes: [
+                        'com.apple.UIKit.activity.PostToTwitter',
+                        'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
+                        'com.apple.UIKit.activity.UIActivityTypeAddToReadingList'
+                    ]
+                },
+                (error) => {
+                    console.error(error);
+                },
+                (success, method) => {
+                    var text;
+                    if (success) {
+                        text = `Shared via ${method}`;
+                    } else {
+                        text = 'You didn\'t share';
+                    }
+                    console.log(text);
+                });
+        }
     },
     logoutPressed() {
         this.dispatch({

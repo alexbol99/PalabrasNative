@@ -1,15 +1,13 @@
 package com.palabras;
 
 import com.facebook.react.ReactActivity;
+import cl.json.RNSharePackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.magus.fblogin.FacebookLoginPackage; // <--- import
-import com.smixx.reactnativeicons.ReactNativeIcons;  // <--- import
 
 import java.util.Arrays;
 import java.util.List;
-
-import com.smixx.reactnativeicons.IconFont; // <--- import this if you want to specify which fonts to load
 
 public class MainActivity extends ReactActivity {
 
@@ -39,10 +37,8 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
-        new FacebookLoginPackage(),
-        new ReactNativeIcons(Arrays.asList(
-                  new IconFont("fontawesome", "FontAwesome.otf")
-        ))
+            new RNSharePackage(),
+        new FacebookLoginPackage()
       );
     }
 }

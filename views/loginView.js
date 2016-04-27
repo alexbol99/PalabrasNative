@@ -2,10 +2,7 @@
  * Created by alexanderbol on 21/02/2016.
  */
 var React = require('react-native');
-var FBLogin = require('react-native-facebook-login');
-var FBLoginManager = require('NativeModules').FBLoginManager;
 var User = require('../models/user').User;
-
 import * as ActionTypes from '../store/actionTypes';
 var globalStyles = require('../styles/styles').styles;
 
@@ -16,6 +13,9 @@ var {
     TouchableHighlight,
     Platform
     } = React;
+
+var FBLogin = require('react-native-facebook-login');
+var FBLoginManager = require('NativeModules').FBLoginManager;
 
 export const LoginView = React.createClass({
     getInitialState() {

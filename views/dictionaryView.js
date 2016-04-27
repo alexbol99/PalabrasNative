@@ -10,11 +10,13 @@ var LearnView = require('../views/learnView').LearnView;
 var Items = require('../models/items').Items;
 
 import * as ActionTypes from '../store/actionTypes';
+import Share from 'react-native-share';
 
 var {
     ActionSheetIOS,
     StyleSheet,
-    View
+    View,
+    Platform
     } = React;
 
 export const DictionaryView = React.createClass ({
@@ -43,28 +45,39 @@ export const DictionaryView = React.createClass ({
     },
     onShareButtonPressed() {
         /* on Android use https://github.com/EstebanFuentealba/react-native-share ? */
-        ActionSheetIOS.showShareActionSheetWithOptions({
-                url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
-                message: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
-                subject: 'Word In My Pocket App',
-                excludedActivityTypes: [
-                    'com.apple.UIKit.activity.PostToTwitter',
-                    'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
-                    'com.apple.UIKit.activity.UIActivityTypeAddToReadingList'
-                ]
-            },
-            (error) => {
-                console.error(error);
-            },
-            (success, method) => {
-                var text;
-                if (success) {
-                    text = `Shared via ${method}`;
-                } else {
-                    text = 'You didn\'t share';
-                }
-                console.log(text);
+        if (Platform.OS === 'android') {
+            Share.open({
+                share_text: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
+                share_URL: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
+                title: "Word In My Pocket"
+            },(e) => {
+                console.log(e);
             });
+        }
+        else {
+            ActionSheetIOS.showShareActionSheetWithOptions({
+                    url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
+                    message: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
+                    subject: 'Word In My Pocket',
+                    excludedActivityTypes: [
+                        'com.apple.UIKit.activity.PostToTwitter',
+                        'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
+                        'com.apple.UIKit.activity.UIActivityTypeAddToReadingList'
+                    ]
+                },
+                (error) => {
+                    console.error(error);
+                },
+                (success, method) => {
+                    var text;
+                    if (success) {
+                        text = `Shared via ${method}`;
+                    } else {
+                        text = 'You didn\'t share';
+                    }
+                    console.log(text);
+                });
+        }
         /*
         this.dispatch({
             type:ActionTypes.SHARE_DICTIONARY_BUTTON_PRESSED
