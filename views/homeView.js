@@ -229,7 +229,8 @@ export const HomeView = React.createClass ({
                         </Text>
 
                         <Text style={styles.languages}>
-                            {dictionary.get('language1').get('name') + ' - ' + dictionary.get('language2').get('name')}
+                            {dictionary.get('language1').get('localName') + ' - ' +
+                            dictionary.get('language2').get('localName')}
                         </Text>
                     </View>
                 </View>
@@ -339,10 +340,11 @@ var styles = StyleSheet.create({
         /*color: 'green'*/
     },
     headerContainer: {
-        paddingTop:30,
+        paddingTop:20,
         paddingBottom:10,
         marginTop: 0,
         flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: globalStyles.header.backgroundColor
     },
 
@@ -352,7 +354,8 @@ var styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 25,
-        marginLeft: 10
+        marginLeft: 10,
+        alignSelf: 'center'
     },
 
     menuIcon: {

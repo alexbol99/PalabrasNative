@@ -60,5 +60,5 @@ var styles = StyleSheet.create({
   },
 });
 */
-debugger;
+
 AppRegistry.registerComponent('Palabras', () => Palabras);

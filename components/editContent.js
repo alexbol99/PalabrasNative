@@ -51,10 +51,25 @@ export const EditContentComponent = React.createClass ({
         });
     },
     onEditItemButtonPressed() {
-        this.dispatch({
-            type: ActionTypes.EDIT_ITEM_BUTTON_PRESSED
-        })
+        /* Disable edit/delete if current user is not an owner of the document */
+        var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+
+        if (isOwner) {
+            this.dispatch({
+                type: ActionTypes.EDIT_ITEM_BUTTON_PRESSED
+            });
+        }
+        else {
+            Alert.alert(
+                'Alert',
+                `You are not an owner of ${this.state.app.currentDictionary.get('name')}`,
+                [
+                    {text: 'OK', onPress: () => {}, style: 'cancel'}
+                ]
+            )
+        }
     },
+
     itemLeftChanged({value}) {
         var item = this.state.editState.selectedItem;
         var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
@@ -85,16 +100,33 @@ export const EditContentComponent = React.createClass ({
     },
     onDeleteItemButtonPressed() {
         var item = this.state.editState.selectedItem;
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
-        Alert.alert(
-            'Are you sure?',
-            `Item ${item.get(langLeft)} - ${item.get(langRight)} will be deleted`,
-            [
-                {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-                {text: 'OK', onPress: () => this.deleteItem()},
-            ]
-        )
+        if (!item) return;
+
+        /* Disable edit/delete if current user is not an owner of the document */
+        var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+
+        if (isOwner) {
+            var item = this.state.editState.selectedItem;
+            var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+            var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+            Alert.alert(
+                'Are you sure?',
+                `Item ${item.get(langLeft)} - ${item.get(langRight)} will be deleted`,
+                [
+                    {text: 'Cancel', onPress: () => { }, style: 'cancel'},
+                    {text: 'OK', onPress: () => this.deleteItem()}
+                ]
+            )
+        }
+        else {
+            Alert.alert(
+                'Alert',
+                `You are not an owner of ${this.state.app.currentDictionary.get('name')}`,
+                [
+                    {text: 'OK', onPress: () => {}, style: 'cancel'}
+                ]
+            )
+        }
     },
     deleteItem() {
         var item = this.state.editState.selectedItem;
@@ -168,6 +200,19 @@ export const EditContentComponent = React.createClass ({
         var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
 
+        var editButtonDisabled = this.state.editState.selectedItem ? false : true;
+        var sayItButtonDisabled = this.state.editState.selectedItem ? false : true;
+        var goWebButtonDisabled = this.state.editState.selectedItem ? false : true;
+        var deleteButtonDisabled = this.state.editState.selectedItem ? false : true;
+        var editButtonIconStyle = editButtonDisabled ?
+            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
+        var sayItButtonIconStyle = sayItButtonDisabled ?
+            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
+        var goWebButtonIconStyle = goWebButtonDisabled ?
+            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
+        var deleteButtonIconStyle = deleteButtonDisabled ?
+            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
+
         var langTitles = (
             <View style={styles.sortToolbarContainer}>
                 <Text style={styles.languageTitle}>
@@ -199,55 +244,52 @@ export const EditContentComponent = React.createClass ({
         var editToolbar = (
             <View style={styles.editToolbar}>
                 <TouchableHighlight style={{flex:1}}
+                                    disabled = {editButtonDisabled}
                                     onPress = {() => this.onEditItemButtonPressed()}>
                     <Icon
                         name='pencil'
                         size={20}
                         color='#81c04d'
-                        style={globalStyles.header.icon}
+                        style={editButtonIconStyle}
                     />
                 </TouchableHighlight>
 
                 <TouchableHighlight style={{flex:1}}
+                                    disabled = {sayItButtonDisabled}
                                     onPress = {() => this.onSayItButtonPressed()}>
                     <Icon
                         name='volume-up'
                         size={20}
                         color='#81c04d'
-                        style={globalStyles.header.icon}
+                        style={sayItButtonIconStyle}
                     />
                 </TouchableHighlight>
 
                 <TouchableHighlight style={{flex:1}}
+                                    disabled={goWebButtonDisabled}
                                     onPress = {() => this.onGoWebButtonPressed()}>
                     <Icon
                         name='globe'
                         size={20}
                         color='#81c04d'
-                        style={globalStyles.header.icon}
+                        style={goWebButtonIconStyle}
                     />
                 </TouchableHighlight>
 
                 <TouchableHighlight style={{flex:1}}
+                                    disabled = {deleteButtonDisabled}
                                     onPress = {() => this.onDeleteItemButtonPressed()}>
                     <Icon
                         name='trash-o'
                         size={20}
                         color='#81c04d'
-                        style={globalStyles.header.icon}
+                        style={deleteButtonIconStyle}
                     />
                 </TouchableHighlight>
 
             </View>
         );
-/*
- {
- this.state.editState.selectedItem ? (
 
- ) : null
- }
-
- */
         return (
             <View style={styles.headerContainer}>
                 {editToolbar}
@@ -418,7 +460,13 @@ var styles = StyleSheet.create({
     iconSortDimmed: {
         width:30,
         height: 30,
-        opacity: 0.3
+        opacity: 0.5
+    },
+    iconButtonActive: {
+        opacity: 1.0
+    },
+    iconButtonDimmed: {
+        opacity: 0.5
     }
 });
 
