@@ -92,16 +92,8 @@ export const HomeView = React.createClass ({
         var needFetchData = this.props.store.getState().app.needFetchData;
         if (user && needFetchData) {
             this.fetchData(user);
+            this.processLink(user);
         }
-
-        Linking.getInitialURL().then((url) => {
-            if (url) {
-                Alert.alert('Linking','Initial url is: ' + url);
-            }
-            else {
-                Alert.alert('Linking', 'Null');
-            }
-        });
 
         var state = this.props.store.getState();
         this.setState(state);
@@ -144,6 +136,28 @@ export const HomeView = React.createClass ({
         this.dispatch({
             type: ActionTypes.AJAX_REQUEST_STARTED
         })
+    },
+    processLink(user) {
+        Linking.getInitialURL()
+            .then((url) => {
+                if (url && url.split('/')[2] == "quiz" && url.split('/')[3] != "") {
+                    var dictionaryId = url.split('/')[3];
+                    // Alert.alert('Linking','Initial url is: ' + url);
+                    return Dictionaries.findById(dictionaryId);
+                }
+            })
+            .then( (dictionary) => {
+                return Shares.share(user.parseUser, dictionary);
+            })
+            .then( (share) => {
+                /* do nothing */
+            }),
+            (error) => {
+                this.dispatch({
+                    type: ActionTypes.AJAX_REQUEST_FAILED
+                });
+            };
+
     },
     dictionarySelected(dictionary) {
         this.dispatch({

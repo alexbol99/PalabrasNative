@@ -167,7 +167,7 @@ export const LoginView = React.createClass({
         return (
             <View style={styles.container}>
                 <Image
-                    style={{ width: deviceWidth }}
+                    style={{ width: 360 }}
                     source={require('../assets/images/palabra-470x346.jpg')}
                 />
                 <Text style={styles.title}>
@@ -180,7 +180,7 @@ export const LoginView = React.createClass({
                     Share with your friends
                 </Text>
                 <FBLogin style={styles.loginButton}
-                         permissions={["email","user_friends"]}
+                         permissions={["user_friends"]}
                          loginBehavior={loginBehaviour}
                          onLogin={(data) => this.onLogin(data)}
                          onLogout={this.onLogout}
@@ -213,7 +213,7 @@ var styles = StyleSheet.create({
         textAlign:'center',
         alignSelf:'center',
         fontSize: 20,
-        margin:10,
+        margin:2,
     },
     subtitle: {
         fontSize: 35,

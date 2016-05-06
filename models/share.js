@@ -36,4 +36,31 @@ export class Shares extends Parse.Object {
                 respArr.forEach( (share) => share.destroy() )
             )
     }
+
+    // add dictionary to current user shared dictionaries
+    share(user, dictionary) {
+        if (!dictionary)
+            return;
+        // do not add to shared if dictionary was created by current user
+        if (user.id == dictionary.get('createdBy').id)
+            return;
+
+        var share = new Shares();
+        share.set({
+            user: user,
+            dictionary: dictionary
+        });
+
+        var query = new Parse.Query(Shares)
+            .equalTo('user', share.get('user'))
+            .equalTo('dictionary', share.get('dictionary'));
+
+        /* Add unique if not exist */
+        query.count()
+            .then( (count) => {
+                if (count == 0) {
+                    return share.save();
+                }
+            })
+    }
 }

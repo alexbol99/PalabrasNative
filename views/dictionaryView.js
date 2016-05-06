@@ -48,7 +48,7 @@ export const DictionaryView = React.createClass ({
         if (Platform.OS === 'android') {
             Share.open({
                 share_text: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
-                share_URL: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
+                share_URL: `https://dl.dropboxusercontent.com/u/79667427/palabras_redirect.html#quiz/${this.state.app.currentDictionary.id}`,
                 title: "Palabras"
             },(e) => {
                 console.log(e);
@@ -56,7 +56,7 @@ export const DictionaryView = React.createClass ({
         }
         else {
             ActionSheetIOS.showShareActionSheetWithOptions({
-                    url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
+                    url: `https://dl.dropboxusercontent.com/u/79667427/palabras_redirect.html#quiz/${this.state.app.currentDictionary.id}`,
                     message: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
                     subject: 'Palabras',
                     excludedActivityTypes: [

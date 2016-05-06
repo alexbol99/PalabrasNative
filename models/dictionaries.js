@@ -13,12 +13,12 @@ export class Dictionaries extends Parse.Object {
         super('Dictionaries');     // Pass the ClassName to the Parse.Object constructor
     }
     fetch(user) {
-        var localeQuery = new Parse.Query('Dictionaries')
+        var localQuery = new Parse.Query('Dictionaries')
             .include('language1')
             .include('language2')
             .include('createdBy')
             .equalTo("createdBy", user);
-        return localeQuery.find();
+        return localQuery.find();
     }
 
     updateDictionary(dictionary) {
@@ -44,5 +44,13 @@ export class Dictionaries extends Parse.Object {
 
     deleteDictionary(dictionary) {
         return dictionary.destroy();
+    }
+
+    findById(id) {
+        var localQuery = new Parse.Query('Dictionaries')
+            .equalTo("objectId", id)
+            .include('language1')
+            .include('language2');
+        return localQuery.first();        // return promise
     }
 }
