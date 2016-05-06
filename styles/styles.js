@@ -25,8 +25,8 @@ export const styles = {
         },
         icon: {
             flex: 1,
-            width: 20,
-            height: 20,
+            /*width: 20,
+            height: 20,*/
             marginLeft: 10,
             marginRight: 10,
             alignSelf: 'center'
@@ -51,8 +51,9 @@ export const styles = {
         marginVertical:5,
     },
     iconAdd: {
+        /*
         width: 50,
-        height: 50,
+        height: 50,*/
         elevation: 1,
         shadowColor:'darkgray',
         shadowOpacity: 0.8,

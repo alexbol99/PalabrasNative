@@ -61,29 +61,17 @@ export const AddNewDictionaryView = React.createClass ({
         dictionary.set('name', name);
         this.updateDictionary(dictionary);
     },
-    toggleLanguage1Picker() {
-        this.dispatch({
-            type: ActionTypes.TOGGLE_LANGUAGE1_PICKER_PRESSED
-        })
-    },
-    toggleLanguage2Picker() {
-        this.dispatch({
-            type: ActionTypes.TOGGLE_LANGUAGE2_PICKER_PRESSED
-        })
-    },
     language1Selected({name}) {
         var dictionary = this.state.app.currentDictionary;
         var language = this.state.languages.find( (language_tmp) => (language_tmp.get('name') == name) );
         dictionary.set('language1', language);
         this.updateDictionary(dictionary);
-        this.toggleLanguage1Picker();
     },
     language2Selected({name}) {
         var dictionary = this.state.app.currentDictionary;
         var language = this.state.languages.find( (language_tmp) => (language_tmp.get('name') == name) );
         dictionary.set('language2', language);
         this.updateDictionary(dictionary);
-        this.toggleLanguage2Picker();
     },
     render() {
         return (
@@ -102,7 +90,6 @@ export const AddNewDictionaryView = React.createClass ({
                     </Text>
                     <TextInput
                         style={styles.input}
-                        returnKeyType='next'
                         blurOnSubmit={false}
                         value={this.state.app.currentDictionary.get('name')}
                         onChangeText={(name) => this.dictionaryNameChanged({name})}
@@ -113,22 +100,9 @@ export const AddNewDictionaryView = React.createClass ({
                         <Text style={styles.label}>
                             1st Language:
                         </Text>
-                        <TouchableHighlight style={{flex:1}}
-                            onPress={() => this.toggleLanguage1Picker()}>
-                            <TextInput
-                                style={styles.input}
-                                returnKeyType='next'
-                                editable={false}
-                                blurOnSubmit={false}
-                                value={this.state.app.currentDictionary.get('language1').get('name')}
-                            />
-                        </TouchableHighlight>
-                    </View>
-
-                    {this.state.app.displayLangage1Picker ? (
-                        <Picker
-                            selectedValue={this.state.app.currentDictionary.get('language1').get('name')}
-                            onValueChange={(name) => this.language1Selected({name})} >
+                        <Picker style={{flex:1}}
+                                selectedValue={this.state.app.currentDictionary.get('language1').get('name')}
+                                onValueChange={(name) => this.language1Selected({name})} >
                             {
                                 this.state.languages.map( (language) =>
                                     <Picker.Item key= {language.id}
@@ -137,39 +111,26 @@ export const AddNewDictionaryView = React.createClass ({
                                 )
                             }
                         </Picker>
-                    ) : null}
+                    </View>
 
                     {/* Select Second Language */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
                             2nd Language:
                         </Text>
-
-                        <TouchableHighlight style={{flex:1}}
-                            onPress={() => this.toggleLanguage2Picker()}>
-                            <TextInput
-                                style={styles.input}
-                                returnKeyType='next'
-                                editable={false}
-                                blurOnSubmit={false}
-                                value={this.state.app.currentDictionary.get('language2').get('name')}
-                            />
-                        </TouchableHighlight>
-                    </View>
-
-                    {this.state.app.displayLangage2Picker ? (
-                        <Picker
-                            selectedValue={this.state.app.currentDictionary.get('language2').get('name')}
-                            onValueChange={(name) => this.language2Selected({name})} >
+                        <Picker style={{flex:1}}
+                                selectedValue={this.state.app.currentDictionary.get('language2').get('name')}
+                                onValueChange={(name) => this.language2Selected({name})} >
                             {
                                 this.state.languages.map( (language) =>
                                     <Picker.Item key= {language.id}
-                                                    label={language.get('localName')}
-                                                    value={language.get('name')} />
+                                                 label={language.get('localName')}
+                                                 value={language.get('name')} />
                                 )
                             }
                         </Picker>
-                    ): null}
+                    </View>
+
 
                 </View>
             </View>

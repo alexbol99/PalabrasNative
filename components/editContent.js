@@ -311,12 +311,12 @@ export const EditContentComponent = React.createClass ({
                     this.state.editState.editItem ? (
                         <View style={style}>
                             <TextInput
-                                style={{flex:1, height: 30, backgroundColor: 'white'}}
+                                style={styles.editItem}
                                 value={item.get(langLeft)}
                                 onChangeText={(value) => this.itemLeftChanged({value})}
                             />
                             <TextInput
-                                style={{flex:1, height: 30, backgroundColor: 'white'}}
+                                style={styles.editItem}
                                 value={item.get(langRight)}
                                 onChangeText={(value) => this.itemRightChanged({value})}
                             />
@@ -408,7 +408,8 @@ var styles = StyleSheet.create({
     },
     languageTitle: {
         flex:1,
-        paddingHorizontal: 10,
+        paddingLeft:10,
+        paddingRight:10,
         marginVertical: 5,
         textAlign:'left',
         fontSize: 20,
@@ -430,6 +431,13 @@ var styles = StyleSheet.create({
     item: {
         flex:1,
         fontSize: 15
+    },
+    editItem: {
+        flex:1,
+        height: 40,
+        margin:5,
+        alignItems: 'center',
+        backgroundColor: 'white'
     },
     listView: {
         flex: 1,

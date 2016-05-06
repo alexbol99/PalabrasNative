@@ -20,9 +20,12 @@ var {
     View,
     ListView,
     TouchableHighlight,
+    TouchableOpacity,
     Image,
     ActionSheetIOS,
-    Platform
+    Platform,
+    Linking,
+    Alert
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -66,10 +69,12 @@ const Header = ({uri, onMenuButtonPressed}) => {
                 Dictionaries
             </Text>
 
-            <TouchableHighlight onPress={onMenuButtonPressed}>
+            <TouchableOpacity
+                onPress={onMenuButtonPressed}
+                activeOpacity={1.0}>
                 <Icon name='bars' size={20} color='white' style={globalStyles.header.icon}>
                 </Icon>
-            </TouchableHighlight>
+            </TouchableOpacity>
         </View>
     )
 };
@@ -88,6 +93,15 @@ export const HomeView = React.createClass ({
         if (user && needFetchData) {
             this.fetchData(user);
         }
+
+        Linking.getInitialURL().then((url) => {
+            if (url) {
+                Alert.alert('Linking','Initial url is: ' + url);
+            }
+            else {
+                Alert.alert('Linking', 'Null');
+            }
+        });
 
         var state = this.props.store.getState();
         this.setState(state);
@@ -180,7 +194,7 @@ export const HomeView = React.createClass ({
             Share.open({
                 share_text: "Learn new words",
                 share_URL: "https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html",
-                title: "Word In My Pocket"
+                title: "Palabras"
             },(e) => {
                 console.log(e);
             });
@@ -189,7 +203,7 @@ export const HomeView = React.createClass ({
             ActionSheetIOS.showShareActionSheetWithOptions({
                     url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html`,
                     message: `Learn new words`,
-                    subject: 'Word In My Pocket',
+                    subject: 'Palabras',
                     excludedActivityTypes: [
                         'com.apple.UIKit.activity.PostToTwitter',
                         'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
@@ -266,10 +280,10 @@ export const HomeView = React.createClass ({
 
         var content = this.state.dictionaries.length == 0 ? (
             <Text style={styles.description}>
-                Words in my pocket
+                Palabras - learn new words
             </Text>
         ) : (
-            <ListView
+            <ListView ref="dictionariesList"
                 dataSource={dataSource}
                 initialListSize = {20}
                 renderRow={(dictionary) => this.renderRow(dictionary)}
@@ -311,10 +325,8 @@ export const HomeView = React.createClass ({
         return (
             <View style={styles.container}>
                 {header}
-                <View style={contentWrapperStyle}>
-                    {content}
-                    {addDirectoryButton}
-                </View>
+                {content}
+                {addDirectoryButton}
                 {localMenu}
             </View>
         );
@@ -329,15 +341,14 @@ var styles = StyleSheet.create({
         backgroundColor: '#F5FCFF'
     },
     contentRegular: {
+        flex:1
     },
     contentShifted: {
+        flex:1,
         right: 100
     },
     spinner: {
-        flex:1,
-        width: 50,
-        height: 50,
-        /*color: 'green'*/
+        flex:1
     },
     headerContainer: {
         paddingTop:20,
@@ -381,13 +392,13 @@ var styles = StyleSheet.create({
     },
     createdBy: {
         flex:1,
-        fontSize: 12,
+        fontSize: 10,
         fontStyle: 'italic',
         textAlign: 'left'
     },
     languages: {
         flex:1,
-        fontSize: 12,
+        fontSize: 10,
         fontStyle: 'italic',
         textAlign: 'right'
     },
@@ -403,14 +414,14 @@ var styles = StyleSheet.create({
 
     addDirectoryButton: {
         position: 'absolute',
-        right: 30,
-        bottom: 30
+        right: 40,
+        bottom: 40
     },
 
     localMenu: {
         position: 'absolute',
         right: 0,
-        top: 80,
+        top: 90,
         /*backgroundColor: '#F5FCFF',*/
         backgroundColor: globalStyles.header.backgroundColor,
         borderLeftWidth: 1,

@@ -10,7 +10,7 @@ var {
     Text,
     StyleSheet,
     View,
-    TouchableHighlight
+    TouchableOpacity
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -18,14 +18,14 @@ var Icon = require('react-native-vector-icons/FontAwesome');
 
 var BackButton = ({onButtonPressed}) => {
     return (
-        <TouchableHighlight onPress={onButtonPressed}>
+        <TouchableOpacity onPress={onButtonPressed} activeOpacity={1.0}>
             <Icon
                 name='long-arrow-left'
                 size={20}
                 color={globalStyles.header.color}
                 style={styles.icon}
             />
-        </TouchableHighlight>
+        </TouchableOpacity>
     );
 };
 var Title = ({title}) => {

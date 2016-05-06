@@ -5,13 +5,15 @@ var React = require('react-native');
 var User = require('../models/user').User;
 import * as ActionTypes from '../store/actionTypes';
 var globalStyles = require('../styles/styles').styles;
+var Dimensions = require('Dimensions');
 
 var {
     Text,
     StyleSheet,
     View,
     TouchableHighlight,
-    Platform
+    Platform,
+    Image
     } = React;
 
 var FBLogin = require('react-native-facebook-login');
@@ -160,8 +162,23 @@ export const LoginView = React.createClass({
     render() {
         var _this = this;
         var loginBehaviour = FBLoginManager.LoginBehaviors ? FBLoginManager.LoginBehaviors.SystemAccount : undefined;
+        var deviceWidth = Dimensions.get('window').width;
+
         return (
             <View style={styles.container}>
+                <Image
+                    style={{ width: deviceWidth }}
+                    source={require('../assets/images/palabra-470x346.jpg')}
+                />
+                <Text style={styles.title}>
+                    Create you dictionary
+                </Text>
+                <Text style={styles.title}>
+                    Learn new words
+                </Text>
+                <Text style={styles.title}>
+                    Share with your friends
+                </Text>
                 <FBLogin style={styles.loginButton}
                          permissions={["email","user_friends"]}
                          loginBehavior={loginBehaviour}
@@ -173,6 +190,7 @@ export const LoginView = React.createClass({
                          onCancel={this.onCancel}
                          onPermissionsMissing={(data) => this.onPermissionMissing(data)}
                 />
+
             </View>
         );
     }
@@ -184,9 +202,26 @@ var styles = StyleSheet.create({
         alignItems:'center',
         backgroundColor: globalStyles.container.backgroundColor
     },
+    image: {
+        width: 470   /*Dimensions.get('window').width*/
+    },
     loginButton: {
-        marginBottom: 10,
-        marginTop: 40
+        padding: 30
+    },
+    title: {
+        color: 'gray',
+        textAlign:'center',
+        alignSelf:'center',
+        fontSize: 20,
+        margin:10,
+    },
+    subtitle: {
+        fontSize: 35,
+        color: '#ffffff',
+        textAlign:'center',
+        alignSelf:'center',
+        marginTop: 75,
+        marginBottom: 250
     }
 
 });

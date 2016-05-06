@@ -49,7 +49,7 @@ export const DictionaryView = React.createClass ({
             Share.open({
                 share_text: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
                 share_URL: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
-                title: "Word In My Pocket"
+                title: "Palabras"
             },(e) => {
                 console.log(e);
             });
@@ -58,7 +58,7 @@ export const DictionaryView = React.createClass ({
             ActionSheetIOS.showShareActionSheetWithOptions({
                     url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html#quiz/${this.state.app.currentDictionary.id}`,
                     message: `Learn new words from ${this.state.app.currentDictionary.get('name')}`,
-                    subject: 'Word In My Pocket',
+                    subject: 'Palabras',
                     excludedActivityTypes: [
                         'com.apple.UIKit.activity.PostToTwitter',
                         'com.apple.UIKit.activity.UIActivityTypeCopyToPasteboard',
@@ -131,7 +131,8 @@ var styles = StyleSheet.create({
         paddingTop:30,
         paddingBottom:10,
         marginTop: 0,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     footerContainer: {
         flex: 1,

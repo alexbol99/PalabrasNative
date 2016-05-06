@@ -22,9 +22,7 @@ const initialAppState = {
         selectedRightItemId: undefined,
         itemsToBeRefreshed: false
     },
-    needFetchData: true,
-    displayLangage1Picker: false,
-    displayLanguage2Picker: false
+    needFetchData: true
 };
 
 const initialUserState = {
@@ -91,14 +89,6 @@ function app(state=initialAppState, action) {
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
                 navigateTo: 'addNewDictionaryView'
-            });
-        case ActionTypes.TOGGLE_LANGUAGE1_PICKER_PRESSED:
-            return Object.assign({}, state, {
-                displayLangage1Picker: !state.displayLangage1Picker
-            });
-        case ActionTypes.TOGGLE_LANGUAGE2_PICKER_PRESSED:
-            return Object.assign({}, state, {
-                displayLangage2Picker: !state.displayLangage2Picker
             });
         case ActionTypes.DELETE_DICTIONARY_BUTTON_PRESSED:
             return Object.assign({}, state, {
@@ -207,7 +197,7 @@ function dictionaries(state = [], action) {
             // Add dictionaries shared to current user
             // User can share to himself, check this is not in the list already
             action.shares.forEach( (share) => {
-                if (!state.find( (dictionary) => dictionary.id = share.get('dictionary').id ) ) {
+                if (!state.find( (dictionary) => dictionary.id == share.get('dictionary').id ) ) {
                     newDictionaries.push(share.get('dictionary'));
                 }
             });

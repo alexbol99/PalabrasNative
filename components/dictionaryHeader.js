@@ -71,10 +71,11 @@ export const DictionaryHeaderComponent = React.createClass ({
 var styles = StyleSheet.create({
     headerContainer: {
         backgroundColor:globalStyles.header.backgroundColor,
-        paddingTop:30,
+        paddingTop:10,
         paddingBottom:10,
         marginTop: 0,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     dictionaryTitle: globalStyles.header.title,
     icon: globalStyles.header.icon
