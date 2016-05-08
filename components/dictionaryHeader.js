@@ -9,7 +9,7 @@ var {
     Text,
     StyleSheet,
     View,
-    TouchableHighlight
+    TouchableOpacity
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -32,36 +32,36 @@ export const DictionaryHeaderComponent = React.createClass ({
     render() {
         return (
             <View style={styles.headerContainer}>
-                <TouchableHighlight onPress={this.props.onBackHomeButtonPressed}>
+                <TouchableOpacity onPress={this.props.onBackHomeButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='long-arrow-left'
                         size={20}
                         color={globalStyles.header.color}
                         style={styles.icon}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
 
                 <Text style={styles.dictionaryTitle}>
                     {this.props.dictionary.get('name')}
                 </Text>
 
-                <TouchableHighlight onPress={this.props.onConfigButtonPressed}>
+                <TouchableOpacity onPress={this.props.onConfigButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='cog'
                         size={20}
                         color={globalStyles.header.color}
                         style={styles.icon}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
 
-                <TouchableHighlight onPress={this.props.onShareButtonPressed}>
+                <TouchableOpacity onPress={this.props.onShareButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='share-alt'
                         size={20}
                         color={globalStyles.header.color}
                         style={styles.icon}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
             </View>
         );
     }

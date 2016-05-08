@@ -15,6 +15,7 @@ export class Shares extends Parse.Object {
         var localeQuery = new Parse.Query(Shares)
             .equalTo("user", user)
             .include("dictionary")
+            .include("dictionary.createdBy")
             .select("dictionary");
         return localeQuery.find();
     }

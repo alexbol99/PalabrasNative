@@ -16,6 +16,7 @@ var {
     View,
     ListView,
     TouchableHighlight,
+    TouchableOpacity,
     TextInput,
     Timers
     } = React;
@@ -62,7 +63,7 @@ export const EditContentComponent = React.createClass ({
         else {
             Alert.alert(
                 'Alert',
-                `You are not an owner of ${this.state.app.currentDictionary.get('name')}`,
+                `You are not the owner of ${this.state.app.currentDictionary.get('name')}`,
                 [
                     {text: 'OK', onPress: () => {}, style: 'cancel'}
                 ]
@@ -121,7 +122,7 @@ export const EditContentComponent = React.createClass ({
         else {
             Alert.alert(
                 'Alert',
-                `You are not an owner of ${this.state.app.currentDictionary.get('name')}`,
+                `You are not the owner of ${this.state.app.currentDictionary.get('name')}`,
                 [
                     {text: 'OK', onPress: () => {}, style: 'cancel'}
                 ]
@@ -173,7 +174,7 @@ export const EditContentComponent = React.createClass ({
             .catch(error => console.log(error));
     },
     onGoWebButtonPressed() {       // go search web for additional info
-        if (this.state.editState.selectedItem == undefined) return;
+        if (!this.state.editState.selectedItem) return;
         this.dispatch({
             type: ActionTypes.GO_WEB_BUTTON_PRESSED,
             item: this.state.editState.selectedItem
@@ -218,32 +219,33 @@ export const EditContentComponent = React.createClass ({
                 <Text style={styles.languageTitle}>
                     {langLeft}
                 </Text>
-                <TouchableHighlight onPress = {this.props.onLeftSortButtonPressed}>
+                <TouchableOpacity onPress = {this.props.onLeftSortButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='sort-desc'
                         size={20}
                         color='#81c04d'
                         style={iconSortStyleLeft}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
                 <Text style={styles.languageTitle}>
                     {langRight}
                 </Text>
-                <TouchableHighlight onPress = {this.props.onRightSortButtonPressed}>
+                <TouchableOpacity onPress = {this.props.onRightSortButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='sort-desc'
                         size={20}
                         color='#81c04d'
                         style={iconSortStyleRight}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
             </View>
         );
 
         /* Edit Item Toolbar opened when item selected */
         var editToolbar = (
             <View style={styles.editToolbar}>
-                <TouchableHighlight style={{flex:1}}
+                <TouchableOpacity style={{flex:1}}
+                                  activeOpacity={1.0}
                                     disabled = {editButtonDisabled}
                                     onPress = {() => this.onEditItemButtonPressed()}>
                     <Icon
@@ -252,9 +254,10 @@ export const EditContentComponent = React.createClass ({
                         color='#81c04d'
                         style={editButtonIconStyle}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
 
-                <TouchableHighlight style={{flex:1}}
+                <TouchableOpacity style={{flex:1}}
+                                  activeOpacity={1.0}
                                     disabled = {sayItButtonDisabled}
                                     onPress = {() => this.onSayItButtonPressed()}>
                     <Icon
@@ -263,9 +266,10 @@ export const EditContentComponent = React.createClass ({
                         color='#81c04d'
                         style={sayItButtonIconStyle}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
 
-                <TouchableHighlight style={{flex:1}}
+                <TouchableOpacity style={{flex:1}}
+                                    activeOpacity={1.0}
                                     disabled={goWebButtonDisabled}
                                     onPress = {() => this.onGoWebButtonPressed()}>
                     <Icon
@@ -274,9 +278,10 @@ export const EditContentComponent = React.createClass ({
                         color='#81c04d'
                         style={goWebButtonIconStyle}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
 
-                <TouchableHighlight style={{flex:1}}
+                <TouchableOpacity style={{flex:1}}
+                                    activeOpacity={1.0}
                                     disabled = {deleteButtonDisabled}
                                     onPress = {() => this.onDeleteItemButtonPressed()}>
                     <Icon
@@ -285,7 +290,7 @@ export const EditContentComponent = React.createClass ({
                         color='#81c04d'
                         style={deleteButtonIconStyle}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
 
             </View>
         );
@@ -304,7 +309,8 @@ export const EditContentComponent = React.createClass ({
             [styles.itemContainer, styles.itemSelected] : [styles.itemContainer, styles.itemUnselected];
 
         return (
-            <TouchableHighlight
+            <TouchableOpacity
+                activeOpacity={1.0}
                 onPress={() => this.toggleSelectItem(item)}>
                 {
                     this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id &&
@@ -332,7 +338,7 @@ export const EditContentComponent = React.createClass ({
                         </View>
                     )
                 }
-            </TouchableHighlight>
+            </TouchableOpacity>
         )
     },
     render() {
@@ -369,7 +375,8 @@ export const EditContentComponent = React.createClass ({
                     renderSectionHeader={() => this.renderHeader()}
                     renderRow={(item) => this.renderRow(item)}
                 />
-                <TouchableHighlight style={styles.addItemButton}
+                <TouchableOpacity style={styles.addItemButton}
+                                  activeOpacity={1.0}
                     onPress={() => this.onAddNewItemButtonPressed()}>
                     <Icon
                         name='plus-circle'
@@ -377,7 +384,7 @@ export const EditContentComponent = React.createClass ({
                         color='#81c04d'
                         style={globalStyles.iconAdd}
                     />
-                </TouchableHighlight>
+                </TouchableOpacity>
             </View>
         );
     }

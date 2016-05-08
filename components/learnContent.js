@@ -12,7 +12,7 @@ var {
     StyleSheet,
     View,
     ListView,
-    TouchableHighlight
+    TouchableOpacity
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -31,21 +31,23 @@ export const LearnContentComponent = React.createClass ({
 
         return (
             <View style={styles.itemContainer}>
-                <TouchableHighlight
+                <TouchableOpacity
                     style={leftStyle}
+                    activeOpacity={1.0}
                     onPress = {() => this.props.onLeftItemSelected(item.left.id)}>
                      <Text style={styles.text}>
                         {item.left.get(langLeft)}
                     </Text>
-                </TouchableHighlight>
+                </TouchableOpacity>
 
-                <TouchableHighlight
+                <TouchableOpacity
                     style={rightStyle}
+                    activeOpacity={1.0}
                     onPress = {() => this.props.onRightItemSelected(item.right.id)}>
                     <Text style={styles.text}>
                         {item.right.get(langRight)}
                     </Text>
-                </TouchableHighlight>
+                </TouchableOpacity>
             </View>
 
         )
@@ -91,6 +93,8 @@ var styles = StyleSheet.create({
         borderColor: 'white',
         backgroundColor: 'honeydew',
         marginVertical:5,
+        paddingLeft: 3,
+        paddingRight: 3
     },
     itemSelected: {
         flex:1,
@@ -98,6 +102,8 @@ var styles = StyleSheet.create({
         borderColor: 'white',
         backgroundColor: 'lightcyan',
         marginVertical:5,
+        paddingLeft: 3,
+        paddingRight: 3
     },
     text: {
         paddingHorizontal: 10,

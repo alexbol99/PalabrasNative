@@ -206,7 +206,7 @@ var styles = StyleSheet.create({
         width: 470   /*Dimensions.get('window').width*/
     },
     loginButton: {
-        padding: 30
+        flex:1,
     },
     title: {
         color: 'gray',
@@ -214,6 +214,7 @@ var styles = StyleSheet.create({
         alignSelf:'center',
         fontSize: 20,
         margin:2,
+        marginBottom: 20
     },
     subtitle: {
         fontSize: 35,

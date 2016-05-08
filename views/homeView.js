@@ -207,7 +207,7 @@ export const HomeView = React.createClass ({
         if (Platform.OS === 'android') {
             Share.open({
                 share_text: "Learn new words",
-                share_URL: "https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html",
+                share_URL: "https://dl.dropboxusercontent.com/u/79667427/palabras_redirect.html",
                 title: "Palabras"
             },(e) => {
                 console.log(e);
@@ -215,7 +215,7 @@ export const HomeView = React.createClass ({
         }
         else {
             ActionSheetIOS.showShareActionSheetWithOptions({
-                    url: `https://dl.dropboxusercontent.com/u/79667427/palabras3_dist/index.html`,
+                    url: `https://dl.dropboxusercontent.com/u/79667427/palabras_redirect.html`,
                     message: `Learn new words`,
                     subject: 'Palabras',
                     excludedActivityTypes: [
@@ -245,7 +245,7 @@ export const HomeView = React.createClass ({
     },
     renderRow(dictionary) {
         return (
-            <TouchableHighlight key={dictionary.id}
+            <TouchableOpacity key={dictionary.id}
                                 onPress={() => this.dictionarySelected(dictionary)} >
                 <View style={styles.dictionaryContainer} >
                     <Text style={styles.dictionaryName}>
@@ -262,12 +262,12 @@ export const HomeView = React.createClass ({
                         </Text>
                     </View>
                 </View>
-            </TouchableHighlight>
+            </TouchableOpacity>
         );
     },
     render() {
         var addDirectoryButton = this.state.ajaxState == "" ? (
-            <TouchableHighlight style={styles.addDirectoryButton}
+            <TouchableOpacity style={styles.addDirectoryButton}
                                 onPress={() => this.addEmptyDictionary()}>
                 <Icon
                     name='plus-circle'
@@ -275,7 +275,7 @@ export const HomeView = React.createClass ({
                     color='#81c04d'
                     style={globalStyles.iconAdd}
                 />
-            </TouchableHighlight>
+            </TouchableOpacity>
         ) : null;
 /*
         var modal = (

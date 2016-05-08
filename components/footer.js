@@ -8,7 +8,7 @@ var {
     StyleSheet,
     View,
     ListView,
-    TouchableHighlight
+    TouchableOpacity
     } = React;
 
 export const FooterComponent = React.createClass ({
@@ -16,18 +16,20 @@ export const FooterComponent = React.createClass ({
         return (
             <View style={styles.footerContainer}>
                 <View style={styles.footerMenuItem}>
-                    <TouchableHighlight onPress={this.props.onEditButtonPressed}>
+                    <TouchableOpacity onPress={this.props.onEditButtonPressed}
+                                      activeOpacity={1.0}>
                         <Text style={styles.description}>
                             Edit
                         </Text>
-                    </TouchableHighlight>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.footerMenuItem}>
-                    <TouchableHighlight onPress={this.props.onLearnButtonPressed}>
+                    <TouchableOpacity onPress={this.props.onLearnButtonPressed}
+                                      activeOpacity={1.0}>
                         <Text style={styles.description}>
                             Learn
                         </Text>
-                    </TouchableHighlight>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
