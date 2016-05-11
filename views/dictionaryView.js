@@ -16,7 +16,8 @@ var {
     ActionSheetIOS,
     StyleSheet,
     View,
-    Platform
+    Platform,
+    BackAndroid
     } = React;
 
 export const DictionaryView = React.createClass ({
@@ -29,6 +30,11 @@ export const DictionaryView = React.createClass ({
         this.setState(this.props.store.getState());
     },
     componentDidMount() {
+        // Listen Android back button
+        BackAndroid.addEventListener('hardwareBackPress', function() {
+            this.onBackHomeButtonPressed();
+            return true;
+        });
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());

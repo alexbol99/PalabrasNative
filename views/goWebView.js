@@ -10,7 +10,8 @@ var {
     Text,
     StyleSheet,
     View,
-    WebView
+    WebView,
+    BackAndroid
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -26,7 +27,11 @@ export const GoWebView = React.createClass ({
         this.setState(this.props.store.getState());
     },
     componentDidMount() {
-
+        // Listen Android back button
+        BackAndroid.addEventListener('hardwareBackPress', function() {
+            this.backToDictionaryView();
+            return true;
+        });
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());

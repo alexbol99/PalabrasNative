@@ -14,7 +14,8 @@ var {
     View,
     TouchableHighlight,
     TextInput,
-    Picker
+    Picker,
+    BackAndroid
     } = React;
 
 // var Item = PickerIOS.Item;
@@ -30,6 +31,13 @@ export const AddNewDictionaryView = React.createClass ({
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    componentDidMount() {
+        // Listen Android back button
+        BackAndroid.addEventListener('hardwareBackPress', function() {
+            this.backToDictionaryView();
+            return true;
+        });
     },
     backToDictionaryView() {
         this.dispatch({
