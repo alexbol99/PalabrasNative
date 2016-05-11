@@ -2,7 +2,13 @@
  * Created by alexanderbol on 21/01/2016.
  */
 
-// var Speech = require('react-native-speech');
+var Platform = require('react-native').Platform;
+if (Platform.OS === 'android') {
+    var Speech = require('react-native-android-speech')
+}
+else {
+    var Speech = require('react-native-speech');
+}
 var Parse = require('parse/react-native');
 
 // Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");
@@ -107,8 +113,18 @@ export class Items extends Parse.Object {
 
         return newItems;
     }
+    sayItAndroid(item, language) {
+        var langName = language.get('name');
+        var voice = language.get('lcid');
+        var pitch = 1.5;   // Optional Parameter to set the pitch of Speech,
+        return Speech.speak({
+            text: item.get(langName),
+            forceStop: false,
+            language: voice
+        });
+    }
 
-    sayIt(item, language) {
+    sayItIOS(item, language) {
         var langName = language.get('name');
         var voice = language.get('lcid');
         return Speech.speak({
@@ -117,58 +133,6 @@ export class Items extends Parse.Object {
             rate: 0.4
         });
     }
-
-    //sayIt(item, language1, language2) {
-    //    var langName1 = language1.get('name');
-    //    var voice1 = language1.get('lcid');
-    //    var langName2 = language2.get('name');
-    //    var voice2 = language2.get('lcid');
-    //    Speech.speak({
-    //        text: item.get(langName1),
-    //        voice: voice1,
-    //        rate: 0.4
-    //    })
-    //    .then( started => {
-    //        return Speech.isSpeaking()
-    //    })
-    //    .then( speaking => {
-    //        return Speech.speak({
-    //                text: item.get(langName2),
-    //                voice: voice2,
-    //                rate: 0.4
-    //            })
-    //    })
-    //    .catch(error => {
-    //        console.log(error);
-    //    })
-    //}
-
-    /*
-        sync(selectionMode, category, numWeeksBefore, orderedBy) {
-            if (selectionMode == "all") {
-                var numTiksBefore = (numWeeksBefore * 7 * 24 * 3600 * 1000);
-                var currentDate = new Date();
-                var newItemsDate = new Date(currentDate.getTime() - (numTiksBefore));
-
-                this.query.greaterThanOrEqualTo("createdAt", newItemsDate);
-                if (this.query._where.category) {
-                    delete this.query._where.category;
-                }
-                this.query.limit(1000); // limit to at most 1000 results
-            }
-            else {
-                this.query.equalTo("category", category);
-                if (this.query._where.createdAt) {
-                    delete this.query._where.createdAt
-                }
-            }
-
-            this.query.ascending(orderedBy);    // "spanish");
-
-            return this.fetch({reset: true});
-
-        }
-    */
 }
 
 /*

@@ -28,13 +28,19 @@ export const GoWebView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
+        var _this = this;
         BackAndroid.addEventListener('hardwareBackPress', function() {
-            this.backToDictionaryView();
+            _this.dispatch({
+                type: ActionTypes.BACK_TO_DICTIONARY_VIEW_PRESSED
+            })
             return true;
         });
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    componentWillUnmount() {
+        BackAndroid.removeEventListener('hardwareBackPress');
     },
     onNavigationStateChange(navState) {
         // console.log(navState);

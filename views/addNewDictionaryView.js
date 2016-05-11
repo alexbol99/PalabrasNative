@@ -34,10 +34,14 @@ export const AddNewDictionaryView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
+        var _this = this;
         BackAndroid.addEventListener('hardwareBackPress', function() {
-            this.backToDictionaryView();
+            _this.backToDictionaryView();
             return true;
         });
+    },
+    componentWillUnmount() {
+        BackAndroid.removeEventListener('hardwareBackPress');
     },
     backToDictionaryView() {
         this.dispatch({

@@ -5,6 +5,7 @@ import cl.json.RNSharePackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.magus.fblogin.FacebookLoginPackage; // <--- import
+import com.mihir.react.tts.*; // Import package
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,8 @@ public class MainActivity extends ReactActivity {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
             new RNSharePackage(),
-        new FacebookLoginPackage()
+        new FacebookLoginPackage(),
+        new RCTTextToSpeechModule()
       );
     }
 }

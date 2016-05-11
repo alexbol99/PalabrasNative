@@ -28,18 +28,19 @@ export const ConfigView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
-        BackAndroid.addEventListener('hardwareBackPress', function() {
-            this.backToDictionaryView();
-            return true;
-        });
+        BackAndroid.addEventListener('hardwareBackPress', this.backToDictionaryView);
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
+    componentWillUnmount() {
+        BackAndroid.removeEventListener('hardwareBackPress', this.backToDictionaryView);
+    },
     backToDictionaryView() {
         this.dispatch({
             type: ActionTypes.BACK_TO_DICTIONARY_VIEW_PRESSED
-        })
+        });
+        return true;
     },
     _focusNextField(nextField) {
         this.refs[nextField].focus()

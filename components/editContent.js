@@ -18,7 +18,7 @@ var {
     TouchableHighlight,
     TouchableOpacity,
     TextInput,
-    Timers
+    Platform
     } = React;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -162,16 +162,13 @@ export const EditContentComponent = React.createClass ({
         if (!item) return;
         var lang1 = this.state.app.currentDictionary.get('language1');
         var lang2 = this.state.app.currentDictionary.get('language2');
-        Items.prototype.sayIt(item, lang1)
-            .then(started => {
-                intervalId = setTimeout(() => {
-                    Items.prototype.sayIt(item, lang2)
-                      .then( started => {
-                          clearTimeout(intervalId)
-                      })
-                }, 2000);
-            })
-            .catch(error => console.log(error));
+
+        if (Platform.OS === 'android') {
+            this.sayItAndroid(item, lang1, lang2);
+        }
+        else if (Platform.OS === 'ios') {
+            this.sayItIOS(item, lang1, lang2);
+        }
     },
     onGoWebButtonPressed() {       // go search web for additional info
         if (!this.state.editState.selectedItem) return;
@@ -179,6 +176,34 @@ export const EditContentComponent = React.createClass ({
             type: ActionTypes.GO_WEB_BUTTON_PRESSED,
             item: this.state.editState.selectedItem
         })
+    },
+    sayItAndroid(item, lang1, lang2) {
+        var intervalId;
+        Items.prototype.sayItAndroid(item, lang1)
+            .then(isSpeaking => {
+                intervalId = setTimeout(() => {
+                    Items.prototype.sayItAndroid(item, lang2)
+                        .then( isSpeaking => {
+                            clearTimeout(intervalId)
+                        })
+                        .catch((error) => console.log(error));
+                }, 2000);
+            })
+            .catch((error) => console.log(error));
+    },
+    sayItIOS(item, lang1, lang2) {
+        var intervalId;
+        Items.prototype.sayItIOS(item, lang1)
+            .then(started => {
+                intervalId = setTimeout(() => {
+                    Items.prototype.sayItIOS(item, lang2)
+                        .then( started => {
+                            clearTimeout(intervalId)
+                        }),
+                        (error) => console.log(error);
+                }, 2000);
+            }),
+            (error) => console.log(error);
     },
     // Scroll to selected item
     scrollToItem() {

@@ -31,13 +31,13 @@ export const DictionaryView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
-        BackAndroid.addEventListener('hardwareBackPress', function() {
-            this.onBackHomeButtonPressed();
-            return true;
-        });
+        BackAndroid.addEventListener('hardwareBackPress', this.onBackHomeButtonPressed);
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    componentWillUnmount() {
+        BackAndroid.removeEventListener('hardwareBackPress', this.onBackHomeButtonPressed);
     },
     onBackHomeButtonPressed() {
         this.dispatch({
