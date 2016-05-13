@@ -11,6 +11,7 @@ var {
     StyleSheet,
     View,
     WebView,
+    Platform,
     BackAndroid
     } = React;
 
@@ -28,19 +29,17 @@ export const GoWebView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
-        var _this = this;
-        BackAndroid.addEventListener('hardwareBackPress', function() {
-            _this.dispatch({
-                type: ActionTypes.BACK_TO_DICTIONARY_VIEW_PRESSED
-            })
-            return true;
-        });
+        if (Platform.OS === 'android') {
+            BackAndroid.addEventListener('hardwareBackPress', this.backToDictionaryView);
+        }
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
     componentWillUnmount() {
-        BackAndroid.removeEventListener('hardwareBackPress');
+        if (Platform.OS === 'android') {
+            BackAndroid.removeEventListener('hardwareBackPress', this.backToDictionaryView);
+        }
     },
     onNavigationStateChange(navState) {
         // console.log(navState);
@@ -48,7 +47,8 @@ export const GoWebView = React.createClass ({
     backToDictionaryView() {
         this.dispatch({
             type: ActionTypes.BACK_TO_DICTIONARY_VIEW_PRESSED
-        })
+        });
+        return true;
     },
     render() {
         var item = this.state.editState.selectedItem;

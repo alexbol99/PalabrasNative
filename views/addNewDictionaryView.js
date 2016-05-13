@@ -15,6 +15,7 @@ var {
     TouchableHighlight,
     TextInput,
     Picker,
+    Platform,
     BackAndroid
     } = React;
 
@@ -34,19 +35,20 @@ export const AddNewDictionaryView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
-        var _this = this;
-        BackAndroid.addEventListener('hardwareBackPress', function() {
-            _this.backToDictionaryView();
-            return true;
-        });
+        if (Platform.OS === 'android') {
+            BackAndroid.addEventListener('hardwareBackPress', this.backToDictionaryView);
+        }
     },
     componentWillUnmount() {
-        BackAndroid.removeEventListener('hardwareBackPress');
+        if (Platform.OS === 'android') {
+            BackAndroid.removeEventListener('hardwareBackPress', this.backToDictionaryView);
+        }
     },
     backToDictionaryView() {
         this.dispatch({
             type: ActionTypes.BACK_HOME_BUTTON_PRESSED
-        })
+        });
+        return true;
     },
     _focusNextField(nextField) {
         this.refs[nextField].focus()

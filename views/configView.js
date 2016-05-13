@@ -15,6 +15,7 @@ var {
     View,
     TouchableHighlight,
     TextInput,
+    Platform,
     BackAndroid
     } = React;
 
@@ -28,13 +29,17 @@ export const ConfigView = React.createClass ({
     },
     componentDidMount() {
         // Listen Android back button
-        BackAndroid.addEventListener('hardwareBackPress', this.backToDictionaryView);
+        if (Platform.OS === 'android') {
+            BackAndroid.addEventListener('hardwareBackPress', this.backToDictionaryView);
+        }
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
     componentWillUnmount() {
-        BackAndroid.removeEventListener('hardwareBackPress', this.backToDictionaryView);
+        if (Platform.OS === 'android') {
+            BackAndroid.removeEventListener('hardwareBackPress', this.backToDictionaryView);
+        }
     },
     backToDictionaryView() {
         this.dispatch({
