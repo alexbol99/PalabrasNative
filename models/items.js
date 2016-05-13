@@ -25,6 +25,13 @@ export class Items extends Parse.Object {
         return localeQuery.find();
     }
 
+    fetchPage(numInPage, numToSkip) {
+        var localeQuery = new Parse.Query(this.className)
+            .limit(numInPage)
+            .skip(numToSkip);
+        return localeQuery.find();
+    }
+
     addEmptyItem(dictionary) {
         var pref = '';
         if (dictionary.id.charAt(0) >= '0' && dictionary.id.charAt(0) <= '9') {

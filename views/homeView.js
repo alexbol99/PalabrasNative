@@ -160,11 +160,12 @@ export const HomeView = React.createClass ({
 
     },
     dictionarySelected(dictionary) {
+        var itemsParse = this.createItems(dictionary);
         this.dispatch({
             type: ActionTypes.DICTIONARY_SELECTED,
-            dictionary: dictionary
+            dictionary: dictionary,
+            itemsParse: itemsParse
         });
-        this.createItems(dictionary);
     },
     addEmptyDictionary() {
         var user = this.state.user.parseUser;
@@ -189,13 +190,7 @@ export const HomeView = React.createClass ({
             pref = 'a';
         }
         var itemsClassName = pref + dictionary.id;
-        var items = new Items(itemsClassName);
-        items.fetch().then( (items) => {
-            this.dispatch({
-                type: ActionTypes.FETCH_ITEMS_SUCCEED,
-                items: items
-            });
-        });
+        return new Items(itemsClassName);
     },
     toggleHomeMenu() {
         this.dispatch({
@@ -440,7 +435,14 @@ var styles = StyleSheet.create({
         backgroundColor: globalStyles.header.backgroundColor,
         borderLeftWidth: 1,
         borderBottomWidth: 1,
-        borderColor: '#ffffff'
+        borderColor: '#ffffff',
+        elevation: 1,
+        shadowColor:'darkgray',
+        shadowOpacity: 0.8,
+        shadowOffset: {
+            height:0,
+            width:0
+        }
     }
 });
 

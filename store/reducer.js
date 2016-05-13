@@ -22,7 +22,11 @@ const initialAppState = {
         selectedRightItemId: undefined,
         itemsToBeRefreshed: false
     },
-    needFetchData: true
+    needFetchData: true,
+    numItemsInPage: 100,
+    numItemsToSkip: 0,
+    fetchItemsStarted: false,
+    itemsParse: undefined     /* Parse Object represented correspondent Parse document */
 };
 
 const initialUserState = {
@@ -56,6 +60,7 @@ function app(state=initialAppState, action) {
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
+                itemsParse: action.itemsParse,
                 navigateTo: 'dictionaryView',
                 mode: 'edit'
             });
@@ -98,6 +103,21 @@ function app(state=initialAppState, action) {
         case ActionTypes.GO_WEB_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 navigateTo: 'goWebView'
+            });
+        case ActionTypes.FETCH_ITEMS_STARTED:
+            return Object.assign({}, state, {
+                fetchItemsStarted: true
+            });
+        /* page of items fetched successfully */
+        case ActionTypes.FETCH_ITEMS_PAGE_SUCCEED:
+            return Object.assign({}, state, {
+                numItemsToSkip: state.numItemsToSkip + state.numItemsInPage
+            });
+        /* all items fetched successfully */
+        case ActionTypes.FETCH_ITEMS_SUCCEED:
+            return Object.assign({}, state, {
+                numItemsToSkip: 0,
+                fetchItemsStarted: false
             });
         default:
             return state;
@@ -228,8 +248,10 @@ function dictionaries(state = [], action) {
 
 function items(state = [], action) {
     switch (action.type) {
-        case ActionTypes.FETCH_ITEMS_SUCCEED:
-            return action.items;
+        case ActionTypes.FETCH_ITEMS_STARTED:
+            return [];
+        case ActionTypes.FETCH_ITEMS_PAGE_SUCCEED:
+            return state.concat(action.items);
         case ActionTypes.ITEM_CHANGED:
             var index = state.findIndex( (item_tmp) => (item_tmp.id == action.item.id) );
             return (state

@@ -42,7 +42,7 @@ export const DictionaryHeaderComponent = React.createClass ({
                 </TouchableOpacity>
 
                 <Text style={styles.dictionaryTitle}>
-                    {this.props.dictionary.get('name')}
+                    {this.props.dictionary.get('name') + ' (' + this.state.items.length + ')'}
                 </Text>
 
                 <TouchableOpacity onPress={this.props.onConfigButtonPressed} activeOpacity={1.0}>

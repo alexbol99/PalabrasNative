@@ -34,14 +34,44 @@ export const DictionaryView = React.createClass ({
         if (Platform.OS === 'android') {
             BackAndroid.addEventListener('hardwareBackPress', this.onBackHomeButtonPressed);
         }
+        /* Start fetch items */
+        this.dispatch({
+            type: ActionTypes.FETCH_ITEMS_STARTED
+        });
+        this.fetchItems();
     },
     componentWillReceiveProps(nextProps) {
+        var state = nextProps.store.getState();
+        if (state.app.fetchItemsStarted && state.app.numItemsToSkip != this.state.app.numItemsToSkip ) {
+            this.fetchItems(state.app.numItemsToSkip);
+        }
         this.setState(nextProps.store.getState());
+    },
+    componentReceivedProps() {
     },
     componentWillUnmount() {
         if (Platform.OS === 'android') {
             BackAndroid.removeEventListener('hardwareBackPress', this.onBackHomeButtonPressed);
         }
+    },
+    fetchItems(num) {
+        var numInPage = this.state.app.numItemsInPage;
+        var numToSkip = num || this.state.app.numItemsToSkip;
+        var itemsParse = this.state.app.itemsParse;  /* object represent Parse document */
+        if (!itemsParse) return;
+        itemsParse.fetchPage(numInPage, numToSkip).then( (items) => {
+            if (items.length == 0) {    /* finished */
+                this.dispatch({
+                    type: ActionTypes.FETCH_ITEMS_SUCCEED
+                });
+            }
+            else {
+                this.dispatch({
+                    type: ActionTypes.FETCH_ITEMS_PAGE_SUCCEED,
+                    items: items
+                });
+            }
+        });
     },
     onBackHomeButtonPressed() {
         this.dispatch({
