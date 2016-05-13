@@ -16,7 +16,8 @@ var {
     TouchableHighlight,
     TextInput,
     Platform,
-    BackAndroid
+    BackAndroid,
+    Alert
     } = React;
 
 export const ConfigView = React.createClass ({
@@ -50,43 +51,77 @@ export const ConfigView = React.createClass ({
     _focusNextField(nextField) {
         this.refs[nextField].focus()
     },
-    dictionaryNameChanged({name}) {
-        var dictionary = this.state.app.currentDictionary;
-        dictionary.set('name', name);
+    /* Update database and state */
+    updateDictionary(dictionary) {
+        this.dispatch({
+            type: ActionTypes.DICTIONARY_UPDATED,
+            dictionary: dictionary
+        });
         Dictionaries.updateDictionary(dictionary).then(
-            (dictionary) => {
-                this.dispatch({
-                    type: ActionTypes.DICTIONARY_UPDATED,
-                    dictionary: dictionary
-                })
+            (dictionary) => {/*
+             this.dispatch({
+             type: ActionTypes.DICTIONARY_UPDATED,
+             dictionary: dictionary
+             })*/
             }),
             (error) => {
                 alert("Problems with connection to server");
             }
+    },
+    dictionaryNameChanged({name}) {
+        var dictionary = this.state.app.currentDictionary;
+        dictionary.set('name', name);
+        this.updateDictionary(dictionary);
+    },
+    learnMoreChanged({url}) {
+        var dictionary = this.state.app.currentDictionary;
+        dictionary.set('learnMore', url);
+        this.updateDictionary(dictionary);
+    },
+    deleteDictionaryButtonPressed() {
+        var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
 
-
+        if (isOwner) {
+            Alert.alert(
+                'Are you sure?',
+                `Dictionary ${this.state.app.currentDictionary.get('name')} will be deleted`,
+                [
+                    {text: 'Cancel', onPress: () => { }, style: 'cancel'},
+                    {text: 'OK', onPress: () => this.deleteDictionary()}
+                ]
+            );
+        }
+        else {
+            Alert.alert(
+                'Alert',
+                `You are not the owner of ${this.state.app.currentDictionary.get('name')}`,
+                [
+                    {text: 'OK', onPress: () => {}, style: 'cancel'}
+                ]
+            )
+        }
     },
     deleteDictionary() {
         // destroy dictionary itself
         Dictionaries.deleteDictionary(this.state.app.currentDictionary)
-            .then( (dictionary) => {
+            .then((dictionary) => {
                 this.dispatch({
                     type: ActionTypes.DELETE_DICTIONARY_REQUEST_SUCCEED,
                     dictionary: dictionary
                 });
                 return Shares.findShares(dictionary);
             })
-            // destroy all share records related to this dictionary
-            .then( (shares) => {
+            // destroy all shared records related to this dictionary
+            .then((shares) => {
                 shares.forEach((share) => {
-                        share.destroy()
-                            .then( (share) =>
-                                this.dispatch({
-                                    type: ActionTypes.DELETE_DICTIONARY_REQUEST_SUCCEED,
-                                    dictionary: share.get('dictionary')
-                                })
-                            )
-                    });
+                    share.destroy()
+                        .then((share) =>
+                            this.dispatch({
+                                type: ActionTypes.DELETE_DICTIONARY_REQUEST_SUCCEED,
+                                dictionary: share.get('dictionary')
+                            })
+                        )
+                });
             });
 
         // This will close Config View and move to Home View
@@ -145,12 +180,23 @@ export const ConfigView = React.createClass ({
                             onChangeText={(text) => this.dictionaryNameChanged({text})}
                         />
                     </View>
+
+                    {/* Edit Learn More */}
+                    <Text style={styles.labelName}>
+                        Learn more:
+                    </Text>
+                    <TextInput
+                        style={styles.input}
+                        blurOnSubmit={false}
+                        value={this.state.app.currentDictionary.get('learnMore')}
+                        onChangeText={(url) => this.learnMoreChanged({url})}
+                    />
                 </View>
 
                 {/* Delete Button */}
                 <View style={styles.deleteButton}>
                     <TouchableHighlight
-                        onPress={() => this.deleteDictionary()}>
+                        onPress={() => this.deleteDictionaryButtonPressed()}>
                         <Text style={styles.description}>
                             Delete dictionary
                         </Text>

@@ -87,6 +87,11 @@ export const AddNewDictionaryView = React.createClass ({
         dictionary.set('language2', language);
         this.updateDictionary(dictionary);
     },
+    learnMoreChanged({url}) {
+        var dictionary = this.state.app.currentDictionary;
+        dictionary.set('learnMore', url);
+        this.updateDictionary(dictionary);
+    },
     render() {
         return (
             <View style={styles.container}>
@@ -145,7 +150,16 @@ export const AddNewDictionaryView = React.createClass ({
                         </Picker>
                     </View>
 
-
+                    {/* Edit Learn More */}
+                    <Text style={styles.labelName}>
+                        Learn more:
+                    </Text>
+                    <TextInput
+                        style={styles.input}
+                        blurOnSubmit={false}
+                        value={this.state.app.currentDictionary.get('learnMore')}
+                        onChangeText={(url) => this.learnMoreChanged({url})}
+                    />
                 </View>
             </View>
         );

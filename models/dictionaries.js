@@ -37,7 +37,8 @@ export class Dictionaries extends Parse.Object {
         dictionary.set({
             "createdBy": user,
             "language1": language1,
-            "language2": language2
+            "language2": language2,
+            "learnMore": 'https://www.google.com/search'
         });
         return dictionary.save();
     }

@@ -58,7 +58,13 @@ export const GoWebView = React.createClass ({
             return null;
 
         var langLeft = currentDictionary.get('language1').get('name');
-        var url = currentDictionary.get('learnMore') + item.get(langLeft);
+        var learnMore = currentDictionary.get('learnMore');
+        if (learnMore.indexOf('google') > 0) {
+            var url = learnMore + '?q=' + item.get(langLeft);
+        }
+        else {
+            var url = learnMore + item.get(langLeft);
+        }
 
         return (
             <View style={styles.webView}>
