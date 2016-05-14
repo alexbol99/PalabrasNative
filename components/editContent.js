@@ -28,6 +28,21 @@ var globalStyles = require('../styles/styles').styles;
 
 var intervalId;
 
+var SearchInputPopup = ({viewStyle, inputStyle, value, onChangeText}) => {
+    return (
+        <View style={viewStyle}>
+            <TextInput
+                style={inputStyle}
+                autoCapitalize = 'none'
+                autoCorrect = {false}
+                autoFocus = {true}
+                value={value}
+                onChangeText={onChangeText}
+            />
+        </View>
+    );
+};
+
 export const EditContentComponent = React.createClass ({
     getInitialState() {
         return {
@@ -218,9 +233,31 @@ export const EditContentComponent = React.createClass ({
 
         scroller.scrollTo({x:0, y:y, animated: true})
     },
+    onLeftSearchButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED
+        })
+    },
+    onRightSearchButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED
+        })
+    },
+    leftSearchPatternChanged({text}) {
+        this.dispatch({
+            type: ActionTypes.LEFT_SEARCH_PATTERN_CHANGED,
+            text: text
+        });
+    },
+    rightSearchPatternChanged({text}) {
+        this.dispatch({
+            type: ActionTypes.RIGHT_SEARCH_PATTERN_CHANGED,
+            text: text
+        });
+    },
     renderHeader() {
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.state.app.currentDictionary.get('language1').get('localName');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2').get('localName');  // "russian";
         var iconSortStyleLeft = this.state.editState.sortedBy == "leftLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
         var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
@@ -241,9 +278,12 @@ export const EditContentComponent = React.createClass ({
 
         var langTitles = (
             <View style={styles.sortToolbarContainer}>
+                {/*Left language name button */}
                 <Text style={styles.languageTitle}>
                     {langLeft}
                 </Text>
+
+                {/* Left Sort button */}
                 <TouchableOpacity onPress = {this.props.onLeftSortButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='sort-desc'
@@ -252,9 +292,25 @@ export const EditContentComponent = React.createClass ({
                         style={iconSortStyleLeft}
                     />
                 </TouchableOpacity>
+
+                {/* Left Search button */}
+                <TouchableOpacity
+                    onPress = {() => this.onLeftSearchButtonPressed()}
+                    activeOpacity={1.0}>
+                    <Icon
+                        name='search'
+                        size={20}
+                        color='#81c04d'
+                        style={globalStyles.header.icon}
+                    />
+                </TouchableOpacity>
+
+                {/* Right language name button */}
                 <Text style={styles.languageTitle}>
                     {langRight}
                 </Text>
+
+                {/* Right sort button */}
                 <TouchableOpacity onPress = {this.props.onRightSortButtonPressed} activeOpacity={1.0}>
                     <Icon
                         name='sort-desc'
@@ -263,6 +319,19 @@ export const EditContentComponent = React.createClass ({
                         style={iconSortStyleRight}
                     />
                 </TouchableOpacity>
+
+                {/* Right Search button */}
+                <TouchableOpacity
+                    onPress = {() => this.onRightSearchButtonPressed()}
+                    activeOpacity={1.0}>
+                    <Icon
+                        name='search'
+                        size={20}
+                        color='#81c04d'
+                        style={globalStyles.header.icon}
+                    />
+                </TouchableOpacity>
+
             </View>
         );
 
@@ -343,11 +412,15 @@ export const EditContentComponent = React.createClass ({
                         <View style={style}>
                             <TextInput
                                 style={styles.editItem}
+                                autoCapitalize = 'none'
+                                autoCorrect = {false}
                                 value={item.get(langLeft)}
                                 onChangeText={(value) => this.itemLeftChanged({value})}
                             />
                             <TextInput
                                 style={styles.editItem}
+                                autoCapitalize = 'none'
+                                autoCorrect = {false}
                                 value={item.get(langRight)}
                                 onChangeText={(value) => this.itemRightChanged({value})}
                             />
@@ -384,13 +457,43 @@ export const EditContentComponent = React.createClass ({
                 return 0;
             }
         });
+
+        var leftSearchPattern = this.state.editState.leftSearchPattern;
+        var rightSearchPattern = this.state.editState.rightSearchPattern;
+
+        var filteredItems = sortedItems.filter( (item) => {
+            if (item.get(langLeft).indexOf(leftSearchPattern, 0) >= 0 &&
+                item.get(langRight).indexOf(rightSearchPattern, 0) >= 0) {
+                return true;
+            }
+            return false;
+        });
+
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        var dataSource = ds.cloneWithRows(sortedItems);
+        var dataSource = ds.cloneWithRows(filteredItems);
 
         /* does not work in version 0.20
         stickyIndices = this.state.editState.selectedItem ?
             sortedItems.findIndex( item => item.id == this.state.editState.selectedItem.id ) :
             [];*/
+
+        var leftSearchPopup = this.state.editState.leftSearchPopup ? (
+            <SearchInputPopup
+                viewStyle = {[styles.searchPopup, styles.leftSearchPopup]}
+                inputStyle = {styles.searchPatternInput}
+                value={this.state.editState.leftSearchPattern}
+                onChangeText={(text) => this.leftSearchPatternChanged({text})}
+            />
+        ) : null;
+
+        var rightSearchPopup = this.state.editState.rightSearchPopup ? (
+            <SearchInputPopup
+                viewStyle = {[styles.searchPopup, styles.rightSearchPopup]}
+                inputStyle = {styles.searchPatternInput}
+                value={this.state.editState.rightSearchPattern}
+                onChangeText={(text) => this.rightSearchPatternChanged({text})}
+            />
+        ) : null;
 
         return (
             <View style={styles.contentContainer}>
@@ -410,6 +513,10 @@ export const EditContentComponent = React.createClass ({
                         style={globalStyles.iconAdd}
                     />
                 </TouchableOpacity>
+
+                {leftSearchPopup}
+
+                {rightSearchPopup}
             </View>
         );
     }
@@ -436,7 +543,8 @@ var styles = StyleSheet.create({
     },
     sortToolbarContainer: {
         flexDirection: 'row',
-        marginTop:0
+        marginTop:0,
+        alignItems: 'center'
     },
     languageTitle: {
         flex:1,
@@ -507,6 +615,33 @@ var styles = StyleSheet.create({
     },
     iconButtonDimmed: {
         opacity: 0.5
+    },
+    leftSearchPopup: {
+        left: 20,
+    },
+    rightSearchPopup: {
+        left: 220,
+    },
+    searchPopup: {
+        position: 'absolute',
+        top: 110,
+        width: 120,
+        height: 40,
+        borderWidth: 2,
+        elevation: 1,
+        shadowColor:'darkgray',
+        borderColor: '#F5FCFF',
+        shadowOpacity: 0.8,
+        shadowOffset: {
+            height:0,
+            width:0
+        }
+    },
+    searchPatternInput: {
+        height: 30,
+        margin:5,
+        alignItems: 'center',
+        backgroundColor: 'white'
     }
 });
 

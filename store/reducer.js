@@ -12,7 +12,11 @@ const initialAppState = {
     editState: {
         sortedBy: 'leftLanguage',
         selectedItem: undefined,
-        editItem: false
+        editItem: false,
+        leftSearchPopup: false,
+        rightSearchPopup: false,
+        leftSearchPattern: '',
+        rightSearchPattern: ''
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -126,9 +130,32 @@ function app(state=initialAppState, action) {
 
 function editState(state=initialAppState.editState, action) {
     switch (action.type) {
+        case ActionTypes.DICTIONARY_SELECTED:
+            return Object.assign({}, state, {
+                leftSearchPopup: false,
+                rightSearchPopup: false,
+                leftSearchPattern: '',
+                rightSearchPattern: ''
+            });
         case ActionTypes.BUTTON_SORTED_BY_PRESSED:
             return Object.assign({}, state, {
                 sortedBy: action.sortedBy
+            });
+        case ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                leftSearchPopup: !state.leftSearchPopup
+            });
+        case ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                rightSearchPopup: !state.rightSearchPopup
+            });
+        case ActionTypes.LEFT_SEARCH_PATTERN_CHANGED:
+            return Object.assign({}, state, {
+                leftSearchPattern: action.text
+            });
+        case ActionTypes.RIGHT_SEARCH_PATTERN_CHANGED:
+            return Object.assign({}, state, {
+                rightSearchPattern: action.text
             });
         case ActionTypes.SELECT_ITEM_PRESSED:
             // if none selected - select
