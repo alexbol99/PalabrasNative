@@ -462,8 +462,8 @@ export const EditContentComponent = React.createClass ({
         var rightSearchPattern = this.state.editState.rightSearchPattern;
 
         var filteredItems = sortedItems.filter( (item) => {
-            if (item.get(langLeft).indexOf(leftSearchPattern, 0) >= 0 &&
-                item.get(langRight).indexOf(rightSearchPattern, 0) >= 0) {
+            if (item.get(langLeft).indexOf(leftSearchPattern) == 0 &&
+                item.get(langRight).indexOf(rightSearchPattern) == 0) {
                 return true;
             }
             return false;
@@ -480,7 +480,7 @@ export const EditContentComponent = React.createClass ({
         var leftSearchPopup = this.state.editState.leftSearchPopup ? (
             <SearchInputPopup
                 viewStyle = {[styles.searchPopup, styles.leftSearchPopup]}
-                inputStyle = {styles.searchPatternInput}
+                inputStyle = {[styles.searchPatternInput]}
                 value={this.state.editState.leftSearchPattern}
                 onChangeText={(text) => this.leftSearchPatternChanged({text})}
             />
@@ -489,7 +489,7 @@ export const EditContentComponent = React.createClass ({
         var rightSearchPopup = this.state.editState.rightSearchPopup ? (
             <SearchInputPopup
                 viewStyle = {[styles.searchPopup, styles.rightSearchPopup]}
-                inputStyle = {styles.searchPatternInput}
+                inputStyle = {[styles.searchPatternInput]}
                 value={this.state.editState.rightSearchPattern}
                 onChangeText={(text) => this.rightSearchPatternChanged({text})}
             />
@@ -543,18 +543,20 @@ var styles = StyleSheet.create({
     },
     sortToolbarContainer: {
         flexDirection: 'row',
-        marginTop:0,
-        alignItems: 'center'
+        marginVertical: 10,
+        alignItems: 'center',
+        /*borderWidth: 1,
+        borderColor: '#81c04d'*/
     },
     languageTitle: {
         flex:1,
-        paddingLeft:10,
+        marginLeft:5,
         paddingRight:10,
         marginVertical: 5,
         textAlign:'left',
-        fontSize: 20,
+        fontSize: 14,
+        fontWeight: 'bold',
         marginBottom: 3,
-        /*borderWidth: 1*/
     },
     itemContainer: {
         flexDirection: 'row',
@@ -624,24 +626,33 @@ var styles = StyleSheet.create({
     },
     searchPopup: {
         position: 'absolute',
-        top: 110,
-        width: 120,
-        height: 40,
-        borderWidth: 2,
+        top: 80,
+        width: 100,
+        height: 45,
+        alignItems: 'center',
+        /*borderWidth: 1,
         elevation: 1,
         shadowColor:'darkgray',
-        borderColor: '#F5FCFF',
+        borderColor: '#81c04d',
         shadowOpacity: 0.8,
         shadowOffset: {
             height:0,
             width:0
-        }
+        }*/
     },
     searchPatternInput: {
-        height: 30,
-        margin:5,
-        alignItems: 'center',
-        backgroundColor: 'white'
+        /*position: 'absolute',
+        top: 80,
+        width: 100,*/
+        height: 40,
+        marginLeft:2,
+        marginRight:2,
+        paddingLeft:5,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#81c04d',
+        textAlignVertical: 'center',
+        elevation: 5,
     }
 });
 

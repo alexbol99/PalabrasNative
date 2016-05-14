@@ -180,7 +180,7 @@ export const LoginView = React.createClass({
                     Share with your friends
                 </Text>
                 <FBLogin style={styles.loginButton}
-                         permissions={["user_friends"]}
+                         permissions={["email", "user_friends"]}
                          loginBehavior={loginBehaviour}
                          onLogin={(data) => this.onLogin(data)}
                          onLogout={this.onLogout}
