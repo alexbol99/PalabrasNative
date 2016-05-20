@@ -43,10 +43,6 @@ const initialUserState = {
 
 function app(state=initialAppState, action) {
     switch (action.type) {
-        case ActionTypes.USER_LOGIN_NOT_FOUND:
-            return Object.assign({}, state, {
-                navigateTo: 'loginView'
-            });
         case ActionTypes.USER_LOGGED_IN_TO_PARSE:
             return Object.assign({}, state, {
                 navigateTo: 'homeView',
@@ -300,37 +296,10 @@ function items(state = [], action) {
 
 function user(state = initialUserState, action) {
     switch (action.type) {
-        case ActionTypes.USER_LOGGED_IN:
-            return Object.assign({}, state, {
-                status: action.type
-            });
         case ActionTypes.USER_LOGGED_IN_TO_PARSE:
             return Object.assign({}, state, {
                 status: action.type,
                 parseUser: action.user
-            });
-        case ActionTypes.USER_LOGIN_FOUND:
-            return Object.assign({}, state, {
-                status: action.type
-            });
-        case ActionTypes.USER_LOGIN_NOT_FOUND:
-            return Object.assign({}, state, {
-                status: action.type,
-                data: null
-            });
-        case ActionTypes.USER_LOGIN_CANCELLED:
-            return Object.assign({}, state, {
-                status: action.type
-            });
-        case ActionTypes.USER_LOGIN_ERROR:
-            return Object.assign({}, state, {
-                status: action.type,
-                data: action.data
-            });
-        case ActionTypes.USER_LOGIN_MISSING_PERMISSIONS:
-            return Object.assign({}, state, {
-                status: action.type,
-                data: action.data
             });
         case ActionTypes.MENU_ITEM_LOGOUT_PRESSED:
             return Object.assign({}, state, {

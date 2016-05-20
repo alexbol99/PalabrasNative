@@ -11,46 +11,84 @@ var {
     Text,
     StyleSheet,
     View,
-    TouchableHighlight,
+    TouchableOpacity,
     Platform,
-    Image
+    Image,
+    Alert
     } = React;
 
-var FBLogin = require('react-native-facebook-login');
+// var FBLogin = require('react-native-facebook-login');
 var FBLoginManager = require('NativeModules').FBLoginManager;
 
 export const LoginView = React.createClass({
     getInitialState() {
         return {
+            showLoginButton: false
         };
     },
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
-
-        // On LogOut requested do nothing
-        if (this.props.store.getState().user.status != "MENU_ITEM_LOGOUT_PRESSED") {
-            /* On Android use FBLoginManager because for some reason
-            FBLogin component does not trigger "login found" event */
-            if (Platform.OS === 'android' && FBLoginManager.loginWithPermissions) {
-                FBLoginManager.loginWithPermissions(["email", "user_friends"],
-                    (error, data) => {
-                        if (!error) {
-                            // for some reason data.profile obtained stringified
-                            this.onLoginFound(Object.assign({}, data, {profile: JSON.parse(data.profile)}));
-                        }
-                        else {
-                            console.log(error);
-                        }
-                    })
-            }
-        }
         this.setState(this.props.store.getState());
 
     },
     componentDidMount() {
+        // On LogOut requested run Logout
+        if (this.props.store.getState().user.status == "MENU_ITEM_LOGOUT_PRESSED") {
+            this.onLogout();
+        }
+
+        this.fbloginStart();
+
+        /*
+        var _this = this;
+        if (FBLoginManager.getCredentials) {
+            FBLoginManager.getCredentials(function (error, data) {
+                if (error) {
+                    _this.setState({
+                        showLoginButton: true
+                    })
+                }
+                else {
+                    _this.onLoginFound(data);
+                }
+            });
+        }
+        */
+
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
+    },
+    fbloginStart() {
+        /* how to set loginBehaviour ??? */
+        var loginBehaviour = FBLoginManager.LoginBehaviors ? FBLoginManager.LoginBehaviors.SystemAccount : undefined;
+        FBLoginManager.FBSDKLoginBehavior = loginBehaviour;
+        if (FBLoginManager.loginWithPermissions) {
+            FBLoginManager.loginWithPermissions(["email", "user_friends"],
+                (error, data) => {
+                    if (error) {
+                        this.setState({
+                            showLoginButton: true
+                        });
+                        alert(error);
+                    }
+                    else {
+                        this.onLoginFound(data);
+                    }
+                })
+        }
+    },
+    fbLogout() {
+        var _this = this;
+        FBLoginManager.logout(function(error, data){
+            if (!error) {
+                _this.setState({
+                    showLoginButton : true
+                });
+            } else {
+                console.log(error, data);
+            }
+        });
     },
     parseLoginIOS(credentials) {
         User.prototype.parseLogin(credentials)                       // login to Parse
@@ -76,6 +114,8 @@ export const LoginView = React.createClass({
         (error) => console.log(error);
     },
     parseLoginAndroid(data) {
+        data = Object.assign({}, data, {profile: JSON.parse(data.profile)});
+
         var credentials = {
             userId : data.profile.id,
             token : data.token,
@@ -97,21 +137,10 @@ export const LoginView = React.createClass({
                     url: data.profile.picture.data.url
                 });
     },
-    onLogin(data) {
-        // Login to Parse with obtained credentials
-        if (data.credentials) {  // IOS style
-            this.parseLoginIOS(data.credentials);
-        }
-        else {                   // Android style
-            this.parseLoginAndroid(data);
-        }
-        this.dispatch({
-            type: ActionTypes.USER_LOGGED_IN
-        });
-    },
     onLogout() {
         User.prototype.parseLogout()
             .then(() => {
+                this.fbLogout();
                 this.dispatch({
                     type: ActionTypes.USER_LOGGED_OUT
                 });
@@ -130,66 +159,41 @@ export const LoginView = React.createClass({
             this.parseLoginAndroid(data);
         }
 
-        this.dispatch({
-            type: ActionTypes.USER_LOGIN_FOUND
-        });
-    },
-    onLoginNotFound() {
-        this.dispatch({
-            type: ActionTypes.USER_LOGIN_NOT_FOUND
-        });
-    },
-    onError(data) {
-        this.dispatch({
-            type: ActionTypes.USER_LOGIN_ERROR,
-            data:data
-        });
-        alert(ActionTypes.USER_LOGIN_ERROR);
-    },
-    onCancel() {
-        this.dispatch({
-            type: ActionTypes.USER_LOGIN_CANCELLED
-        });
-        alert(ActionTypes.USER_LOGIN_CANCELLED);
-    },
-    onPermissionMissing(data) {
-        this.dispatch({
-            type: ActionTypes.USER_LOGIN_MISSING_PERMISSIONS,
-            data: data
-        });
-        alert(ActionTypes.USER_LOGIN_MISSING_PERMISSIONS);
+        //this.dispatch({
+        //    type: ActionTypes.USER_LOGIN_FOUND
+        //});
     },
     render() {
-        var _this = this;
-        var loginBehaviour = FBLoginManager.LoginBehaviors ? FBLoginManager.LoginBehaviors.SystemAccount : undefined;
         var deviceWidth = Dimensions.get('window').width;
+        var _this = this;
+        var loginButton = this.state.showLoginButton ? (
+            <TouchableOpacity
+                activeOpacity={1.0}
+                style={[styles.FBLoginButton]}
+                onPress={this.fbloginStart}
+            >
+                <Image
+                    source={require('../assets/images/fb_login.png')} />
+            </TouchableOpacity>
+        ) : null;
 
         return (
             <View style={styles.container}>
                 <Image
-                    style={{ width: 360 }}
-                    source={require('../assets/images/palabra-470x346.jpg')}
-                />
-                <Text style={styles.title}>
-                    Create you dictionary
-                </Text>
-                <Text style={styles.title}>
-                    Learn new words
-                </Text>
-                <Text style={styles.title}>
-                    Share with your friends
-                </Text>
-                <FBLogin style={styles.loginButton}
-                         permissions={["email", "user_friends"]}
-                         loginBehavior={loginBehaviour}
-                         onLogin={(data) => this.onLogin(data)}
-                         onLogout={this.onLogout}
-                         onLoginFound={(data) => this.onLoginFound(data)}
-                         onLoginNotFound={this.onLoginNotFound}
-                         onError={(data) => this.onError(data)}
-                         onCancel={this.onCancel}
-                         onPermissionsMissing={(data) => this.onPermissionMissing(data)}
-                />
+                    style = {{opacity: 0.8}}
+                    source={require('../assets/images/note-pad-1415071-639x1072.jpg')}
+                >
+                    <Text style={[styles.title]}>
+                        Palabras
+                    </Text>
+                    <Text style={[styles.subtitle]}>
+                        My personal dictionaries
+                    </Text>
+
+                    {/*Login with Facebook button*/}
+                    {loginButton}
+
+                </Image>
 
             </View>
         );
@@ -205,26 +209,31 @@ var styles = StyleSheet.create({
     image: {
         width: 470   /*Dimensions.get('window').width*/
     },
-    loginButton: {
-        flex:1,
-    },
     title: {
-        color: 'gray',
+        color: '#ffffff',
+        backgroundColor: 'transparent',
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontSize: 40,
+        fontWeight: 'bold',
+        marginTop: 250,
+        /*marginBottom: 20,*/
+    },
+    subtitle: {
+        color: '#ffffff',
+        backgroundColor: 'transparent',
         textAlign:'center',
         alignSelf:'center',
         fontSize: 20,
-        margin:2,
-        marginBottom: 20
+        fontWeight: 'bold',
+        margin:50,
+        marginBottom: 100
     },
-    subtitle: {
-        fontSize: 35,
-        color: '#ffffff',
-        textAlign:'center',
-        alignSelf:'center',
-        marginTop: 75,
-        marginBottom: 250
-    }
-
+    FBLoginButton: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 /*
 <FBLogin style={styles.loginButton}
@@ -239,3 +248,18 @@ var styles = StyleSheet.create({
          onPermissionsMissing={(data) => this.onPermissionMissing(data)}
 />
 */
+
+/*
+ <FBLogin style={styles.loginButton}
+ permissions={["email", "user_friends"]}
+ loginBehavior={loginBehaviour}
+ onLogin={(data) => this.onLogin(data)}
+ onLogout={this.onLogout}
+ onLoginFound={(data) => this.onLoginFound(data)}
+ onLoginNotFound={this.onLoginNotFound}
+ onError={(data) => this.onError(data)}
+ onCancel={this.onCancel}
+ onPermissionsMissing={(data) => this.onPermissionMissing(data)}
+ />
+
+ */
