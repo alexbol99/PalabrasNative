@@ -32,7 +32,7 @@ export class Items extends Parse.Object {
         return localeQuery.find();
     }
 
-    addEmptyItem(dictionary) {
+    addEmptyItem(dictionary, language1, language2) {
         var pref = '';
         if (dictionary.id.charAt(0) >= '0' && dictionary.id.charAt(0) <= '9') {
             pref = 'a';
@@ -48,14 +48,11 @@ export class Items extends Parse.Object {
         //    });
         //}
 
-        //var dictionary = app.get("currentDictionary");
-        //var language1 = dictionary.get('language1').get('name');
-        //var language2 = dictionary.get('language2').get('name');
         // http://stackoverflow.com/questions/9640253/how-to-set-a-dynamic-property-on-a-model-with-backbone-js
-        //var map = {};
-        //map[language1] = '';
-        //map[language2] = '';
-        //item.set(map);
+        var map = {};
+        map[language1] = '';
+        map[language2] = '';
+        item.set(map);
 
         return item.save();             // save to cloud and trigger event "added" on success
     }

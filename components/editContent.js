@@ -159,7 +159,11 @@ export const EditContentComponent = React.createClass ({
 
     },
     onAddNewItemButtonPressed() {
-        Items.prototype.addEmptyItem(this.state.app.currentDictionary)
+        var dictionary = this.state.app.currentDictionary;
+        var language1 = dictionary.get('language1').get('name');
+        var language2 = dictionary.get('language2').get('name');
+
+        Items.prototype.addEmptyItem(dictionary, language1, language2)
             .then( (item) => {
                 this.dispatch({
                     type: ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED,
@@ -229,7 +233,7 @@ export const EditContentComponent = React.createClass ({
         var metrics = this.refs.itemsList.getMetrics();
         var index = this.state.items.findIndex(item => item.id == selectedItem.id);
         // var y = (metrics.contentLength / metrics.renderedRows) * index - 100;
-        var y = 41 * index - 100;
+        var y = Math.max(41 * index - 100, 0);
 
         scroller.scrollTo({x:0, y:y, animated: true})
     },
