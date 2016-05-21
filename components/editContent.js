@@ -499,12 +499,14 @@ export const EditContentComponent = React.createClass ({
             />
         ) : null;
 
+        var sectionHeader = this.renderHeader();
+
         return (
             <View style={styles.contentContainer}>
+                {sectionHeader}
                 <ListView ref='itemsList'
                     dataSource={dataSource}
                     initialListSize = {20}
-                    renderSectionHeader={() => this.renderHeader()}
                     renderRow={(item) => this.renderRow(item)}
                 />
                 <TouchableOpacity style={styles.addItemButton}
@@ -538,7 +540,6 @@ var styles = StyleSheet.create({
         /*color: '#656565'*/
     },
     headerContainer: {
-        flex: 1,
         backgroundColor: '#F5FCFF'
     },
     editToolbar: {
@@ -584,10 +585,6 @@ var styles = StyleSheet.create({
         margin:5,
         alignItems: 'center',
         backgroundColor: 'white'
-    },
-    listView: {
-        flex: 1,
-        height: 400
     },
     addItemButton: {
         position: 'absolute',

@@ -4,7 +4,7 @@
 var React = require('react-native');
 
 var DictionaryHeaderComponent = require('../components/dictionaryHeader').DictionaryHeaderComponent;
-var FooterComponent = require('../components/footer').FooterComponent;
+var FooterComponent = require('../components/dictionaryFooter').FooterComponent;
 var EditView = require('../views/editView').EditView;
 var LearnView = require('../views/learnView').LearnView;
 var Items = require('../models/items').Items;
