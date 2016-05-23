@@ -89,27 +89,29 @@ export const EditContentComponent = React.createClass ({
     itemLeftChanged({value}) {
         var item = this.state.editState.selectedItem;
         var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        item.set(langLeft, value);
+        item.set(langLeft, value);     // update state but don't save while editing not finished
         this.dispatch({
             type: ActionTypes.ITEM_CHANGED,
             item: item
         });
-        Items.prototype.updateItem(item)
-            .then( (item) => {/*do nothing*/}),
-            (error) => {
-                alert("Problems with connection to server");
-            }
     },
     itemRightChanged({value}) {
         var item = this.state.editState.selectedItem;
         var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
-        item.set(langRight, value);
+        item.set(langRight, value);     // update state but don't save while editing not finished
         this.dispatch({
             type: ActionTypes.ITEM_CHANGED,
             item: item
         });
-        Items.prototype.updateItem(item)
-            .then( (item) => {/*do nothing*/}),
+    },
+    itemChangeDone() {
+        var item = this.state.editState.selectedItem;
+        Items.prototype.updateItem(item)         // save item in db and enable sorting
+            .then( (item) => {
+                this.dispatch({
+                    type: ActionTypes.ITEM_CHANGE_DONE
+                })
+            }),
             (error) => {
                 alert("Problems with connection to server");
             }
@@ -206,7 +208,7 @@ export const EditContentComponent = React.createClass ({
                             clearTimeout(intervalId)
                         })
                         .catch((error) => console.log(error));
-                }, 2000);
+                }, 2500);
             })
             .catch((error) => console.log(error));
     },
@@ -420,6 +422,7 @@ export const EditContentComponent = React.createClass ({
                                 autoCorrect = {false}
                                 value={item.get(langLeft)}
                                 onChangeText={(value) => this.itemLeftChanged({value})}
+                                onEndEditing = {() => this.itemChangeDone()}
                             />
                             <TextInput
                                 style={styles.editItem}
@@ -427,6 +430,7 @@ export const EditContentComponent = React.createClass ({
                                 autoCorrect = {false}
                                 value={item.get(langRight)}
                                 onChangeText={(value) => this.itemRightChanged({value})}
+                                onEndEditing = {() =>this.itemChangeDone()}
                             />
                         </View>
                     ) : (
@@ -447,27 +451,20 @@ export const EditContentComponent = React.createClass ({
         var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
         var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
         var sortedBy = this.state.editState.sortedBy;
-        var sortedItems = this.state.items.sort((item1, item2) => {
-            let val1 = sortedBy == "leftLanguage" ? item1.get(langLeft) : item1.get(langRight);
-            let val2 = sortedBy == "leftLanguage" ? item2.get(langLeft) : item2.get(langRight);
-
-            if (val1 > val2) {
-                return 1;
-            }
-            if (val1 < val2) {
-                return -1;
-            }
-            if (val1 == val2) {
-                return 0;
-            }
-        });
+        var sortedItems = [];
+        if (this.state.editState.sortEnabled) {
+            sortedItems = Items.prototype.sortItems(this.state.items, sortedBy, langLeft, langRight);
+        }
+        else {
+            sortedItems = this.state.items.slice();
+        }
 
         var leftSearchPattern = this.state.editState.leftSearchPattern;
         var rightSearchPattern = this.state.editState.rightSearchPattern;
 
         var filteredItems = sortedItems.filter( (item) => {
-            if (item.get(langLeft).indexOf(leftSearchPattern) == 0 &&
-                item.get(langRight).indexOf(rightSearchPattern) == 0) {
+            if (item.get(langLeft) !== undefined && item.get(langLeft).indexOf(leftSearchPattern) == 0 &&
+                item.get(langRight) !== undefined && item.get(langRight).indexOf(rightSearchPattern) == 0) {
                 return true;
             }
             return false;

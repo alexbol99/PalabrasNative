@@ -10,6 +10,7 @@ const initialAppState = {
     mode: 'edit',
     showHomeMenu: false,
     editState: {
+        sortEnabled: true,
         sortedBy: 'leftLanguage',
         selectedItem: undefined,
         editItem: false,
@@ -160,22 +161,34 @@ function editState(state=initialAppState.editState, action) {
             return Object.assign({}, state, {
                 selectedItem: state.selectedItem == undefined ? action.item :
                     (state.selectedItem.id == action.item.id ? undefined : action.item),
-                editItem: false
+                editItem: false,
+                sortEnabled: true,
             });
         case ActionTypes.EDIT_ITEM_BUTTON_PRESSED:
             return Object.assign({}, state, {
-                editItem: !state.editItem
+                editItem: !state.editItem,
+                sortEnabled: state.editItem    /* enable sort when editItem mode is going closed */
             });
         case ActionTypes.DELETE_ITEM_REQUEST_SUCCEED:
             return Object.assign({}, state, {
                 selectedItem: undefined,
-                editItem: false
+                editItem: false,
+                sortEnabled: true
             });
         case ActionTypes.ADD_NEW_ITEM_REQUEST_SUCCEED:
             return Object.assign({}, state, {
                 selectedItem: action.item,
-                editItem: true
+                editItem: true,
+                sortEnabled: false
             });
+        case ActionTypes.ITEM_CHANGED:
+            return Object.assign({}, state, {
+                sortEnabled: false
+            });
+        /*case ActionTypes.ITEM_CHANGE_DONE:
+            return Object.assign({}, state, {
+                sortEnabled: true
+            });*/
         default:
             return state;
     }
