@@ -4,12 +4,12 @@
 /**
  * Created by alexanderbol on 30/01/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var Items = require('../models/items').Items;
 
 import * as ActionTypes from '../store/actionTypes';
 
-var {
+import {
     Alert,
     Text,
     StyleSheet,
@@ -19,7 +19,7 @@ var {
     TouchableOpacity,
     TextInput,
     Platform
-    } = React;
+    } from 'react-native';
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
 var Icon = require('react-native-vector-icons/FontAwesome');
@@ -60,7 +60,24 @@ export const EditContentComponent = React.createClass ({
     },
     componentDidUpdate() {
     },
+    updateItem() {
+        var item = this.state.editState.selectedItem;
+        var itemEdited = this.state.editState.editItem;
+        if (item && itemEdited) {
+            Items.prototype.updateItem(item)         // save item in db and enable sorting
+                .then((item) => {
+                    this.dispatch({
+                        type: ActionTypes.ITEM_CHANGE_DONE
+                    })
+                }),
+                (error) => {
+                    alert("Problems with connection to server");
+                }
+        }
+    },
     toggleSelectItem(item) {
+        this.updateItem();     // before switch/unselect update item in database
+
         this.dispatch({
             type: ActionTypes.SELECT_ITEM_PRESSED,
             item: item
@@ -69,6 +86,8 @@ export const EditContentComponent = React.createClass ({
     onEditItemButtonPressed() {
         /* Disable edit/delete if current user is not an owner of the document */
         var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+
+        this.updateItem();         // before switch to "not edit" update current item in database
 
         if (isOwner) {
             this.dispatch({
@@ -161,6 +180,8 @@ export const EditContentComponent = React.createClass ({
 
     },
     onAddNewItemButtonPressed() {
+        this.updateItem();        // before add new item update selected item in database
+
         var dictionary = this.state.app.currentDictionary;
         var language1 = dictionary.get('language1').get('name');
         var language2 = dictionary.get('language2').get('name');
@@ -193,6 +214,9 @@ export const EditContentComponent = React.createClass ({
     },
     onGoWebButtonPressed() {       // go search web for additional info
         if (!this.state.editState.selectedItem) return;
+
+        this.updateItem();       // before go web update selected item
+
         this.dispatch({
             type: ActionTypes.GO_WEB_BUTTON_PRESSED,
             item: this.state.editState.selectedItem
@@ -422,7 +446,7 @@ export const EditContentComponent = React.createClass ({
                                 autoCorrect = {false}
                                 value={item.get(langLeft)}
                                 onChangeText={(value) => this.itemLeftChanged({value})}
-                                onEndEditing = {() => this.itemChangeDone()}
+                                onBlur = {() => this.itemChangeDone()}
                             />
                             <TextInput
                                 style={styles.editItem}
@@ -430,7 +454,7 @@ export const EditContentComponent = React.createClass ({
                                 autoCorrect = {false}
                                 value={item.get(langRight)}
                                 onChangeText={(value) => this.itemRightChanged({value})}
-                                onEndEditing = {() =>this.itemChangeDone()}
+                                onBlur = {() =>this.itemChangeDone()}
                             />
                         </View>
                     ) : (
@@ -504,6 +528,7 @@ export const EditContentComponent = React.createClass ({
                 <ListView ref='itemsList'
                     dataSource={dataSource}
                     initialListSize = {20}
+                          enableEmptySections = {true}
                     renderRow={(item) => this.renderRow(item)}
                 />
                 <TouchableOpacity style={styles.addItemButton}

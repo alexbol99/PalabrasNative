@@ -1,14 +1,14 @@
 /**
  * Created by alexanderbol on 28/02/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var HeaderComponent = require('../components/header').HeaderComponent;
 var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
 var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
 
-var {
+import {
     Text,
     StyleSheet,
     View,
@@ -17,7 +17,7 @@ var {
     Picker,
     Platform,
     BackAndroid
-    } = React;
+    } from 'react-native';
 
 // var Item = PickerIOS.Item;
 

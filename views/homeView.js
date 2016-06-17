@@ -1,21 +1,22 @@
 /**
  * Created by alexanderbol on 21/01/2016.
  */
-var React = require('react-native');
-var HeaderComponent = require('../components/header').HeaderComponent;
+import React from 'react';
+// svar HeaderComponent = require('../components/header').HeaderComponent;
 
 var Shares = require('../models/share').Shares.prototype;
 var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
 var Languages = require('../models/languages').Languages.prototype;
 var Items = require('../models/items').Items;
 
-import * as ActionTypes from '../store/actionTypes';
-import Share from 'react-native-share';
+var ActionTypes = require('../store/actionTypes.js');
 
 var globalStyles = require('../styles/styles').styles;
 
-var {
-    Text,
+var ReactNative = require('react-native');
+var Share = require('react-native-share');
+
+var {Text,
     StyleSheet,
     View,
     ListView,
@@ -26,7 +27,7 @@ var {
     Platform,
     Linking,
     Alert
-    } = React;
+    } = ReactNative;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
 

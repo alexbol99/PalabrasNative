@@ -4,13 +4,13 @@
  */
 'use strict';
 
-var React = require('react-native');
+import React from 'react';
 var MainComponent = require('./main');
 
-var {
+import {
     AppRegistry,
     View,
-    } = React;
+    } from 'react-native';
 
 class Palabras extends React.Component {
     render() {

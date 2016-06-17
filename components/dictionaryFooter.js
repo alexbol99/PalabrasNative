@@ -1,15 +1,15 @@
 /**
  * Created by alexanderbol on 30/01/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var globalStyles = require('../styles/styles').styles;
-var {
+import {
     Text,
     StyleSheet,
     View,
     ListView,
     TouchableOpacity
-    } = React;
+    } from 'react-native';
 
 export const FooterComponent = React.createClass ({
     render() {

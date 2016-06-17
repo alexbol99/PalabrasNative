@@ -1,7 +1,7 @@
 /**
  * Created by alexanderbol on 21/01/2016.
  */
-var React = require('react-native');
+import React from 'react';
 
 var DictionaryHeaderComponent = require('../components/dictionaryHeader').DictionaryHeaderComponent;
 var FooterComponent = require('../components/dictionaryFooter').FooterComponent;
@@ -12,13 +12,13 @@ var Items = require('../models/items').Items;
 import * as ActionTypes from '../store/actionTypes';
 import Share from 'react-native-share';
 
-var {
+import {
     ActionSheetIOS,
     StyleSheet,
     View,
     Platform,
     BackAndroid
-    } = React;
+    } from 'react-native';
 
 export const DictionaryView = React.createClass ({
     getInitialState() {

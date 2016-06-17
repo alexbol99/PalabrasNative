@@ -1,16 +1,16 @@
 /**
  * Created by alexanderbol on 30/01/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
-var {
+import {
     Text,
     StyleSheet,
     View,
     TouchableOpacity
-    } = React;
+    } from 'react-native';
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
 var Icon = require('react-native-vector-icons/FontAwesome');

@@ -1,9 +1,8 @@
 /**
  * Created by alexanderbol on 19/02/2016.
  */
-var React = require('react-native');
-
-var { StyleSheet } = React;
+import React from 'react';
+import { StyleSheet } from 'react-native';
 
 
 export const styles = {

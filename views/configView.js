@@ -1,7 +1,7 @@
 /**
  * Created by alexanderbol on 19/02/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var HeaderComponent = require('../components/header').HeaderComponent;
 var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
@@ -9,7 +9,7 @@ import * as ActionTypes from '../store/actionTypes';
 var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
 var Shares = require('../models/share').Shares.prototype;
 
-var {
+import {
     Text,
     StyleSheet,
     View,
@@ -18,7 +18,7 @@ var {
     Platform,
     BackAndroid,
     Alert
-    } = React;
+    } from 'react-native';
 
 export const ConfigView = React.createClass ({
     getInitialState() {

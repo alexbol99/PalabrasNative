@@ -1,13 +1,13 @@
 /**
  * Created by alexanderbol on 21/02/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var User = require('../models/user').User;
 import * as ActionTypes from '../store/actionTypes';
 var globalStyles = require('../styles/styles').styles;
 var Dimensions = require('Dimensions');
 
-var {
+import {
     Text,
     StyleSheet,
     View,
@@ -15,7 +15,7 @@ var {
     Platform,
     Image,
     Alert
-    } = React;
+    } from 'react-native';
 
 // var FBLogin = require('react-native-facebook-login');
 var FBLoginManager = require('NativeModules').FBLoginManager;

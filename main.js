@@ -1,23 +1,18 @@
 /**
  * Created by alexanderbol on 08/01/2016.
  */
-var React = require('react-native');
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 var Redux = require('redux');
 
 var Reducer = require('./store/reducer');
 var App = require('./app');
+
 const store = Redux.createStore(Reducer.reducer);
 
-var {
-    StyleSheet,
-    Component,
-    View,
-    Text
-    } = React;
-
-class MainComponent extends Component {
-    constructor(props) {
-        super(props);
+export class MainComponent extends React.Component {
+    constructor() {
+        super();
         this.state = store.getState();
         store.subscribe(() => {
             this.setState(store.getState());
@@ -26,8 +21,8 @@ class MainComponent extends Component {
 
     render() {
         return (
-            <App store={store}
-            />);
+            <App store={store} />
+        );
     }
 }
 
@@ -54,4 +49,4 @@ var styles = StyleSheet.create({
     }
 });
 
-module.exports = MainComponent;
+// module.exports = MainComponent;

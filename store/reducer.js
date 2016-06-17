@@ -132,11 +132,13 @@ function editState(state=initialAppState.editState, action) {
                 leftSearchPopup: false,
                 rightSearchPopup: false,
                 leftSearchPattern: '',
-                rightSearchPattern: ''
+                rightSearchPattern: '',
+                sortEnabled: true
             });
         case ActionTypes.BUTTON_SORTED_BY_PRESSED:
             return Object.assign({}, state, {
-                sortedBy: action.sortedBy
+                sortedBy: action.sortedBy,
+                sortEnabled: true
             });
         case ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED:
             return Object.assign({}, state, {
@@ -162,7 +164,7 @@ function editState(state=initialAppState.editState, action) {
                 selectedItem: state.selectedItem == undefined ? action.item :
                     (state.selectedItem.id == action.item.id ? undefined : action.item),
                 editItem: false,
-                sortEnabled: true,
+                sortEnabled: true
             });
         case ActionTypes.EDIT_ITEM_BUTTON_PRESSED:
             return Object.assign({}, state, {

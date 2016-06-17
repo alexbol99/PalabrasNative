@@ -1,19 +1,19 @@
 /**
  * Created by alexbol on 3/6/2016.
  */
-var React = require('react-native');
+import React from 'react';
 var HeaderComponent = require('../components/header').HeaderComponent;
 
 import * as ActionTypes from '../store/actionTypes';
 
-var {
+import {
     Text,
     StyleSheet,
     View,
     WebView,
     Platform,
     BackAndroid
-    } = React;
+    } from 'react-native';
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
 var Icon = require('react-native-vector-icons/FontAwesome');

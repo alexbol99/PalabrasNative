@@ -1,7 +1,7 @@
 /**
  * Created by alexanderbol on 09/01/2016.
  */
-var React = require('react-native');
+import React from 'react';
 
 import * as ActionTypes from './store/actionTypes';
 var LoginView = require('./views/loginView').LoginView;
@@ -10,14 +10,14 @@ var DictionaryView = require('./views/dictionaryView').DictionaryView;
 var ConfigView = require('./views/configView').ConfigView;
 var AddNewDictionaryView = require('./views/addNewDictionaryView').AddNewDictionaryView;
 var GoWebView = require('./views/goWebView').GoWebView;
+
 //var ShareActionSheet = require('./views/shareActionSheet').ShareActionSheet;
 
-var {
+import {
     Text,
     StyleSheet,
-    View,
-    Component,
-    } = React;
+    View
+    } from 'react-native';
 
 var App = React.createClass ({
     getInitialState() {
@@ -35,12 +35,14 @@ var App = React.createClass ({
     },
     render() {
         var page;
+
         switch (this.state.app.navigateTo) {
             case "loginView":
                 page = (
                     <LoginView {... this.props} />
                 );
                 break;
+
             case "homeView":
                 page = (
                     <HomeView {... this.props} />

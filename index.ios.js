@@ -4,15 +4,10 @@
  */
 'use strict';
 
-var React = require('react-native');
-var MainComponent = require('./main');
+import React from 'react';
+import { MainComponent } from './main';
 
-var {
-    AppRegistry,
-    StyleSheet,
-    View,
-    Text
-    } = React;
+import { AppRegistry, StyleSheet, View, Text } from 'react-native';
 
 class Palabras extends React.Component {
     render() {
@@ -23,6 +18,7 @@ class Palabras extends React.Component {
         );
     }
 }
+
 /*
 var Palabras = React.createClass({
   render: function() {
