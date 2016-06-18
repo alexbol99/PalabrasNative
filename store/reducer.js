@@ -28,6 +28,7 @@ const initialAppState = {
         itemsToBeRefreshed: false
     },
     needFetchData: true,
+    needFetchItems: true,
     numItemsInPage: 100,
     numItemsToSkip: 0,
     fetchItemsStarted: false,
@@ -59,11 +60,13 @@ function app(state=initialAppState, action) {
                 navigateTo: 'loginView'
             });
         case ActionTypes.DICTIONARY_SELECTED:
+            var needFetchItems = state.currentDictionary.id != action.dictionary.id;
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
                 itemsParse: action.itemsParse,
                 navigateTo: 'dictionaryView',
-                mode: 'edit'
+                mode: 'edit',
+                needFetchItems: needFetchItems
             });
         case ActionTypes.BACK_HOME_BUTTON_PRESSED:
             return Object.assign({}, state, {
@@ -118,7 +121,8 @@ function app(state=initialAppState, action) {
         case ActionTypes.FETCH_ITEMS_SUCCEED:
             return Object.assign({}, state, {
                 numItemsToSkip: 0,
-                fetchItemsStarted: false
+                fetchItemsStarted: false,
+                needFetchItems: false
             });
         default:
             return state;

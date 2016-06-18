@@ -70,7 +70,6 @@ export const LoginView = React.createClass({
                         this.setState({
                             showLoginButton: true
                         });
-                        alert(error);
                     }
                     else {
                         this.onLoginFound(data);

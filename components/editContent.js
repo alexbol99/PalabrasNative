@@ -59,6 +59,7 @@ export const EditContentComponent = React.createClass ({
         this.setState(nextProps.store.getState());
     },
     componentDidUpdate() {
+        // this.scrollToItem();
     },
     updateItem() {
         var item = this.state.editState.selectedItem;
@@ -258,10 +259,13 @@ export const EditContentComponent = React.createClass ({
         var scroller = this.refs.itemsList.getScrollResponder();
         var metrics = this.refs.itemsList.getMetrics();
         var index = this.state.items.findIndex(item => item.id == selectedItem.id);
-        // var y = (metrics.contentLength / metrics.renderedRows) * index - 100;
-        var y = Math.max(41 * index - 100, 0);
+        if (metrics && metrics.contentLength &&
+            metrics.contentLength > 0 && metrics.renderedRows > 0) {
+            var y = (metrics.contentLength / metrics.renderedRows) * index - 100;
+            // var y = Math.max(47 * index - 100, 0);
 
-        scroller.scrollTo({x:0, y:y, animated: true})
+            scroller.scrollTo({x: 0, y: y, animated: true})
+        }
     },
     onLeftSearchButtonPressed() {
         this.dispatch({

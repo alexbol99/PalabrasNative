@@ -11,8 +11,6 @@ var ConfigView = require('./views/configView').ConfigView;
 var AddNewDictionaryView = require('./views/addNewDictionaryView').AddNewDictionaryView;
 var GoWebView = require('./views/goWebView').GoWebView;
 
-//var ShareActionSheet = require('./views/shareActionSheet').ShareActionSheet;
-
 import {
     Text,
     StyleSheet,

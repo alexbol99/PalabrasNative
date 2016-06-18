@@ -35,10 +35,12 @@ export const DictionaryView = React.createClass ({
             BackAndroid.addEventListener('hardwareBackPress', this.onBackHomeButtonPressed);
         }
         /* Start fetch items */
-        this.dispatch({
-            type: ActionTypes.FETCH_ITEMS_STARTED
-        });
-        this.fetchItems();
+        if (this.state.app.needFetchItems) {
+            this.dispatch({
+                type: ActionTypes.FETCH_ITEMS_STARTED
+            });
+            this.fetchItems();
+        }
     },
     componentWillReceiveProps(nextProps) {
         var state = nextProps.store.getState();

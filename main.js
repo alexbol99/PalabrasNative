@@ -10,21 +10,20 @@ var App = require('./app');
 
 const store = Redux.createStore(Reducer.reducer);
 
-export class MainComponent extends React.Component {
-    constructor() {
-        super();
+var MainComponent = React.createClass ({
+    componentWillMount() {
         this.state = store.getState();
         store.subscribe(() => {
             this.setState(store.getState());
         });
-    }
+    },
 
     render() {
         return (
             <App store={store} />
         );
     }
-}
+});
 
 var styles = StyleSheet.create({
     container: {
@@ -49,4 +48,4 @@ var styles = StyleSheet.create({
     }
 });
 
-// module.exports = MainComponent;
+module.exports = MainComponent;
