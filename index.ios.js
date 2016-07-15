@@ -5,7 +5,7 @@
 'use strict';
 
 import React from 'react';
-import { MainComponent } from './main';
+var MainComponent = require('./main');
 
 import { AppRegistry, StyleSheet, View, Text } from 'react-native';
 

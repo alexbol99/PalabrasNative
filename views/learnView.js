@@ -26,6 +26,7 @@ export const LearnView = React.createClass ({
     },
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
+        this.setState(this.props.store.getState());
     },
     componentDidMount() {
     },
@@ -63,19 +64,20 @@ export const LearnView = React.createClass ({
         this.checkMatch();
     },
     checkMatch: function() {
-        if (this.state.learnState.selectedLeftItemId == undefined || this.state.learnState.selectedRightItemId == undefined)
+        let learnState = this.props.store.getState().learnState;  // this.state not up-to-date yet
+        if (learnState.selectedLeftItemId == undefined || learnState.selectedRightItemId == undefined)
             return;
 
-        if (this.state.learnState.selectedLeftItemId == this.state.learnState.selectedRightItemId) {
-            var id = this.state.learnState.selectedLeftItemId;
-            var leftInd = this.state.learnState.leftItems.findIndex( (item) => (item.id == id) );
-            var rightInd = this.state.learnState.rightItems.findIndex( (item) => (item.id == id) );
+        if (learnState.selectedLeftItemId == learnState.selectedRightItemId) {
+            var id = learnState.selectedLeftItemId;
+            var leftInd = learnState.leftItems.findIndex( (item) => (item.id == id) );
+            var rightInd = learnState.rightItems.findIndex( (item) => (item.id == id) );
 
             if (leftInd == undefined || rightInd == undefined)
                 return;
 
-            var itemLeft = this.state.learnState.leftItems[leftInd];
-            var itemRight = this.state.learnState.rightItems[rightInd];
+            var itemLeft = learnState.leftItems[leftInd];
+            var itemRight = learnState.rightItems[rightInd];
             /*
              if (this.state.sound == "on") {
              var language = this.state.languageOnLeft;
