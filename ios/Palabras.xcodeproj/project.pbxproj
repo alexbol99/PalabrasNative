@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -25,6 +26,7 @@
 		3F41D30255CD4D7F823AC777 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6E6563753FFE404399FE8A48 /* Entypo.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		879FC42A0D674F09B6A54397 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 995DA4DE4CDD4BEC89122C47 /* EvilIcons.ttf */; };
+		8C11EA1C1D38D7A20002CDCF /* Info.plist.debug in Resources */ = {isa = PBXBuildFile; fileRef = 8C11EA1B1D38D7A20002CDCF /* Info.plist.debug */; };
 		8C739E091D0F433600B30BF5 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C739E061D0F433600B30BF5 /* FBSDKCoreKit.framework */; };
 		8C739E0A1D0F433600B30BF5 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C739E071D0F433600B30BF5 /* FBSDKLoginKit.framework */; };
 		8C739E0B1D0F433600B30BF5 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C739E081D0F433600B30BF5 /* FBSDKShareKit.framework */; };
@@ -179,6 +181,7 @@
 		8739C8C8A947499EBE9956E6 /* RNShare.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
 		8A549278F10E49019592BAAD /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		8A773E595ED945299F65EF5F /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
+		8C11EA1B1D38D7A20002CDCF /* Info.plist.debug */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Info.plist.debug; path = Palabras/Info.plist.debug; sourceTree = "<group>"; };
 		8C739E061D0F433600B30BF5 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = "../node_modules/react-native-facebook-login/FacebookSDK/FBSDKCoreKit.framework"; sourceTree = "<group>"; };
 		8C739E071D0F433600B30BF5 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = "../node_modules/react-native-facebook-login/FacebookSDK/FBSDKLoginKit.framework"; sourceTree = "<group>"; };
 		8C739E081D0F433600B30BF5 /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = "../node_modules/react-native-facebook-login/FacebookSDK/FBSDKShareKit.framework"; sourceTree = "<group>"; };
@@ -305,6 +308,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				8C11EA1B1D38D7A20002CDCF /* Info.plist.debug */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
@@ -676,6 +680,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				3F41D30255CD4D7F823AC777 /* Entypo.ttf in Resources */,
 				879FC42A0D674F09B6A54397 /* EvilIcons.ttf in Resources */,
+				8C11EA1C1D38D7A20002CDCF /* Info.plist.debug in Resources */,
 				D31C1E16C3D74CBD89BCF868 /* FontAwesome.ttf in Resources */,
 				AA22087FEB1A414F8207CC28 /* Foundation.ttf in Resources */,
 				D26A5000382F47BA8668F1CC /* Ionicons.ttf in Resources */,
@@ -805,6 +810,7 @@
 				);
 				INFOPLIST_FILE = Palabras/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -817,6 +823,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "";
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-facebook-login/FacebookSDK/**";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -829,6 +836,7 @@
 				);
 				INFOPLIST_FILE = Palabras/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",

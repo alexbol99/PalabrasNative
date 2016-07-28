@@ -12,7 +12,7 @@ export class Dictionaries extends Parse.Object {
     constructor() {
         super('Dictionaries');     // Pass the ClassName to the Parse.Object constructor
     }
-    fetch(user) {
+    static fetch(user) {
         var localQuery = new Parse.Query('Dictionaries')
             .include('language1')
             .include('language2')
@@ -21,18 +21,18 @@ export class Dictionaries extends Parse.Object {
         return localQuery.find();
     }
 
-    updateDictionary(dictionary) {
+    static updateDictionary(dictionary) {
         return dictionary.save();
     }
 
-    updateName(dictionary, name) {
+    static updateName(dictionary, name) {
         dictionary.set({
             "name": name
         });
         return dictionary.save();
     }
 
-    createEmptyDictionary (user, language1, language2) {
+    static createEmptyDictionary (user, language1, language2) {
         var dictionary = new Dictionaries();
         dictionary.set({
             "createdBy": user,
@@ -43,11 +43,11 @@ export class Dictionaries extends Parse.Object {
         return dictionary.save();
     }
 
-    deleteDictionary(dictionary) {
+    static deleteDictionary(dictionary) {
         return dictionary.destroy();
     }
 
-    findById(id) {
+    static findById(id) {
         var localQuery = new Parse.Query('Dictionaries')
             .equalTo("objectId", id)
             .include('language1')

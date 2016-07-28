@@ -11,7 +11,7 @@ export class Shares extends Parse.Object {
     constructor() {
         super('Share');     // Pass the ClassName to the Parse.Object constructor
     }
-    fetch(user) {
+    static fetch(user) {
         var localeQuery = new Parse.Query(Shares)
             .equalTo("user", user)
             .include("dictionary")
@@ -20,7 +20,7 @@ export class Shares extends Parse.Object {
         return localeQuery.find();
     }
 
-    findShares(dictionary) {
+    static findShares(dictionary) {
         var sharedQuery = new Parse.Query(Shares)
             .equalTo("dictionary", dictionary);
 
@@ -28,7 +28,7 @@ export class Shares extends Parse.Object {
     }
 
     // destroy all share records related to this dictionary
-    deleteShared(dictionary) {
+    static deleteShared(dictionary) {
         var sharedQuery = new Parse.Query(Shares)
             .equalTo("dictionary", dictionary);
 
@@ -39,7 +39,7 @@ export class Shares extends Parse.Object {
     }
 
     // add dictionary to current user shared dictionaries
-    share(user, dictionary) {
+    static share(user, dictionary) {
         if (!dictionary)
             return;
         // do not add to shared if dictionary was created by current user

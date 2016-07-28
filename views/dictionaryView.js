@@ -13,6 +13,7 @@ import * as ActionTypes from '../store/actionTypes';
 import Share from 'react-native-share';
 
 import {
+    Animated,
     ActionSheetIOS,
     StyleSheet,
     View,

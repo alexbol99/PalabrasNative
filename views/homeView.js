@@ -4,9 +4,9 @@
 import React from 'react';
 // svar HeaderComponent = require('../components/header').HeaderComponent;
 
-var Shares = require('../models/share').Shares.prototype;
-var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
-var Languages = require('../models/languages').Languages.prototype;
+var Shares = require('../models/share').Shares;
+import { Dictionaries } from '../models/dictionaries';
+import { Languages } from '../models/languages';
 var Items = require('../models/items').Items;
 
 var ActionTypes = require('../store/actionTypes.js');

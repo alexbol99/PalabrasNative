@@ -10,7 +10,7 @@ export class Languages extends Parse.Object {
     constructor() {
         super('Language');     // Pass the ClassName to the Parse.Object constructor
     }
-    fetch() {
+    static fetch() {
         var localeQuery = new Parse.Query(Languages);
         return localeQuery.find();
     }

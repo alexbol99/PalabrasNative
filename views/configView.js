@@ -6,8 +6,8 @@ var HeaderComponent = require('../components/header').HeaderComponent;
 var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
-var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
-var Shares = require('../models/share').Shares.prototype;
+var Dictionaries = require('../models/dictionaries').Dictionaries;
+var Shares = require('../models/share').Shares;
 
 import {
     Text,

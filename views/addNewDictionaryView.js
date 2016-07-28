@@ -6,7 +6,7 @@ var HeaderComponent = require('../components/header').HeaderComponent;
 var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
-var Dictionaries = require('../models/dictionaries').Dictionaries.prototype;
+var Dictionaries = require('../models/dictionaries').Dictionaries;
 
 import {
     Text,

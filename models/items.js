@@ -49,9 +49,14 @@ export class Items extends Parse.Object {
         //}
 
         // http://stackoverflow.com/questions/9640253/how-to-set-a-dynamic-property-on-a-model-with-backbone-js
-        var map = {};
+        // es6 object literal computed property
+        var map = {
+            [language1]:'',
+            [language2]:''
+        };
+        /*
         map[language1] = '';
-        map[language2] = '';
+        map[language2] = '';*/
         item.set(map);
 
         return item.save();             // save to cloud and trigger event "added" on success
