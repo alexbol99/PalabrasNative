@@ -1,4 +1,4 @@
-package com.palabras;
+package com.palabrasnuevas;
 
 import com.facebook.react.ReactActivity;
 import cl.json.RNSharePackage;
