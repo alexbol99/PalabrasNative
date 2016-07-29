@@ -15,6 +15,19 @@ import {
 // use http://fortawesome.github.io/Font-Awesome/icons/
 var Icon = require('react-native-vector-icons/FontAwesome');
 
+var Button = ({iconName, onButtonPressed}) => {
+    return (
+        <TouchableOpacity onPress={onButtonPressed} activeOpacity={1.0}>
+            <Icon
+                name={iconName}
+                size={20}
+                color={globalStyles.header.color}
+                style={styles.icon}
+            />
+        </TouchableOpacity>
+    );
+};
+
 export const DictionaryHeaderComponent = React.createClass ({
     getInitialState() {
         return {
@@ -45,14 +58,9 @@ export const DictionaryHeaderComponent = React.createClass ({
                     {this.props.dictionary.get('name') + ' (' + this.state.items.length + ')'}
                 </Text>
 
-                <TouchableOpacity onPress={this.props.onConfigButtonPressed} activeOpacity={1.0}>
-                    <Icon
-                        name='cog'
-                        size={20}
-                        color={globalStyles.header.color}
-                        style={styles.icon}
-                    />
-                </TouchableOpacity>
+                <Button iconName = 'cog'
+                        onButtonPressed = {this.props.onConfigButtonPressed}
+                />
 
                 <TouchableOpacity onPress={this.props.onShareButtonPressed} activeOpacity={1.0}>
                     <Icon

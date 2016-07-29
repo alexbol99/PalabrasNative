@@ -75,7 +75,8 @@ export const EditContentComponent = React.createClass ({
     },
     onEditItemButtonPressed() {
         /* Disable edit/delete if current user is not an owner of the document */
-        var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+        // var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+        var isOwner = true;  // allow edit/delete
 
         this.updateItem();         // before switch to "not edit" update current item in database
 
@@ -130,7 +131,8 @@ export const EditContentComponent = React.createClass ({
         if (!item) return;
 
         /* Disable edit/delete if current user is not an owner of the document */
-        var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+        // var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
+        var isOwner = true;  // allow edit/delete
 
         if (isOwner) {
             var item = this.state.editState.selectedItem;

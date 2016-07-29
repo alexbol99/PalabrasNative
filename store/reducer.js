@@ -122,6 +122,10 @@ function app(state=initialAppState, action) {
                 fetchItemsStarted: false,
                 needFetchItems: false
             });
+        case ActionTypes.SHARE_DICTIONARY_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+                needFetchData: true
+            });
         default:
             return state;
     }
@@ -326,7 +330,7 @@ function user(state = initialUserState, action) {
 
 function languages(state = [], action) {
     switch (action.type) {
-        case ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEES:
+        case ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEED:
             return action.languages;
         default:
             return state;

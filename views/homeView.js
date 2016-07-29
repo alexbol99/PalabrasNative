@@ -120,7 +120,7 @@ export const HomeView = React.createClass ({
             })
             .then( (languages) => {
                 this.dispatch({
-                    type: ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEES,
+                    type: ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEED,
                     languages: languages
                 });
                 this.dispatch({
@@ -151,7 +151,10 @@ export const HomeView = React.createClass ({
                 return Shares.share(user.parseUser, dictionary);
             })
             .then( (share) => {
-                /* do nothing */
+                /* do nothing with share but re-fetch data */
+                this.dispatch({
+                    type: ActionTypes.SHARE_DICTIONARY_REQUEST_SUCCEED
+                })
             }),
             (error) => {
                 this.dispatch({
