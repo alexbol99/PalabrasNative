@@ -16,8 +16,6 @@ const initialAppState = {
         editItem: false,
         leftSearchPopup: false,
         rightSearchPopup: false,
-        leftSearchPattern: '',
-        rightSearchPattern: ''
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -135,8 +133,6 @@ function editState(state=initialAppState.editState, action) {
             return Object.assign({}, state, {
                 leftSearchPopup: false,
                 rightSearchPopup: false,
-                leftSearchPattern: '',
-                rightSearchPattern: '',
                 sortEnabled: true
             });
         case ActionTypes.BUTTON_SORTED_BY_PRESSED:
@@ -151,14 +147,6 @@ function editState(state=initialAppState.editState, action) {
         case ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 rightSearchPopup: !state.rightSearchPopup
-            });
-        case ActionTypes.LEFT_SEARCH_PATTERN_CHANGED:
-            return Object.assign({}, state, {
-                leftSearchPattern: action.text
-            });
-        case ActionTypes.RIGHT_SEARCH_PATTERN_CHANGED:
-            return Object.assign({}, state, {
-                rightSearchPattern: action.text
             });
         case ActionTypes.SELECT_ITEM_PRESSED:
             // if none selected - select

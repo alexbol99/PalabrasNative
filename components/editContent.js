@@ -6,6 +6,7 @@
  */
 import React from 'react';
 var Items = require('../models/items').Items;
+var SearchItemPopup = require('../components/searchItemPopup').SearchItemPopup;
 
 import * as ActionTypes from '../store/actionTypes';
 
@@ -28,21 +29,6 @@ var globalStyles = require('../styles/styles').styles;
 
 var intervalId;
 
-var SearchInputPopup = ({viewStyle, inputStyle, value, onChangeText}) => {
-    return (
-        <View style={viewStyle}>
-            <TextInput
-                style={inputStyle}
-                autoCapitalize = 'none'
-                autoCorrect = {false}
-                autoFocus = {true}
-                value={value}
-                onChangeText={onChangeText}
-            />
-        </View>
-    );
-};
-
 export const EditContentComponent = React.createClass ({
     getInitialState() {
         return {
@@ -53,7 +39,10 @@ export const EditContentComponent = React.createClass ({
         this.setState(this.props.store.getState());
     },
     componentDidMount() {
-        this.scrollToItem();
+        var selectedItem = this.state.editState.selectedItem;
+        if (selectedItem) {
+            this.scrollToItem(selectedItem);
+        }
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
@@ -252,13 +241,12 @@ export const EditContentComponent = React.createClass ({
             (error) => console.log(error);
     },
     // Scroll to selected item
-    scrollToItem() {
-        var selectedItem = this.state.editState.selectedItem;
-        if (!selectedItem) return;
+    scrollToItem(targetItem) {
+        if (!targetItem) return;
 
         var scroller = this.refs.itemsList.getScrollResponder();
         var metrics = this.refs.itemsList.getMetrics();
-        var index = this.state.items.findIndex(item => item.id == selectedItem.id);
+        var index = this.state.items.findIndex(item => item.id == targetItem.id);
         if (metrics && metrics.contentLength &&
             metrics.contentLength > 0 && metrics.renderedRows > 0) {
             var y = (metrics.contentLength / metrics.renderedRows) * index - 100;
@@ -268,26 +256,44 @@ export const EditContentComponent = React.createClass ({
         }
     },
     onLeftSearchButtonPressed() {
+        this.props.onLeftSortButtonPressed();  // force sort before search
         this.dispatch({
             type: ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED
         })
     },
     onRightSearchButtonPressed() {
+        this.props.onRightSortButtonPressed(); // force sort before search
         this.dispatch({
             type: ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED
         })
     },
     leftSearchPatternChanged({text}) {
-        this.dispatch({
-            type: ActionTypes.LEFT_SEARCH_PATTERN_CHANGED,
-            text: text
+        if (text == "") return;
+        var leftSearchPattern = text;
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        var targetItem = this.state.items.find( (item) => {
+            if (item.get(langLeft) !== undefined && item.get(langLeft).indexOf(leftSearchPattern) == 0) {
+                return true;
+            }
+            return false;
         });
+
+        this.scrollToItem(targetItem);
+
     },
     rightSearchPatternChanged({text}) {
-        this.dispatch({
-            type: ActionTypes.RIGHT_SEARCH_PATTERN_CHANGED,
-            text: text
+        if (text == "") return;
+        var rightSearchPattern = text;
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var targetItem = this.state.items.find( (item) => {
+            if (item.get(langRight) !== undefined && item.get(langRight).indexOf(rightSearchPattern) == 0) {
+                return true;
+            }
+            return false;
         });
+
+        this.scrollToItem(targetItem);
+
     },
     renderHeader() {
         var langLeft = this.state.app.currentDictionary.get('language1').get('localName');   // "spanish";
@@ -487,9 +493,11 @@ export const EditContentComponent = React.createClass ({
             sortedItems = this.state.items.slice();
         }
 
-        var leftSearchPattern = this.state.editState.leftSearchPattern;
-        var rightSearchPattern = this.state.editState.rightSearchPattern;
+        //var leftSearchPattern = this.state.editState.leftSearchPattern;
+        //var rightSearchPattern = this.state.editState.rightSearchPattern;
 
+        filteredItems = sortedItems.slice();
+        /*
         var filteredItems = sortedItems.filter( (item) => {
             if (item.get(langLeft) !== undefined && item.get(langLeft).indexOf(leftSearchPattern) == 0 &&
                 item.get(langRight) !== undefined && item.get(langRight).indexOf(rightSearchPattern) == 0) {
@@ -497,7 +505,7 @@ export const EditContentComponent = React.createClass ({
             }
             return false;
         });
-
+*/
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(filteredItems);
 
@@ -507,18 +515,16 @@ export const EditContentComponent = React.createClass ({
             [];*/
 
         var leftSearchPopup = this.state.editState.leftSearchPopup ? (
-            <SearchInputPopup
-                viewStyle = {[styles.searchPopup, styles.leftSearchPopup]}
-                inputStyle = {[styles.searchPatternInput]}
+            <SearchItemPopup
+                viewStyle = {styles.leftSearchPopup}
                 value={this.state.editState.leftSearchPattern}
                 onChangeText={(text) => this.leftSearchPatternChanged({text})}
             />
         ) : null;
 
         var rightSearchPopup = this.state.editState.rightSearchPopup ? (
-            <SearchInputPopup
-                viewStyle = {[styles.searchPopup, styles.rightSearchPopup]}
-                inputStyle = {[styles.searchPatternInput]}
+            <SearchItemPopup
+                viewStyle = {styles.rightSearchPopup}
                 value={this.state.editState.rightSearchPattern}
                 onChangeText={(text) => this.rightSearchPatternChanged({text})}
             />
@@ -651,36 +657,6 @@ var styles = StyleSheet.create({
     rightSearchPopup: {
         left: 220,
     },
-    searchPopup: {
-        position: 'absolute',
-        top: 80,
-        width: 100,
-        height: 45,
-        alignItems: 'center',
-        /*borderWidth: 1,
-        elevation: 1,
-        shadowColor:'darkgray',
-        borderColor: '#81c04d',
-        shadowOpacity: 0.8,
-        shadowOffset: {
-            height:0,
-            width:0
-        }*/
-    },
-    searchPatternInput: {
-        /*position: 'absolute',
-        top: 80,
-        width: 100,*/
-        height: 40,
-        marginLeft:2,
-        marginRight:2,
-        paddingLeft:5,
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#81c04d',
-        textAlignVertical: 'center',
-        elevation: 5,
-    }
 });
 
 /*
