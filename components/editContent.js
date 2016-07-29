@@ -251,7 +251,7 @@ export const EditContentComponent = React.createClass ({
         var index = this.state.items.findIndex(item => item.id == targetItem.id);
         if (metrics && metrics.contentLength &&
             metrics.contentLength > 0 && metrics.renderedRows > 0) {
-            var y = (metrics.contentLength / metrics.renderedRows) * index - 100;
+            var y = (metrics.contentLength / metrics.renderedRows) * index;
             // var y = Math.max(47 * index - 100, 0);
 
             scroller.scrollTo({x: 0, y: y, animated: true})
