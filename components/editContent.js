@@ -7,6 +7,7 @@
 import React from 'react';
 var Items = require('../models/items').Items;
 var SearchItemPopup = require('../components/searchItemPopup').SearchItemPopup;
+// var googleTranslate = require('google-translate')(AIzaSyDBPG8spZ7NXjOuiljdt_WBwetnyWShfR4);
 
 import * as ActionTypes from '../store/actionTypes';
 
@@ -99,20 +100,66 @@ export const EditContentComponent = React.createClass ({
     itemLeftChanged({value}) {
         var item = this.state.editState.selectedItem;
         var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+
         item.set(langLeft, value);     // update state but don't save while editing not finished
+
         this.dispatch({
             type: ActionTypes.ITEM_CHANGED,
             item: item
         });
+
+        // go google translate
+        var source = this.state.app.currentDictionary.get('language1').get('lcid').substr(0,2);
+        var target = this.state.app.currentDictionary.get('language2').get('lcid').substr(0,2);
+        this.googleTranslate(value, source, target)
+            .then((response) => response.json())
+            .then((responseJson) => {
+
+                var translatedValue = responseJson.data.translations[0].translatedText;
+                item.set(langRight, translatedValue);     // update state but don't save while editing not finished
+
+                this.dispatch({
+                    type: ActionTypes.ITEM_CHANGED,
+                    item: item
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
     },
     itemRightChanged({value}) {
         var item = this.state.editState.selectedItem;
+        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
         var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+
         item.set(langRight, value);     // update state but don't save while editing not finished
         this.dispatch({
             type: ActionTypes.ITEM_CHANGED,
             item: item
         });
+
+        // go google translate
+        var source = this.state.app.currentDictionary.get('language2').get('lcid').substr(0,2);
+        var target = this.state.app.currentDictionary.get('language1').get('lcid').substr(0,2);
+        this.googleTranslate(value, source, target)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                // return responseJson.movies;
+                var translatedValue = responseJson.data.translations[0].translatedText;
+                item.set(langLeft, translatedValue);     // update state but don't save while editing not finished
+
+                this.dispatch({
+                    type: ActionTypes.ITEM_CHANGED,
+                    item: item
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
+
     },
     itemChangeDone() {
         var item = this.state.editState.selectedItem;
@@ -125,6 +172,13 @@ export const EditContentComponent = React.createClass ({
             (error) => {
                 alert("Problems with connection to server");
             }
+    },
+    googleTranslate(value,source,target) {
+        const url = 'https://www.googleapis.com/language/translate/v2';
+        const apiKey = 'AIzaSyDBPG8spZ7NXjOuiljdt_WBwetnyWShfR4';
+        const urlString = `${url}?key=${apiKey}&q=${value}&source=${source}&target=${target}`;
+        // fetch('https://www.googleapis.com/language/translate/v2?key=AIzaSyDBPG8spZ7NXjOuiljdt_WBwetnyWShfR4&q=hello%20world&source=en&target=de')
+        return fetch(urlString)
     },
     onDeleteItemButtonPressed() {
         var item = this.state.editState.selectedItem;

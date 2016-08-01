@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "parse": "^1.6.14",
+    "query-string": "^4.2.2",
     "react": "^15.1.0",
     "react-native": "^0.27.2",
     "react-native-facebook-login": "^1.0.3",
