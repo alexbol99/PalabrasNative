@@ -16,6 +16,7 @@ const initialAppState = {
         editItem: false,
         leftSearchPopup: false,
         rightSearchPopup: false,
+        autotranslate: true,
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -187,6 +188,10 @@ function editState(state=initialAppState.editState, action) {
             return Object.assign({}, state, {
                 sortEnabled: true
             });*/
+        case ActionTypes.AUTO_TRANSLATE_SWITCH_TOGGLED:
+            return Object.assign({}, state, {
+                autotranslate: !state.autotranslate
+            });
         default:
             return state;
     }

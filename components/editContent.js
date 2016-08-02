@@ -109,6 +109,8 @@ export const EditContentComponent = React.createClass ({
             item: item
         });
 
+        if (!this.state.editState.autotranslate) return;   // auto translate disabled
+
         // go google translate
         var source = this.state.app.currentDictionary.get('language1').get('lcid').substr(0,2);
         var target = this.state.app.currentDictionary.get('language2').get('lcid').substr(0,2);
@@ -139,6 +141,8 @@ export const EditContentComponent = React.createClass ({
             type: ActionTypes.ITEM_CHANGED,
             item: item
         });
+
+        if (!this.state.editState.autotranslate) return;   // auto translate disabled
 
         // go google translate
         var source = this.state.app.currentDictionary.get('language2').get('lcid').substr(0,2);

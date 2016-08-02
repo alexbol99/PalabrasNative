@@ -17,7 +17,8 @@ import {
     TextInput,
     Platform,
     BackAndroid,
-    Alert
+    Alert,
+    Switch
     } from 'react-native';
 
 export const ConfigView = React.createClass ({
@@ -129,6 +130,11 @@ export const ConfigView = React.createClass ({
             type: ActionTypes.DELETE_DICTIONARY_BUTTON_PRESSED
         });
     },
+    toggleAutoTranslate() {
+        this.dispatch({
+            type: ActionTypes.AUTO_TRANSLATE_SWITCH_TOGGLED
+        })
+    },
     render() {
         return (
             <View style={styles.container}>
@@ -141,6 +147,9 @@ export const ConfigView = React.createClass ({
                 <View style={styles.content}>
 
                     {/* Edit Directory Name */}
+                    <Text style={[styles.label, {marginLeft: 10, marginTop: 10}]}>
+                        Name:
+                    </Text>
                     <TextInput
                         ref='1'
                         style={styles.input}
@@ -154,7 +163,7 @@ export const ConfigView = React.createClass ({
                     {/* First Language not editable */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
-                            1st language
+                            First language:
                         </Text>
                         <TextInput
                             style={styles.inputOtherNotEditable}
@@ -169,7 +178,7 @@ export const ConfigView = React.createClass ({
                     {/* Second Language not editable */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
-                            2nd language
+                            Second language:
                         </Text>
                         <TextInput
                             style={styles.inputOtherNotEditable}
@@ -181,8 +190,20 @@ export const ConfigView = React.createClass ({
                         />
                     </View>
 
+                    {/*AutoTranslate Switch*/}
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>
+                            Auto translate:
+                        </Text>
+                        <Switch
+                            onValueChange={(value) => this.toggleAutoTranslate()}
+                            style={{marginBottom: 10, alignSelf: 'flex-end'}}
+                            value={this.state.editState.autotranslate}
+                        />
+                    </View>
+
                     {/* Edit Learn More */}
-                    <Text style={styles.labelName}>
+                    <Text style={[styles.label, {marginLeft: 10}]}>
                         Learn more:
                     </Text>
                     <TextInput
@@ -227,7 +248,7 @@ var styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
         flexDirection:'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     label: {
         flex:1,

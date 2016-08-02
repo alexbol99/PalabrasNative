@@ -293,7 +293,7 @@ export const HomeView = React.createClass ({
 
         var content = this.state.dictionaries.length == 0 ? (
             <Text style={styles.description}>
-                Palabras - learn new words
+                Press plus button to add new dictionary
             </Text>
         ) : (
             <ListView ref="dictionariesList"
@@ -318,12 +318,6 @@ export const HomeView = React.createClass ({
                         {/*this.state.ajaxState*/}
                         Connecting to server ...
                     </Text>
-                    <Icon
-                        name='spinner'
-                        size={50}
-                        color='darkgray'
-                        style={styles.spinner}
-                    />
                 </View>
             );
         }
@@ -476,3 +470,12 @@ var styles = StyleSheet.create({
  */
 
 /* module.exports = HomeView; */
+
+/*
+<Icon
+    name='spinner'
+    size={50}
+    color='darkgray'
+    style={styles.spinner}
+/>
+*/
