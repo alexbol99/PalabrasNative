@@ -1,6 +1,7 @@
 /**
  * Created by alexanderbol on 30/01/2016.
  */
+/* CHANGED BY SWIPER */
 import React from 'react';
 var globalStyles = require('../styles/styles').styles;
 import {

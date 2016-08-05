@@ -12,6 +12,7 @@
     "react-native-facebook-login": "^1.0.3",
     "react-native-share": "^1.0.11",
     "react-native-speech": "^0.1.2",
+    "react-native-swiper": "^1.4.8",
     "react-native-vector-icons": "^2.0.3",
     "react-redux": "^4.4.5",
     "redux": "^3.0.5"

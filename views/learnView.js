@@ -40,6 +40,8 @@ export const LearnView = React.createClass ({
         this.setState(state);
     },
     refreshLearnItems() {
+        if (this.state.items.length == 0) return;
+
         var {leftItems, rightItems} =
             Items.prototype.getLearnItems(this.state.items, this.state.learnState.maxNumLearnItems);
 

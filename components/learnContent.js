@@ -73,6 +73,7 @@ export const LearnContentComponent = React.createClass ({
                     dataSource={dataSource}
                     initialListSize = {20}
                     renderRow={(item) => this.renderRow(item)}
+                    enableEmptySections = {true}
                 />
             </View>
         );
@@ -85,7 +86,9 @@ var styles = StyleSheet.create({
         backgroundColor: globalStyles.content.backgroundColor,
     },
     itemContainer: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginLeft:3,
+        marginRight:3
     },
     item: {
         flex:1,
@@ -107,36 +110,10 @@ var styles = StyleSheet.create({
     },
     text: {
         paddingHorizontal: 10,
-        paddingVertical: 15,
+        paddingVertical: 10,
         textAlign:'left',
         fontSize: 20,
 
     }
 });
 
-/*
- var styles = StyleSheet.create({
- container: {
- padding:30,
- marginTop: 65,
- alignItems:'center'
- },
- image: {
- width: 217,
- height: 138
- },
- searchInput: {
- height: 36,
- padding: 4,
- marginRight: 5,
- flex: 4,
- fontSize: 18,
- borderWidth: 1,
- borderColor: '#48BBEC',
- borderRadius: 8,
- color: '#48BBEC'
- }
- });
- */
-
-/* module.exports = HomeView; */

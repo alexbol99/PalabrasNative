@@ -24,7 +24,7 @@ const initialAppState = {
         rightItems: [],
         selectedLeftItemId: undefined,
         selectedRightItemId: undefined,
-        itemsToBeRefreshed: false
+        itemsToBeRefreshed: true
     },
     needFetchData: true,
     needFetchItems: true,

@@ -2,9 +2,11 @@
  * Created by alexanderbol on 21/01/2016.
  */
 import React from 'react';
+var Swiper = require('react-native-swiper');
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 var DictionaryHeaderComponent = require('../components/dictionaryHeader').DictionaryHeaderComponent;
-var FooterComponent = require('../components/dictionaryFooter').FooterComponent;
+// var FooterComponent = require('../components/dictionaryFooter').FooterComponent;
 var EditView = require('../views/editView').EditView;
 var LearnView = require('../views/learnView').LearnView;
 var Items = require('../models/items').Items;
@@ -18,9 +20,32 @@ import {
     StyleSheet,
     View,
     Platform,
-    BackAndroid
+    BackAndroid,
+    Text
     } from 'react-native';
 
+const LearnButton = () => {
+    return (
+        <View style={styles.swiperButton}>
+            <Icon
+                name='hand-o-right'
+                size={20}
+                color='#81c04d'
+            />
+        </View>
+    );
+};
+const EditButton = () => {
+    return (
+        <View style={styles.swiperButton}>
+            <Icon
+                name='hand-o-left'
+                size={20}
+                color='#81c04d'
+            />
+        </View>
+    );
+};
 export const DictionaryView = React.createClass ({
     getInitialState() {
         return {
@@ -142,12 +167,23 @@ export const DictionaryView = React.createClass ({
             rightItems: rightItems
         });
     },
+    _onMomentumScrollEnd(e, state, context) {
+        // console.log(state, context.state)
+        if (state.index == 0) {
+            this.setEditMode();
+        }
+        else {
+            this.setLearnMode();
+        }
+    },
     render() {
+        /*
         var viewInstance = this.state.app.mode == 'edit' ? (
             <EditView {... this.props} />
         ) : (
             <LearnView { ... this.props} />
         );
+        */
         return (
             <View style={{flex:1, flexDirection:'column'}}>
                 <DictionaryHeaderComponent
@@ -158,16 +194,31 @@ export const DictionaryView = React.createClass ({
                     onShareButtonPressed = {this.onShareButtonPressed}
                 />
 
-                {viewInstance}
+                <Swiper
+                    showsButtons = {true}
+                    nextButton = {<LearnButton />}
+                    prevButton = {<EditButton />}
+                    loop = {false}
+                    onMomentumScrollEnd ={this._onMomentumScrollEnd}
+                >
+                    <EditView {... this.props} />
+                    <LearnView { ... this.props} />
+                </Swiper>
 
-                <FooterComponent
-                    onEditButtonPressed = {this.setEditMode}
-                    onLearnButtonPressed = {this.setLearnMode}
-                />
+
             </View>
         );
     }
 });
+
+/* {viewInstance} */
+
+/*
+ <FooterComponent
+ onEditButtonPressed = {this.setEditMode}
+ onLearnButtonPressed = {this.setLearnMode}
+ />
+ */
 
 var styles = StyleSheet.create({
     headerContainer: {
@@ -178,17 +229,22 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    footerContainer: {
-        flex: 1,
-        flexDirection:'row',
-        /*
-         position:'absolute',
-         left:0,
-         bottom:30,
-         */
-
-        backgroundColor: '#81c04d',
-        borderTopWidth: 1
+    swiperButton: {
+        flex:1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 5,
+        borderWidth: 1,
+        borderColor: 'chartreuse',
+        borderRadius: 10,
+        backgroundColor: '#ffffff'
+    },
+    swiperButtonText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#81c04d',
+        /*color: '#ffffff',*/
+        transform: [{ rotate: '90deg'}]
     }
 
 });
