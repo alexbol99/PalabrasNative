@@ -3,6 +3,7 @@
  */
 import React from 'react';
 var globalStyles = require('../styles/styles').styles;
+var Icon = require('react-native-vector-icons/FontAwesome');
 
 import {
     Text,
@@ -24,6 +25,12 @@ export const SearchItemPopup = React.createClass({
         });
         this.props.onChangeText(text);
     },
+    cleanText() {
+        this.setState({
+            value: ''
+        })
+
+    },
     render()
     {
         return (
@@ -36,6 +43,27 @@ export const SearchItemPopup = React.createClass({
                     value={this.state.value}
                     onChangeText={(text) => this.onChange({text})}
                 />
+                {this.state.value.length == 0 ? (
+                    <Icon
+                        name='search'
+                        size={14}
+                        color='#81c04d'
+                        style={styles.icon}
+                    />) : null
+                }
+                {this.state.value.length != 0 ? (
+                    <TouchableOpacity
+                        style={styles.iconClean}
+                        activeOpacity={1.0}
+                        onPress={this.cleanText}
+                    >
+                        <Icon
+                            name='times'
+                            size={14}
+                            color='#81c04d'
+                        />
+                    </TouchableOpacity>) : null
+                }
             </View>
         );
     }
@@ -45,31 +73,29 @@ var styles = StyleSheet.create({
     searchPopup: {
         position: 'absolute',
         top: 80,
-        width: 100,
-        height: 45,
-        alignItems: 'center',
-        /*borderWidth: 1,
-         elevation: 1,
-         shadowColor:'darkgray',
-         borderColor: '#81c04d',
-         shadowOpacity: 0.8,
-         shadowOffset: {
-         height:0,
-         width:0
-         }*/
+        justifyContent: 'center',
     },
     searchPatternInput: {
-        /*position: 'absolute',
-         top: 80,
-         width: 100,*/
-        height: 40,
-        marginLeft:2,
-        marginRight:2,
-        paddingLeft:5,
+        width: 120,
+        height: 24,
         backgroundColor: 'white',
         borderWidth: 1,
         borderColor: '#81c04d',
+        borderRadius: 4,
         textAlignVertical: 'center',
+        padding: 4,
         elevation: 5,
+    },
+    icon: {
+        position: 'absolute',
+        top: 4,
+        marginLeft: 4,
+        opacity: 0.75,
+    },
+    iconClean: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        marginRight: 4,
     }
 });

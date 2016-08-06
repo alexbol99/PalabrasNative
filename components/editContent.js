@@ -74,6 +74,12 @@ export const EditContentComponent = React.createClass ({
             item: item
         });
     },
+    forceEditItem(item) {
+        this.dispatch({
+            type: ActionTypes.FORCE_EDIT_ITEM_PRESSED,
+            item: item
+        });
+    },
     onEditItemButtonPressed() {
         /* Disable edit/delete if current user is not an owner of the document */
         // var isOwner = this.state.user.parseUser.id === this.state.app.currentDictionary.get('createdBy').id;
@@ -505,7 +511,8 @@ export const EditContentComponent = React.createClass ({
         return (
             <TouchableOpacity
                 activeOpacity={1.0}
-                onPress={() => this.toggleSelectItem(item)}>
+                onPress={() => this.toggleSelectItem(item)}
+                onLongPress={() => this.forceEditItem(item)}>
                 {
                     this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id &&
                     this.state.editState.editItem ? (
