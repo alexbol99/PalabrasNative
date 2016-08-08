@@ -1,14 +1,14 @@
 /**
  * Created by alexanderbol on 21/01/2016.
  */
-
 var Platform = require('react-native').Platform;
 if (Platform.OS === 'android') {
-    var Speech = require('react-native-android-speech')
+    var Speech = require('react-native-android-speech');
 }
 else {
     var Speech = require('react-native-speech');
 }
+
 var Parse = require('parse/react-native');
 
 // Parse.initialize("nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H", "IDxfUbmW9AIn7iej2PAC7FtDAO1KvSdPuqP18iyu");

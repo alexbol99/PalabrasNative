@@ -84,8 +84,8 @@ android {
         applicationId "com.palabrasnuevas"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.02 Beta"
+        versionCode 4
+        versionName "1.03 Beta"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }

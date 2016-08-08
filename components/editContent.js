@@ -57,9 +57,11 @@ export const EditContentComponent = React.createClass ({
         if (item && itemEdited) {
             Items.prototype.updateItem(item)         // save item in db and enable sorting
                 .then((item) => {
+                    this.scrollToItem(item);
+                    /*
                     this.dispatch({
                         type: ActionTypes.ITEM_CHANGE_DONE
-                    })
+                    })*/
                 }),
                 (error) => {
                     alert("Problems with connection to server");
@@ -309,6 +311,7 @@ export const EditContentComponent = React.createClass ({
     // Scroll to selected item
     scrollToItem(targetItem) {
         if (!targetItem) return;
+        if (!this.refs.itemsList) return;
 
         var scroller = this.refs.itemsList.getScrollResponder();
         var metrics = this.refs.itemsList.getMetrics();

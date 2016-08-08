@@ -77,7 +77,7 @@ var styles = StyleSheet.create({
     },
     searchPatternInput: {
         width: 120,
-        height: 24,
+        height: 34,
         backgroundColor: 'white',
         borderWidth: 1,
         borderColor: '#81c04d',
@@ -88,13 +88,13 @@ var styles = StyleSheet.create({
     },
     icon: {
         position: 'absolute',
-        top: 4,
+        top: 8,
         marginLeft: 4,
         opacity: 0.75,
     },
     iconClean: {
         position: 'absolute',
-        top: 4,
+        top: 8,
         right: 4,
         marginRight: 4,
     }

@@ -125,6 +125,15 @@ export const HomeView = React.createClass ({
                 });
                 this.dispatch({
                     type:ActionTypes.AJAX_REQUEST_RESET
+                });
+                // Get available locales for text-to-speech
+                return Languages.getLocales()
+            })
+            .then((locales) => {
+                // alert(locales);
+                this.dispatch({
+                    type: ActionTypes.TTS_LOCALES_REQUEST_SUCCEED,
+                    locales: locales
                 })
             }),
 

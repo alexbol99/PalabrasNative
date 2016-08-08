@@ -7,6 +7,7 @@ var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
 var Dictionaries = require('../models/dictionaries').Dictionaries;
+import { Languages } from '../models/languages';
 
 import {
     Text,
@@ -80,12 +81,22 @@ export const AddNewDictionaryView = React.createClass ({
         var language = this.state.languages.find( (language_tmp) => (language_tmp.get('name') == name) );
         dictionary.set('language1', language);
         this.updateDictionary(dictionary);
+
+        //var isSpeechSupported = Languages.isSpeechSupported(language, this.state.app.locales);
+        //if (!isSpeechSupported) {
+        //    alert(`Your smartphone does not support text to speech for ${name} language`);
+        //}
     },
     language2Selected({name}) {
         var dictionary = this.state.app.currentDictionary;
         var language = this.state.languages.find( (language_tmp) => (language_tmp.get('name') == name) );
         dictionary.set('language2', language);
         this.updateDictionary(dictionary);
+
+        //var isSpeechSupported = Languages.isSpeechSupported(language, this.state.app.locales);
+        //if (!isSpeechSupported) {
+        //    alert(`Your smartphone does not support text to speech for ${name} language`);
+        //}
     },
     learnMoreChanged({url}) {
         var dictionary = this.state.app.currentDictionary;

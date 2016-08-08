@@ -9,6 +9,13 @@ const initialAppState = {
     currentDictionary: '',
     mode: 'edit',
     showHomeMenu: false,
+    needFetchData: true,
+    needFetchItems: true,
+    numItemsInPage: 100,
+    numItemsToSkip: 0,
+    fetchItemsStarted: false,
+    itemsParse: undefined,    /* Parse Object represented correspondent Parse document */
+    locales: [],
     editState: {
         sortEnabled: true,
         sortedBy: 'leftLanguage',
@@ -26,12 +33,6 @@ const initialAppState = {
         selectedRightItemId: undefined,
         itemsToBeRefreshed: true
     },
-    needFetchData: true,
-    needFetchItems: true,
-    numItemsInPage: 100,
-    numItemsToSkip: 0,
-    fetchItemsStarted: false,
-    itemsParse: undefined     /* Parse Object represented correspondent Parse document */
 };
 
 const initialUserState = {
@@ -126,6 +127,10 @@ function app(state=initialAppState, action) {
         case ActionTypes.SHARE_DICTIONARY_REQUEST_SUCCEED:
             return Object.assign({}, state, {
                 needFetchData: true
+            });
+        case ActionTypes.TTS_LOCALES_REQUEST_SUCCEED:
+            return Object.assign({}, state, {
+                locales: action.locales
             });
         default:
             return state;
