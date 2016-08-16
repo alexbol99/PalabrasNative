@@ -128,7 +128,7 @@ export const AddNewDictionaryView = React.createClass ({
                     {/* Select First Language */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
-                            First language:
+                            My language:
                         </Text>
                         <Picker style={{flex:1}}
                                 selectedValue={this.state.app.currentDictionary.get('language1').get('name')}
@@ -146,7 +146,7 @@ export const AddNewDictionaryView = React.createClass ({
                     {/* Select Second Language */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
-                            Second language:
+                            Language I learn:
                         </Text>
                         <Picker style={{flex:1}}
                                 selectedValue={this.state.app.currentDictionary.get('language2').get('name')}

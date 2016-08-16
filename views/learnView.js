@@ -86,11 +86,14 @@ export const LearnView = React.createClass ({
              itemLeft.sayIt(this.state.languageOnLeft, this.state.languageOnRight);           // "spanish");
              }
              */
-            this.dispatch({
-                type: ActionTypes.ITEMS_MATCHED,
-                leftInd: leftInd,
-                rightInd: rightInd
-            });
+            // timeout for fade out
+            var intervalId = setTimeout(() => {
+                this.dispatch({
+                    type: ActionTypes.ITEMS_MATCHED,
+                    leftInd: leftInd,
+                    rightInd: rightInd
+                });
+            }, 500);
         }
     },
     render() {
@@ -100,6 +103,7 @@ export const LearnView = React.createClass ({
                 <ContentComponent {... this.props}
                     onLeftItemSelected = {this.toggleLeftItemSelected}
                     onRightItemSelected = {this.toggleRightItemSelected}
+                    onItemFadedOut = {this.removeItemsFromList}
                     dictionary = {state.app.currentDictionary}
                     learnState = {state.learnState}
                     leftItems = {state.learnState.leftItems}

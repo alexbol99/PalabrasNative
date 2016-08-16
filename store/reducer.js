@@ -240,7 +240,9 @@ function learnState(state=initialAppState.learnState, action) {
                 rightItems: state.rightItems
                     .slice(0, action.rightInd)
                     .concat(state.rightItems.slice(action.rightInd+1)),
-                itemsToBeRefreshed: itemsToBeRefreshed
+                itemsToBeRefreshed: itemsToBeRefreshed,
+                selectedLeftItemId: undefined,
+                selectedRightItemId: undefined
             });
         default:
             return state;

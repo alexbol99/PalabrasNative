@@ -186,7 +186,7 @@ export const LoginView = React.createClass({
                         Palabras
                     </Text>
                     <Text style={[styles.subtitle]}>
-                        My personal dictionaries
+                        My personal dictionary
                     </Text>
 
                     {/*Login with Facebook button*/}

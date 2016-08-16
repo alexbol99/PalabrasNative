@@ -237,14 +237,14 @@ var styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'chartreuse',
         borderRadius: 10,
-        backgroundColor: '#ffffff'
+        backgroundColor: 'transparent',
     },
     swiperButtonText: {
         fontSize: 20,
         fontWeight: 'bold',
         color: '#81c04d',
         /*color: '#ffffff',*/
-        transform: [{ rotate: '90deg'}]
+        transform: [{ rotate: '90deg'}],
     }
 
 });

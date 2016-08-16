@@ -12,11 +12,59 @@ import {
     StyleSheet,
     View,
     ListView,
-    TouchableOpacity
+    TouchableOpacity,
+    Animated
     } from 'react-native';
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
 var Icon = require('react-native-vector-icons/FontAwesome');
+
+const ItemComponent = React.createClass({
+    getInitialState() {
+        return {
+            fadeAnim: new Animated.Value(1.0)
+        };
+    },
+    componentDidMount() {
+        //this.state.fadeAnim.addListener( (fadeAnim) =>{
+        //    if (fadeAnim.value == 0.4) {
+        //        if (this.props.onItemFadedOut) {
+        //            this.props.onItemFadedOut();
+        //        }
+        //    }
+        //}, this);
+    },
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.matched) {
+            this.startAnimation();
+        }
+        else {
+            this.state.fadeAnim.setValue(1.0);
+        }
+    },
+    startAnimation() {
+        Animated.timing(            // Uses easing functions
+            this.state.fadeAnim,    // The value to drive
+            {toValue: 0.1}          // Configuration
+        ).start();                  // Don't forget start!
+    },
+    render() {
+        let itemStyle = this.props.selected ? styles.itemSelected : styles.item;
+        return (
+            <Animated.View
+                style={[itemStyle, {opacity: this.state.fadeAnim}]}
+            >
+                <TouchableOpacity
+                    activeOpacity={1.0}
+                    onPress = {this.props.onPress}>
+                    <Text style={styles.text}>
+                        {this.props.text}
+                    </Text>
+                </TouchableOpacity>
+            </Animated.View>
+        )
+    }
+});
 
 export const LearnContentComponent = React.createClass ({
     getInitialState() {
@@ -26,28 +74,25 @@ export const LearnContentComponent = React.createClass ({
     renderRow(item) {
         var langLeft = this.props.dictionary.get('language1').get('name');   // "spanish";
         var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
-        var leftStyle = this.props.learnState.selectedLeftItemId == item.left.id ? styles.itemSelected : styles.item;
-        var rightStyle = this.props.learnState.selectedRightItemId == item.right.id ? styles.itemSelected : styles.item;
-
+        let learnState = this.props.learnState;
+        let leftSelected = learnState.selectedLeftItemId == item.left.id;
+        let rightSelected = learnState.selectedRightItemId == item.right.id;
+        let matched = learnState.selectedLeftItemId == learnState.selectedRightItemId;
         return (
-            <View style={styles.itemContainer}>
-                <TouchableOpacity
-                    style={leftStyle}
-                    activeOpacity={1.0}
-                    onPress = {() => this.props.onLeftItemSelected(item.left.id)}>
-                     <Text style={styles.text}>
-                        {item.left.get(langLeft)}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={rightStyle}
-                    activeOpacity={1.0}
-                    onPress = {() => this.props.onRightItemSelected(item.right.id)}>
-                    <Text style={styles.text}>
-                        {item.right.get(langRight)}
-                    </Text>
-                </TouchableOpacity>
+            <View
+                style={styles.itemContainer}>
+                <ItemComponent
+                    text = {item.left.get(langLeft)}
+                    selected = {leftSelected}
+                    matched = {leftSelected && matched}
+                    onPress = {() => this.props.onLeftItemSelected(item.left.id)}
+                />
+                <ItemComponent
+                    text = {item.right.get(langRight)}
+                    selected = {rightSelected}
+                    matched = {rightSelected && matched}
+                    onPress = {() => this.props.onRightItemSelected(item.right.id)}
+                />
             </View>
 
         )
@@ -68,14 +113,15 @@ export const LearnContentComponent = React.createClass ({
         var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
 
         return (
-            <View style={styles.contentContainer}>
+            <Animated.View
+                style={[styles.contentContainer, {opacity: this.state.fadeAnim}]}>
                 <ListView
                     dataSource={dataSource}
                     initialListSize = {20}
                     renderRow={(item) => this.renderRow(item)}
                     enableEmptySections = {true}
                 />
-            </View>
+            </Animated.View>
         );
     }
 });

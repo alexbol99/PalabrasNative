@@ -139,7 +139,7 @@ export const ConfigView = React.createClass ({
         return (
             <View style={styles.container}>
                 <HeaderComponent
-                    title="Config"
+                    title="Settings"
                     onBackButtonPressed={this.backToDictionaryView}
                 />
 
