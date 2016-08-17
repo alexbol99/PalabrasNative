@@ -2,7 +2,7 @@
  * Created by alexanderbol on 28/02/2016.
  */
 import React from 'react';
-var HeaderComponent = require('../components/header').HeaderComponent;
+var AddNewDictionaryHeaderComponent = require('../components/addNewDictionaryHeader').AddNewDictionaryHeaderComponent;
 var globalStyles = require('../styles/styles').styles;
 import * as ActionTypes from '../store/actionTypes';
 
@@ -13,11 +13,11 @@ import {
     Text,
     StyleSheet,
     View,
-    TouchableHighlight,
     TextInput,
     Picker,
     Platform,
-    BackAndroid
+    BackAndroid,
+    Alert
     } from 'react-native';
 
 // var Item = PickerIOS.Item;
@@ -25,6 +25,7 @@ import {
 export const AddNewDictionaryView = React.createClass ({
     getInitialState() {
         return {
+            localDictionary: new Dictionaries()
         }
     },
     componentWillMount() {
@@ -39,6 +40,9 @@ export const AddNewDictionaryView = React.createClass ({
         if (Platform.OS === 'android') {
             BackAndroid.addEventListener('hardwareBackPress', this.backToDictionaryView);
         }
+        this.setState({
+            localDictionary: new Dictionaries(this.state.user.parseUser)
+        });
     },
     componentWillUnmount() {
         if (Platform.OS === 'android') {
@@ -46,41 +50,45 @@ export const AddNewDictionaryView = React.createClass ({
         }
     },
     backToDictionaryView() {
+        if (!this.validateSaved()) return;
         this.dispatch({
-            type: ActionTypes.BACK_HOME_BUTTON_PRESSED
+            type: ActionTypes.BACK_HOME_BUTTON_PRESSED,
+            needFetchData: true
         });
-        return true;
     },
-    _focusNextField(nextField) {
-        this.refs[nextField].focus()
+    saveDictionary() {
+        if (!this.validateNameNotEmpty()) return;
+        if (!this.validateLanguage1NotEmpty()) return;
+        if (!this.validateLanguage2NotEmpty()) return;
+        if (!this.validateLanguagesAreDifferent()) return;
+
+        this.updateDictionary();
     },
     /* Update database and state */
-    updateDictionary(dictionary) {
-        this.dispatch({
-            type: ActionTypes.DICTIONARY_UPDATED,
-            dictionary: dictionary
-        });
-        Dictionaries.updateDictionary(dictionary).then(
-            (dictionary) => {/*
+    updateDictionary() {
+        Dictionaries.updateDictionary(this.state.localDictionary).then(
+            (dictionary) => {
+                Alert.alert(`Good news`,
+                    `Dictionary ${this.state.localDictionary.get('name')}  was saved to your database`);
                 this.dispatch({
                     type: ActionTypes.DICTIONARY_UPDATED,
                     dictionary: dictionary
-                })*/
+                })
             }),
             (error) => {
-                alert("Problems with connection to server");
+                Alert.alert("Problems with connection to server");
             }
     },
     dictionaryNameChanged({name}) {
-        var dictionary = this.state.app.currentDictionary;
-        dictionary.set('name', name);
-        this.updateDictionary(dictionary);
+        this.setState({
+            localDictionary: this.state.localDictionary.set('name', name)
+        });
     },
     language1Selected({name}) {
-        var dictionary = this.state.app.currentDictionary;
         var language = this.state.languages.find( (language_tmp) => (language_tmp.get('name') == name) );
-        dictionary.set('language1', language);
-        this.updateDictionary(dictionary);
+        this.setState({
+            localDictionary: this.state.localDictionary.set('language1', language)
+        });
 
         //var isSpeechSupported = Languages.isSpeechSupported(language, this.state.app.locales);
         //if (!isSpeechSupported) {
@@ -88,10 +96,10 @@ export const AddNewDictionaryView = React.createClass ({
         //}
     },
     language2Selected({name}) {
-        var dictionary = this.state.app.currentDictionary;
         var language = this.state.languages.find( (language_tmp) => (language_tmp.get('name') == name) );
-        dictionary.set('language2', language);
-        this.updateDictionary(dictionary);
+        this.setState({
+            localDictionary: this.state.localDictionary.set('language2', language)
+        });
 
         //var isSpeechSupported = Languages.isSpeechSupported(language, this.state.app.locales);
         //if (!isSpeechSupported) {
@@ -99,16 +107,65 @@ export const AddNewDictionaryView = React.createClass ({
         //}
     },
     learnMoreChanged({url}) {
-        var dictionary = this.state.app.currentDictionary;
-        dictionary.set('learnMore', url);
-        this.updateDictionary(dictionary);
+        this.setState({
+            localDictionary: this.state.localDictionary.set('learnMore', url)
+        });
+    },
+    validateNameNotEmpty() {
+        if (this.state.localDictionary.get('name').length != 0)
+            return true;
+        Alert.alert(`Wait a minute ...`,
+            `Please enter dictionary name`);
+        return false;
+    },
+    validateLanguage1NotEmpty() {
+        if (this.state.localDictionary.get('language1'))
+            return true;
+        Alert.alert(`Wait a minute ...`,
+            `Please choose language you learn`);
+        return false;
+    },
+    validateLanguage2NotEmpty() {
+        if (this.state.localDictionary.get('language2'))
+            return true;
+        Alert.alert(`Wait a minute ...`,
+            `Please choose your language`);
+        return false;
+
+    },
+    validateLanguagesAreDifferent() {
+        if (this.state.localDictionary.get('language1').id != this.state.localDictionary.get('language2').id)
+            return true;
+        Alert.alert(`Wait a minute ...`,
+            `Please choose two different languages`);
+        return false;
+    },
+    validateSaved() {
+        if (this.state.localDictionary.id == this.state.app.currentDictionary.id)
+            return true;
+        Alert.alert(
+            'Are you sure?',
+            `Your new dictionary was not saved`,
+            [
+                {text: 'Cancel', onPress: () => { }, style: 'cancel'},
+                {text: 'OK', onPress: () => {
+                    this.dispatch({
+                        type: ActionTypes.BACK_HOME_BUTTON_PRESSED,
+                        needFetchData: true
+                    });
+                    return true;
+                }}
+            ]
+        );
+        return false;
     },
     render() {
         return (
             <View style={styles.container}>
-                <HeaderComponent
+                <AddNewDictionaryHeaderComponent
                     title="Add new dictionary"
-                    onBackButtonPressed={this.backToDictionaryView}
+                    onBackButtonPressed = {this.backToDictionaryView}
+                    onSaveDictionaryButtonPressed = {this.saveDictionary}
                 />
 
                 {/* Content: Edit Form */}
@@ -121,17 +178,18 @@ export const AddNewDictionaryView = React.createClass ({
                     <TextInput
                         style={styles.input}
                         blurOnSubmit={false}
-                        value={this.state.app.currentDictionary.get('name')}
+                        value={this.state.localDictionary.get('name')}
                         onChangeText={(name) => this.dictionaryNameChanged({name})}
                     />
 
                     {/* Select First Language */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
-                            My language:
+                            Language you learn:
                         </Text>
                         <Picker style={{flex:1}}
-                                selectedValue={this.state.app.currentDictionary.get('language1').get('name')}
+                                selectedValue={this.state.localDictionary.get('language1') ?
+                                    this.state.localDictionary.get('language1').get('name') : ""}
                                 onValueChange={(name) => this.language1Selected({name})} >
                             {
                                 this.state.languages.map( (language) =>
@@ -146,10 +204,11 @@ export const AddNewDictionaryView = React.createClass ({
                     {/* Select Second Language */}
                     <View style={styles.inputRow}>
                         <Text style={styles.label}>
-                            Language I learn:
+                            Your language:
                         </Text>
                         <Picker style={{flex:1}}
-                                selectedValue={this.state.app.currentDictionary.get('language2').get('name')}
+                                selectedValue={this.state.localDictionary.get('language2') ?
+                                    this.state.localDictionary.get('language2').get('name') : ""}
                                 onValueChange={(name) => this.language2Selected({name})} >
                             {
                                 this.state.languages.map( (language) =>
@@ -168,7 +227,7 @@ export const AddNewDictionaryView = React.createClass ({
                     <TextInput
                         style={styles.input}
                         blurOnSubmit={false}
-                        value={this.state.app.currentDictionary.get('learnMore')}
+                        value={this.state.localDictionary.get('learnMore')}
                         onChangeText={(url) => this.learnMoreChanged({url})}
                     />
                 </View>

@@ -71,7 +71,7 @@ function app(state=initialAppState, action) {
         case ActionTypes.BACK_HOME_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 navigateTo: 'homeView',
-                needFetchData: false
+                needFetchData: action.needFetchData || false
             });
         case ActionTypes.CONFIG_BUTTON_PRESSED: {
             return Object.assign({}, state, {
@@ -95,8 +95,12 @@ function app(state=initialAppState, action) {
                 currentDictionary: action.dictionary
             });
         case ActionTypes.NEW_DICTIONARY_SAVE_REQUEST_SUCCEED:
+            //return Object.assign({}, state, {
+            //    currentDictionary: action.dictionary,
+            //    navigateTo: 'addNewDictionaryView'
+            //});
+        case ActionTypes.ADD_NEW_DICTIONARY_BUTTON_PRESSED:
             return Object.assign({}, state, {
-                currentDictionary: action.dictionary,
                 navigateTo: 'addNewDictionaryView'
             });
         case ActionTypes.DELETE_DICTIONARY_BUTTON_PRESSED:

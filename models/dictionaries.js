@@ -9,8 +9,15 @@ Parse.initialize('nNSG5uA8wGI1tWe4kaPqX3pFFplhc0nV5UlyDj8H', 'unused');
 Parse.serverURL = 'https://palabras99.herokuapp.com/parse';
 
 export class Dictionaries extends Parse.Object {
-    constructor() {
+    constructor(user, language1, language2) {
         super('Dictionaries');     // Pass the ClassName to the Parse.Object constructor
+        this.set({
+            "createdBy": user,
+            "name": "",
+            "language1": language1 || undefined,
+            "language2": language2 || undefined,
+            "learnMore": 'https://www.google.com/search'
+        })
     }
     static fetch(user) {
         var localQuery = new Parse.Query('Dictionaries')

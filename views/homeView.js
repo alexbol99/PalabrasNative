@@ -180,6 +180,11 @@ export const HomeView = React.createClass ({
             itemsParse: itemsParse
         });
     },
+    addNewDictionaryButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.ADD_NEW_DICTIONARY_BUTTON_PRESSED
+        });
+    },
     addEmptyDictionary() {
         var user = this.state.user.parseUser;
         var language = this.state.languages[0];
@@ -276,7 +281,7 @@ export const HomeView = React.createClass ({
     render() {
         var addDirectoryButton = this.state.ajaxState == "" ? (
             <TouchableOpacity style={styles.addDirectoryButton}
-                                onPress={() => this.addEmptyDictionary()}>
+                                onPress={() => this.addNewDictionaryButtonPressed()}>
                 <Icon
                     name='plus-circle'
                     size={50}
