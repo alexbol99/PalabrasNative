@@ -7,7 +7,7 @@ var Icon = require('react-native-vector-icons/FontAwesome');
 
 var DictionaryHeaderComponent = require('../components/dictionaryHeader').DictionaryHeaderComponent;
 // var FooterComponent = require('../components/dictionaryFooter').FooterComponent;
-var EditView = require('../views/editView').EditView;
+var DictionaryEditorView = require('../views/dictionaryEditorView').DictionaryEditorView;
 var LearnView = require('../views/learnView').LearnView;
 var Items = require('../models/items').Items;
 
@@ -201,7 +201,7 @@ export const DictionaryView = React.createClass ({
                     loop = {false}
                     onMomentumScrollEnd ={this._onMomentumScrollEnd}
                 >
-                    <EditView {... this.props} />
+                    <DictionaryEditorView {... this.props} />
                     <LearnView { ... this.props} />
                 </Swiper>
 

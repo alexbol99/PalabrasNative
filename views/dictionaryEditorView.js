@@ -7,7 +7,8 @@
 import React from 'react';
 var Items = require('../models/items').Items;
 var SearchItemPopup = require('../components/searchItemPopup').SearchItemPopup;
-// var googleTranslate = require('google-translate')(AIzaSyDBPG8spZ7NXjOuiljdt_WBwetnyWShfR4);
+var DictionaryEditorToolbar = require('../components/dictionaryEditorToolbar').DictionaryEditorToolbar;
+var DictionaryEditorLanguageBar = require('../components/dictionaryEditorLanguageBar').DictionaryEditorLanguageBar;
 
 import * as ActionTypes from '../store/actionTypes';
 
@@ -30,7 +31,7 @@ var globalStyles = require('../styles/styles').styles;
 
 var intervalId;
 
-export const EditContentComponent = React.createClass ({
+export const DictionaryEditorView = React.createClass ({
     getInitialState() {
         return {
         };
@@ -324,14 +325,26 @@ export const EditContentComponent = React.createClass ({
             scroller.scrollTo({x: 0, y: y, animated: true})
         }
     },
+    onLeftSortButtonPressed() {
+        this.setSortedBy("leftLanguage");
+    },
+    onRightSortButtonPressed() {
+        this.setSortedBy("rightLanguage");
+    },
+    setSortedBy(sortedBy) {
+        this.dispatch({
+            type: ActionTypes.BUTTON_SORTED_BY_PRESSED,
+            sortedBy: sortedBy
+        });
+    },
     onLeftSearchButtonPressed() {
-        this.props.onLeftSortButtonPressed();  // force sort before search
+        this.onLeftSortButtonPressed();  // force sort before search
         this.dispatch({
             type: ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED
         })
     },
     onRightSearchButtonPressed() {
-        this.props.onRightSortButtonPressed(); // force sort before search
+        this.onRightSortButtonPressed(); // force sort before search
         this.dispatch({
             type: ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED
         })
@@ -365,143 +378,42 @@ export const EditContentComponent = React.createClass ({
 
     },
     renderHeader() {
-        var langLeft = this.state.app.currentDictionary.get('language1').get('localName');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('localName');  // "russian";
+        var langLeft = this.state.app.currentDictionary.get('language1'); // .get('localName');   // "spanish";
+        var langRight = this.state.app.currentDictionary.get('language2'); // .get('localName');  // "russian";
         var iconSortStyleLeft = this.state.editState.sortedBy == "leftLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
         var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
 
-        var editButtonDisabled = this.state.editState.selectedItem ? false : true;
-        var sayItButtonDisabled = this.state.editState.selectedItem ? false : true;
-        var goWebButtonDisabled = this.state.editState.selectedItem ? false : true;
-        var deleteButtonDisabled = this.state.editState.selectedItem ? false : true;
-        var editButtonIconStyle = editButtonDisabled ?
-            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
-        var sayItButtonIconStyle = sayItButtonDisabled ?
-            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
-        var goWebButtonIconStyle = goWebButtonDisabled ?
-            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
-        var deleteButtonIconStyle = deleteButtonDisabled ?
-            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
+        var buttonDisabled = this.state.editState.selectedItem ? false : true;
 
-        var langTitles = (
-            <View style={styles.sortToolbarContainer}>
-                {/*Left language name button */}
-                <Text style={styles.languageTitle}>
-                    {langLeft}
-                </Text>
-
-                {/* Left Sort button */}
-                <TouchableOpacity onPress = {this.props.onLeftSortButtonPressed} activeOpacity={1.0}>
-                    <Icon
-                        name='sort-desc'
-                        size={20}
-                        color='#81c04d'
-                        style={iconSortStyleLeft}
-                    />
-                </TouchableOpacity>
-
-                {/* Left Search button */}
-                <TouchableOpacity
-                    onPress = {() => this.onLeftSearchButtonPressed()}
-                    activeOpacity={1.0}>
-                    <Icon
-                        name='search'
-                        size={20}
-                        color='#81c04d'
-                        style={globalStyles.header.icon}
-                    />
-                </TouchableOpacity>
-
-                {/* Right language name button */}
-                <Text style={styles.languageTitle}>
-                    {langRight}
-                </Text>
-
-                {/* Right sort button */}
-                <TouchableOpacity onPress = {this.props.onRightSortButtonPressed} activeOpacity={1.0}>
-                    <Icon
-                        name='sort-desc'
-                        size={20}
-                        color='#81c04d'
-                        style={iconSortStyleRight}
-                    />
-                </TouchableOpacity>
-
-                {/* Right Search button */}
-                <TouchableOpacity
-                    onPress = {() => this.onRightSearchButtonPressed()}
-                    activeOpacity={1.0}>
-                    <Icon
-                        name='search'
-                        size={20}
-                        color='#81c04d'
-                        style={globalStyles.header.icon}
-                    />
-                </TouchableOpacity>
-
-            </View>
+        var editorLanguageBar = (
+            <DictionaryEditorLanguageBar
+                langLeft = {langLeft}
+                langRight = {langRight}
+                iconSortStyleLeft = {iconSortStyleLeft}
+                iconSortStyleRight = {iconSortStyleRight}
+                onLeftSortButtonPressed = {this.onLeftSortButtonPressed}
+                onLeftSearchButtonPressed = {this.onLeftSearchButtonPressed}
+                onRightSortButtonPressed = {this.onRightSortButtonPressed}
+                onRightSearchButtonPressed = {this.onRightSearchButtonPressed}
+            />
         );
 
         /* Edit Item Toolbar opened when item selected */
-        var editToolbar = (
-            <View style={styles.editToolbar}>
-                <TouchableOpacity style={{flex:1}}
-                                  activeOpacity={1.0}
-                                    disabled = {editButtonDisabled}
-                                    onPress = {() => this.onEditItemButtonPressed()}>
-                    <Icon
-                        name='pencil'
-                        size={20}
-                        color='#81c04d'
-                        style={editButtonIconStyle}
-                    />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{flex:1}}
-                                  activeOpacity={1.0}
-                                    disabled = {sayItButtonDisabled}
-                                    onPress = {() => this.onSayItButtonPressed()}>
-                    <Icon
-                        name='volume-up'
-                        size={20}
-                        color='#81c04d'
-                        style={sayItButtonIconStyle}
-                    />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{flex:1}}
-                                    activeOpacity={1.0}
-                                    disabled={goWebButtonDisabled}
-                                    onPress = {() => this.onGoWebButtonPressed()}>
-                    <Icon
-                        name='globe'
-                        size={20}
-                        color='#81c04d'
-                        style={goWebButtonIconStyle}
-                    />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{flex:1}}
-                                    activeOpacity={1.0}
-                                    disabled = {deleteButtonDisabled}
-                                    onPress = {() => this.onDeleteItemButtonPressed()}>
-                    <Icon
-                        name='trash-o'
-                        size={20}
-                        color='#81c04d'
-                        style={deleteButtonIconStyle}
-                    />
-                </TouchableOpacity>
-
-            </View>
+        var editorToolbar = (
+            <DictionaryEditorToolbar
+                onEditItemButtonPressed = {this.onEditItemButtonPressed}
+                onSayItButtonPressed = {this.onSayItButtonPressed}
+                onGoWebButtonPressed = {this.onGoWebButtonPressed}
+                onDeleteItemButtonPressed = {this.onDeleteItemButtonPressed}
+                buttonDisabled = {buttonDisabled}
+            />
         );
-
         return (
-            <View style={styles.headerContainer}>
-                {editToolbar}
-                {langTitles}
+            <View style={styles.editorHeader}>
+                {editorToolbar}
+                {editorLanguageBar}
             </View>
         )
     },
@@ -635,18 +547,8 @@ var styles = StyleSheet.create({
         flex:8,
         backgroundColor: '#F5FCFF',
     },
-    description: {
-        marginTop: 10,
-        fontSize: 20,
-        textAlign: 'center',
-        /*color: '#656565'*/
-    },
-    headerContainer: {
+    editorHeader: {
         backgroundColor: '#F5FCFF'
-    },
-    editToolbar: {
-        flexDirection: 'row',
-        marginVertical: 10
     },
     sortToolbarContainer: {
         flexDirection: 'row',
@@ -713,12 +615,6 @@ var styles = StyleSheet.create({
     iconSortDimmed: {
         width:30,
         height: 30,
-        opacity: 0.5
-    },
-    iconButtonActive: {
-        opacity: 1.0
-    },
-    iconButtonDimmed: {
         opacity: 0.5
     },
     leftSearchPopup: {
