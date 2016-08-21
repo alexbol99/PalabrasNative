@@ -108,6 +108,8 @@ export const LearnView = React.createClass ({
                     learnState = {state.learnState}
                     leftItems = {state.learnState.leftItems}
                     rightItems = {state.learnState.rightItems}
+                    langLeft = {state.app.langLeft}
+                    langRight = {state.app.langRight}
                 />
             </View>
         );

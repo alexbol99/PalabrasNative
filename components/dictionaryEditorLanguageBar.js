@@ -21,7 +21,6 @@ var Icon = require('react-native-vector-icons/FontAwesome');
 var Button = ({iconName, iconStyle, onButtonPressed}) => {
     return (
         <TouchableOpacity
-            style={{flex:1}}
             activeOpacity={1.0}
             onPress={onButtonPressed}
         >
@@ -46,28 +45,47 @@ export const DictionaryEditorLanguageBar = React.createClass ({
             <View style={styles.sortToolbarContainer}>
 
                 {/* Left language name title */}
-                <Text style={styles.languageTitle}>
-                    {this.props.langLeft.get('localName')}
-                </Text>
+                <TouchableOpacity
+                    style={styles.languageTitleAndSort}
+                    activeOpacity={1.0}
+                    onPress = {this.props.onLeftSortButtonPressed}
+                >
+                    <Text style={styles.languageTitle}>
+                        {this.props.langLeft.get('localName')}
+                    </Text>
 
-                {/* Left Sort button */}
+                    {/* Left Sort button */}
+                    <Button
+                        iconName = 'sort-desc'
+                        iconStyle = {this.props.iconSortStyleLeft}
+                        onButtonPressed = {this.props.onLeftSortButtonPressed}
+                    />
+                </TouchableOpacity>
+
+                {/* Button exchange */}
                 <Button
-                    iconName = 'sort-desc'
-                    iconStyle = {this.props.iconSortStyleLeft}
-                    onButtonPressed = {this.props.onLeftSortButtonPressed}
+                    iconName = 'exchange'
+                    iconStyle = {{marginLeft:5, marginRight:5}}
+                    onButtonPressed = {this.props.onSwitchLanguagePanelsPressed}
                 />
 
                 {/* Right language name title */}
-                <Text style={styles.languageTitle}>
-                    {this.props.langRight.get('localName')}
-                </Text>
+                <TouchableOpacity
+                    style={styles.languageTitleAndSort}
+                    activeOpacity={1.0}
+                    onPress = {this.props.onRightSortButtonPressed}
+                >
+                    <Text style={styles.languageTitle}>
+                        {this.props.langRight.get('localName')}
+                    </Text>
 
-                {/* Right Sort button */}
-                <Button
-                    iconName = 'sort-desc'
-                    iconStyle = {this.props.iconSortStyleRight}
-                    onButtonPressed = {this.props.onRightSortButtonPressed}
-                />
+                    {/* Right Sort button */}
+                    <Button
+                        iconName = 'sort-desc'
+                        iconStyle = {this.props.iconSortStyleRight}
+                        onButtonPressed = {this.props.onRightSortButtonPressed}
+                    />
+                </TouchableOpacity>
 
             </View>
 
@@ -79,16 +97,22 @@ var styles = StyleSheet.create({
     sortToolbarContainer: {
         flexDirection: 'row',
         marginVertical: 10,
+        /*justifyContent: 'space-between',*/
         alignItems: 'center',
         /*borderWidth: 1,
          borderColor: '#81c04d'*/
     },
+    languageTitleAndSort: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     languageTitle: {
-        flex:2,
         marginLeft:5,
         paddingRight:10,
         marginVertical: 5,
-        textAlign:'left',
+        /*textAlign:'left',*/
         fontSize: 14,
         fontWeight: 'bold',
         marginBottom: 3,

@@ -109,8 +109,8 @@ export const DictionaryEditorView = React.createClass ({
 
     itemLeftChanged({value}) {
         var item = this.state.editState.selectedItem;
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2').get('name');  // "russian";
 
         item.set(langLeft, value);     // update state but don't save while editing not finished
 
@@ -122,8 +122,8 @@ export const DictionaryEditorView = React.createClass ({
         if (!this.state.editState.autotranslate) return;   // auto translate disabled
 
         // go google translate
-        var source = this.state.app.currentDictionary.get('language1').get('lcid').substr(0,2);
-        var target = this.state.app.currentDictionary.get('language2').get('lcid').substr(0,2);
+        var source = this.state.app.langLeft.get('lcid').substr(0,2); // currentDictionary.get('language1').get('lcid').substr(0,2);
+        var target = this.state.app.langRight.get('lcid').substr(0,2); // currentDictionary.get('language2').get('lcid').substr(0,2);
         this.googleTranslate(value, source, target)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -143,8 +143,8 @@ export const DictionaryEditorView = React.createClass ({
     },
     itemRightChanged({value}) {
         var item = this.state.editState.selectedItem;
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2').get('name');  // "russian";
 
         item.set(langRight, value);     // update state but don't save while editing not finished
         this.dispatch({
@@ -155,8 +155,8 @@ export const DictionaryEditorView = React.createClass ({
         if (!this.state.editState.autotranslate) return;   // auto translate disabled
 
         // go google translate
-        var source = this.state.app.currentDictionary.get('language2').get('lcid').substr(0,2);
-        var target = this.state.app.currentDictionary.get('language1').get('lcid').substr(0,2);
+        var source = this.state.app.langRight.get('lcid').substr(0,2); // currentDictionary.get('language2').get('lcid').substr(0,2);
+        var target = this.state.app.langLeft.get('lcid').substr(0,2); // currentDictionary.get('language1').get('lcid').substr(0,2);
         this.googleTranslate(value, source, target)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -204,8 +204,8 @@ export const DictionaryEditorView = React.createClass ({
 
         if (isOwner) {
             var item = this.state.editState.selectedItem;
-            var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-            var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+            var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1').get('name');   // "spanish";
+            var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2').get('name');  // "russian";
             Alert.alert(
                 'Are you sure?',
                 `Item ${item.get(langLeft)} - ${item.get(langRight)} will be deleted`,
@@ -262,14 +262,14 @@ export const DictionaryEditorView = React.createClass ({
     onSayItButtonPressed() {
         var item = this.state.editState.selectedItem;
         if (!item) return;
-        var lang1 = this.state.app.currentDictionary.get('language1');
-        var lang2 = this.state.app.currentDictionary.get('language2');
+        var langLeft = this.state.app.langLeft; // currentDictionary.get('language1');
+        var langRight = this.state.app.langRight; // currentDictionary.get('language2');
 
         if (Platform.OS === 'android') {
-            this.sayItAndroid(item, lang1, lang2);
+            this.sayItAndroid(item, langLeft, langRight);
         }
         else if (Platform.OS === 'ios') {
-            this.sayItIOS(item, lang1, lang2);
+            this.sayItIOS(item, langLeft, langRight);
         }
     },
     onGoWebButtonPressed() {       // go search web for additional info
@@ -353,7 +353,7 @@ export const DictionaryEditorView = React.createClass ({
     leftSearchPatternChanged({text}) {
         if (text != "") {
             var leftSearchPattern = text;
-            var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+            var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1').get('name');   // "spanish";
             var targetItem = this.state.items.find((item) => {
                 if (item.get(langLeft) !== undefined && item.get(langLeft).indexOf(leftSearchPattern) == 0) {
                     return true;
@@ -372,7 +372,7 @@ export const DictionaryEditorView = React.createClass ({
     rightSearchPatternChanged({text}) {
         if (text != "") {
             var rightSearchPattern = text;
-            var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+            var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2').get('name');  // "russian";
             var targetItem = this.state.items.find((item) => {
                 if (item.get(langRight) !== undefined && item.get(langRight).indexOf(rightSearchPattern) == 0) {
                     return true;
@@ -399,9 +399,14 @@ export const DictionaryEditorView = React.createClass ({
             type: ActionTypes.RIGHT_CLEAN_SEARCH_PATTERN_PRESSED
         })
     },
+    onSwitchLanguagePanelsPressed() {
+        this.dispatch({
+            type: ActionTypes.SWITCH_LANGUAGE_PANELS_PRESSED
+        })
+    },
     renderHeader() {
-        var langLeft = this.state.app.currentDictionary.get('language1'); // .get('localName');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2'); // .get('localName');  // "russian";
+        var langLeft = this.state.app.langLeft; // currentDictionary.get('language1'); // .get('localName');   // "spanish";
+        var langRight = this.state.app.langRight; // currentDictionary.get('language2'); // .get('localName');  // "russian";
         var iconSortStyleLeft = this.state.editState.sortedBy == "leftLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
         var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
@@ -417,6 +422,7 @@ export const DictionaryEditorView = React.createClass ({
                 iconSortStyleRight = {iconSortStyleRight}
                 onLeftSortButtonPressed = {this.onLeftSortButtonPressed}
                 onRightSortButtonPressed = {this.onRightSortButtonPressed}
+                onSwitchLanguagePanelsPressed = {this.onSwitchLanguagePanelsPressed}
             />
         );
 
@@ -453,10 +459,13 @@ export const DictionaryEditorView = React.createClass ({
         )
     },
     renderRow(item) {
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1'); // .get('name');   // "spanish";
+        var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2'); // .get('name');  // "russian";
         var style = this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id ?
             [styles.itemContainer, styles.itemSelected] : [styles.itemContainer, styles.itemUnselected];
+
+        var leftAlign = this.state.app.langLeft.get('rtl') ? 'right' : 'left';
+        var rightAlign = this.state.app.langRight.get('rtl') ? 'right' : 'left';
 
         return (
             <TouchableOpacity
@@ -468,7 +477,7 @@ export const DictionaryEditorView = React.createClass ({
                     this.state.editState.editItem ? (
                         <View style={style}>
                             <TextInput
-                                style={styles.editItem}
+                                style={[styles.editItem, {textAlign: leftAlign}]}
                                 autoCapitalize = 'none'
                                 autoCorrect = {false}
                                 value={item.get(langLeft)}
@@ -476,7 +485,7 @@ export const DictionaryEditorView = React.createClass ({
                                 onBlur = {() => this.itemChangeDone()}
                             />
                             <TextInput
-                                style={styles.editItem}
+                                style={[styles.editItem, {textAlign: rightAlign}]}
                                 autoCapitalize = 'none'
                                 autoCorrect = {false}
                                 value={item.get(langRight)}
@@ -486,10 +495,10 @@ export const DictionaryEditorView = React.createClass ({
                         </View>
                     ) : (
                         <View style={style}>
-                            <Text style={styles.item}>
+                            <Text style={[styles.item, {textAlign: leftAlign}]}>
                                 {item.get(langLeft)}
                             </Text>
-                            <Text style={styles.item}>
+                            <Text style={[styles.item, {textAlign: rightAlign}]}>
                                 {item.get(langRight)}
                             </Text>
                         </View>
@@ -499,8 +508,8 @@ export const DictionaryEditorView = React.createClass ({
         )
     },
     render() {
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2').get('name');  // "russian";
         var sortedBy = this.state.editState.sortedBy;
         var sortedItems = [];
         if (this.state.editState.sortEnabled) {
@@ -578,7 +587,8 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         borderWidth: globalStyles.item.borderWidth,
-        borderColor: globalStyles.item.borderColor
+        borderColor: globalStyles.item.borderColor,
+        alignItems: 'center',
     },
     itemUnselected: {
         backgroundColor: globalStyles.item.backgroundColor
@@ -588,7 +598,9 @@ var styles = StyleSheet.create({
     },
     item: {
         flex:1,
-        fontSize: 15
+        fontSize: 15,
+        alignItems: 'center',
+        textAlignVertical: 'center'
     },
     editItem: {
         flex:1,

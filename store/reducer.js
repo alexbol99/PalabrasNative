@@ -16,6 +16,8 @@ const initialAppState = {
     fetchItemsStarted: false,
     itemsParse: undefined,    /* Parse Object represented correspondent Parse document */
     locales: [],
+    langLeft: undefined,
+    langRight: undefined,
     editState: {
         sortEnabled: true,
         sortedBy: 'leftLanguage',
@@ -23,7 +25,7 @@ const initialAppState = {
         editItem: false,
         autotranslate: true,
         leftSearchPattern: '',
-        rightSearchPattern: ''
+        rightSearchPattern: '',
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -61,12 +63,17 @@ function app(state=initialAppState, action) {
             });
         case ActionTypes.DICTIONARY_SELECTED:
             var needFetchItems = state.currentDictionary.id != action.dictionary.id;
+            var langLeft = action.dictionary.get('language1');
+            var langRight = action.dictionary.get('language2');
+
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
                 itemsParse: action.itemsParse,
                 navigateTo: 'dictionaryView',
                 mode: 'edit',
-                needFetchItems: needFetchItems
+                needFetchItems: needFetchItems,
+                langLeft: langLeft,
+                langRight: langRight
             });
         case ActionTypes.BACK_HOME_BUTTON_PRESSED:
             return Object.assign({}, state, {
@@ -135,6 +142,12 @@ function app(state=initialAppState, action) {
         case ActionTypes.TTS_LOCALES_REQUEST_SUCCEED:
             return Object.assign({}, state, {
                 locales: action.locales
+            });
+        case ActionTypes.SWITCH_LANGUAGE_PANELS_PRESSED:
+            let langTmp = langLeft;
+            return Object.assign({}, state, {
+                langLeft : state.langRight,
+                langRight: state.langLeft
             });
         default:
             return state;

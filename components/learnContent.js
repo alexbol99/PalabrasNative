@@ -72,8 +72,8 @@ export const LearnContentComponent = React.createClass ({
         };
     },
     renderRow(item) {
-        var langLeft = this.props.dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.props.langLeft.get('name'); // dictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.props.langRight.get('name'); // dictionary.get('language2').get('name');  // "russian";
         let learnState = this.props.learnState;
         let leftSelected = learnState.selectedLeftItemId == item.left.id;
         let rightSelected = learnState.selectedRightItemId == item.right.id;
@@ -109,8 +109,8 @@ export const LearnContentComponent = React.createClass ({
 
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(items);
-        var langLeft = this.props.dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.dictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.props.langLeft.get('name'); // dictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.props.langRight.get('name'); // dictionary.get('language2').get('name');  // "russian";
 
         return (
             <Animated.View

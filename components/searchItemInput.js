@@ -29,7 +29,6 @@ export const SearchItemInput = React.createClass({
                     style={styles.searchPatternInput}
                     autoCapitalize = 'none'
                     autoCorrect = {false}
-                    autoFocus = {true}
                     value={this.props.value}
                     onChangeText={(text) => this.props.onChangeText(text)}
                     onFocus={this.props.onFocus}
