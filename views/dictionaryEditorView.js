@@ -399,6 +399,16 @@ export const DictionaryEditorView = React.createClass ({
             type: ActionTypes.RIGHT_CLEAN_SEARCH_PATTERN_PRESSED
         })
     },
+    onLeftToggleSearchButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.LEFT_TOGGLE_SEARCH_BUTTON_PRESSED
+        })
+    },
+    onRightToggleSearchButtonPressed() {
+        this.dispatch({
+            type: ActionTypes.RIGHT_TOGGLE_SEARCH_BUTTON_PRESSED
+        })
+    },
     onSwitchLanguagePanelsPressed() {
         this.dispatch({
             type: ActionTypes.SWITCH_LANGUAGE_PANELS_PRESSED
@@ -439,14 +449,20 @@ export const DictionaryEditorView = React.createClass ({
 
         var editorSearchBar = (
             <DictionaryEditorSearchBar
-              leftSearchPattern={this.state.editState.leftSearchPattern}
-              leftSearchPatternChanged={(text) => this.leftSearchPatternChanged({text})}
-              onLeftSearchInputGotFocus={this.onLeftSearchInputGotFocus}
-              onLeftCleanSearchPatternPressed={this.onLeftCleanSearchPatternPressed}
-              rightSearchPattern={this.state.editState.rightSearchPattern}
-              rightSearchPatternChanged={(text) => this.rightSearchPatternChanged({text})}
-              onRightSearchInputGotFocus={this.onRightSearchInputGotFocus}
-              onRightCleanSearchPatternPressed={this.onRightCleanSearchPatternPressed}
+                leftSearchEnabled={this.state.editState.leftSearchEnabled}
+                leftSearchPattern={this.state.editState.leftSearchPattern}
+                leftRtl = {langLeft.get('rtl')}
+                leftSearchPatternChanged={(text) => this.leftSearchPatternChanged({text})}
+                onLeftSearchInputGotFocus={this.onLeftSearchInputGotFocus}
+                onLeftCleanSearchPatternPressed={this.onLeftCleanSearchPatternPressed}
+                onLeftToggleSearchButtonPressed={this.onLeftToggleSearchButtonPressed}
+                rightSearchEnabled={this.state.editState.rightSearchEnabled}
+                rightSearchPattern={this.state.editState.rightSearchPattern}
+                rightRtl = {langRight.get('rtl')}
+                rightSearchPatternChanged={(text) => this.rightSearchPatternChanged({text})}
+                onRightSearchInputGotFocus={this.onRightSearchInputGotFocus}
+                onRightCleanSearchPatternPressed={this.onRightCleanSearchPatternPressed}
+                onRightToggleSearchButtonPressed={this.onRightToggleSearchButtonPressed}
             />
         );
 

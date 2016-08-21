@@ -26,6 +26,8 @@ const initialAppState = {
         autotranslate: true,
         leftSearchPattern: '',
         rightSearchPattern: '',
+        leftSearchEnabled: false,
+        rightSearchEnabled: false
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -73,7 +75,9 @@ function app(state=initialAppState, action) {
                 mode: 'edit',
                 needFetchItems: needFetchItems,
                 langLeft: langLeft,
-                langRight: langRight
+                langRight: langRight,
+                leftSearchEnabled: false,
+                rightSearchEnabled: false
             });
         case ActionTypes.BACK_HOME_BUTTON_PRESSED:
             return Object.assign({}, state, {
@@ -166,6 +170,16 @@ function editState(state=initialAppState.editState, action) {
             return Object.assign({}, state, {
                 sortedBy: action.sortedBy,
                 sortEnabled: true
+            });
+        case ActionTypes.LEFT_TOGGLE_SEARCH_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                leftSearchEnabled: !state.leftSearchEnabled,
+                rightSearchEnabled: false
+            });
+        case ActionTypes.RIGHT_TOGGLE_SEARCH_BUTTON_PRESSED:
+            return Object.assign({}, state, {
+                leftSearchEnabled: false,
+                rightSearchEnabled: !state.rightSearchEnabled
             });
         case ActionTypes.LEFT_SEARCH_INPUT_GOT_FOCUS:
             return Object.assign({}, state, {
