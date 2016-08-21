@@ -11,39 +11,30 @@ import {
     View,
     TouchableOpacity,
     TextInput,
+    Dimensions
 } from 'react-native';
 
-export const SearchItemPopup = React.createClass({
+export const SearchItemInput = React.createClass({
     getInitialState() {
         return {
-            value: ""
         };
-    },
-    onChange({text}) {
-        this.setState({
-            value: text
-        });
-        this.props.onChangeText(text);
-    },
-    cleanText() {
-        this.setState({
-            value: ''
-        })
-
     },
     render()
     {
+        var {height, width} = Dimensions.get('window');
+
         return (
-            <View style={[this.props.viewStyle, styles.searchPopup]}>
+            <View style={[styles.searchPopup, {width: 0.49*width}]}>
                 <TextInput
                     style={styles.searchPatternInput}
                     autoCapitalize = 'none'
                     autoCorrect = {false}
                     autoFocus = {true}
-                    value={this.state.value}
-                    onChangeText={(text) => this.onChange({text})}
+                    value={this.props.value}
+                    onChangeText={(text) => this.props.onChangeText(text)}
+                    onFocus={this.props.onFocus}
                 />
-                {this.state.value.length == 0 ? (
+                {this.props.value.length == 0 ? (
                     <Icon
                         name='search'
                         size={14}
@@ -51,11 +42,11 @@ export const SearchItemPopup = React.createClass({
                         style={styles.icon}
                     />) : null
                 }
-                {this.state.value.length != 0 ? (
+                {this.props.value.length != 0 ? (
                     <TouchableOpacity
                         style={styles.iconClean}
                         activeOpacity={1.0}
-                        onPress={this.cleanText}
+                        onPress={this.props.onCleanSearchPatternPressed}
                     >
                         <Icon
                             name='times'
@@ -71,12 +62,10 @@ export const SearchItemPopup = React.createClass({
 
 var styles = StyleSheet.create({
     searchPopup: {
-        position: 'absolute',
-        top: 80,
         justifyContent: 'center',
     },
     searchPatternInput: {
-        width: 120,
+        flex: 1,
         height: 34,
         backgroundColor: 'white',
         borderWidth: 1,
@@ -84,7 +73,6 @@ var styles = StyleSheet.create({
         borderRadius: 4,
         textAlignVertical: 'center',
         padding: 4,
-        elevation: 5,
     },
     icon: {
         position: 'absolute',

@@ -21,9 +21,9 @@ const initialAppState = {
         sortedBy: 'leftLanguage',
         selectedItem: undefined,
         editItem: false,
-        leftSearchPopup: false,
-        rightSearchPopup: false,
         autotranslate: true,
+        leftSearchPattern: '',
+        rightSearchPattern: ''
     },
     learnState: {
         maxNumLearnItems: 8,
@@ -145,8 +145,8 @@ function editState(state=initialAppState.editState, action) {
     switch (action.type) {
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
-                leftSearchPopup: false,
-                rightSearchPopup: false,
+                leftSearchPattern: '',
+                rightSearchPattern: '',
                 sortEnabled: true
             });
         case ActionTypes.BUTTON_SORTED_BY_PRESSED:
@@ -154,15 +154,29 @@ function editState(state=initialAppState.editState, action) {
                 sortedBy: action.sortedBy,
                 sortEnabled: true
             });
-        case ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED:
+        case ActionTypes.LEFT_SEARCH_INPUT_GOT_FOCUS:
             return Object.assign({}, state, {
-                leftSearchPopup: !state.leftSearchPopup,
-                rightSearchPopup: false
+                rightSearchPattern: ''
             });
-        case ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED:
+        case ActionTypes.RIGHT_SEARCH_INPUT_GOT_FOCUS:
             return Object.assign({}, state, {
-                leftSearchPopup: false,
-                rightSearchPopup: !state.rightSearchPopup
+                leftSearchPattern: ''
+            });
+        case ActionTypes.LEFT_SEARCH_PATTERN_CHANGED:
+            return Object.assign({}, state, {
+                leftSearchPattern: action.leftSearchPattern
+            });
+        case ActionTypes.RIGHT_SEARCH_PATTERN_CHANGED:
+            return Object.assign({}, state, {
+                rightSearchPattern: action.rightSearchPattern
+            });
+        case ActionTypes.LEFT_CLEAN_SEARCH_PATTERN_PRESSED:
+            return Object.assign({}, state, {
+                leftSearchPattern: ''
+            });
+        case ActionTypes.RIGHT_CLEAN_SEARCH_PATTERN_PRESSED:
+            return Object.assign({}, state, {
+                rightSearchPattern: ''
             });
         case ActionTypes.SELECT_ITEM_PRESSED:
             // if none selected - select

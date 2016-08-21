@@ -6,9 +6,10 @@
  */
 import React from 'react';
 var Items = require('../models/items').Items;
-var SearchItemPopup = require('../components/searchItemPopup').SearchItemPopup;
+var SearchItemPopup = require('../components/searchItemInput').SearchItemPopup;
 var DictionaryEditorToolbar = require('../components/dictionaryEditorToolbar').DictionaryEditorToolbar;
 var DictionaryEditorLanguageBar = require('../components/dictionaryEditorLanguageBar').DictionaryEditorLanguageBar;
+var DictionaryEditorSearchBar = require('../components/dictionaryEditorSearchBar').DictionaryEditorSearchBar;
 
 import * as ActionTypes from '../store/actionTypes';
 
@@ -337,45 +338,66 @@ export const DictionaryEditorView = React.createClass ({
             sortedBy: sortedBy
         });
     },
-    onLeftSearchButtonPressed() {
+    onLeftSearchInputGotFocus() {
         this.onLeftSortButtonPressed();  // force sort before search
         this.dispatch({
-            type: ActionTypes.TOGGLE_LEFT_SEARCH_BUTTON_PRESSED
-        })
+            type: ActionTypes.LEFT_SEARCH_INPUT_GOT_FOCUS
+        });
     },
-    onRightSearchButtonPressed() {
+    onRightSearchInputGotFocus() {
         this.onRightSortButtonPressed(); // force sort before search
         this.dispatch({
-            type: ActionTypes.TOGGLE_RIGHT_SEARCH_BUTTON_PRESSED
-        })
+            type: ActionTypes.RIGHT_SEARCH_INPUT_GOT_FOCUS
+        });
     },
     leftSearchPatternChanged({text}) {
-        if (text == "") return;
-        var leftSearchPattern = text;
-        var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
-        var targetItem = this.state.items.find( (item) => {
-            if (item.get(langLeft) !== undefined && item.get(langLeft).indexOf(leftSearchPattern) == 0) {
-                return true;
-            }
-            return false;
-        });
+        if (text != "") {
+            var leftSearchPattern = text;
+            var langLeft = this.state.app.currentDictionary.get('language1').get('name');   // "spanish";
+            var targetItem = this.state.items.find((item) => {
+                if (item.get(langLeft) !== undefined && item.get(langLeft).indexOf(leftSearchPattern) == 0) {
+                    return true;
+                }
+                return false;
+            });
+            this.scrollToItem(targetItem);
+        }
 
-        this.scrollToItem(targetItem);
+        this.dispatch({
+            type: ActionTypes.LEFT_SEARCH_PATTERN_CHANGED,
+            leftSearchPattern: text
+        })
 
     },
     rightSearchPatternChanged({text}) {
-        if (text == "") return;
-        var rightSearchPattern = text;
-        var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
-        var targetItem = this.state.items.find( (item) => {
-            if (item.get(langRight) !== undefined && item.get(langRight).indexOf(rightSearchPattern) == 0) {
-                return true;
-            }
-            return false;
-        });
+        if (text != "") {
+            var rightSearchPattern = text;
+            var langRight = this.state.app.currentDictionary.get('language2').get('name');  // "russian";
+            var targetItem = this.state.items.find((item) => {
+                if (item.get(langRight) !== undefined && item.get(langRight).indexOf(rightSearchPattern) == 0) {
+                    return true;
+                }
+                return false;
+            });
+            this.scrollToItem(targetItem);
+        }
 
-        this.scrollToItem(targetItem);
+        this.dispatch({
+            type: ActionTypes.RIGHT_SEARCH_PATTERN_CHANGED,
+            rightSearchPattern: text
+        })
 
+    },
+    onLeftCleanSearchPatternPressed() {
+        var type = ActionTypes.LEFT_CLEAN_SEARCH_PATTERN_PRESSED;
+        this.dispatch({
+            type: type
+        })
+    },
+    onRightCleanSearchPatternPressed() {
+        this.dispatch({
+            type: ActionTypes.RIGHT_CLEAN_SEARCH_PATTERN_PRESSED
+        })
     },
     renderHeader() {
         var langLeft = this.state.app.currentDictionary.get('language1'); // .get('localName');   // "spanish";
@@ -394,9 +416,7 @@ export const DictionaryEditorView = React.createClass ({
                 iconSortStyleLeft = {iconSortStyleLeft}
                 iconSortStyleRight = {iconSortStyleRight}
                 onLeftSortButtonPressed = {this.onLeftSortButtonPressed}
-                onLeftSearchButtonPressed = {this.onLeftSearchButtonPressed}
                 onRightSortButtonPressed = {this.onRightSortButtonPressed}
-                onRightSearchButtonPressed = {this.onRightSearchButtonPressed}
             />
         );
 
@@ -410,10 +430,25 @@ export const DictionaryEditorView = React.createClass ({
                 buttonDisabled = {buttonDisabled}
             />
         );
+
+        var editorSearchBar = (
+            <DictionaryEditorSearchBar
+              leftSearchPattern={this.state.editState.leftSearchPattern}
+              leftSearchPatternChanged={(text) => this.leftSearchPatternChanged({text})}
+              onLeftSearchInputGotFocus={this.onLeftSearchInputGotFocus}
+              onLeftCleanSearchPatternPressed={this.onLeftCleanSearchPatternPressed}
+              rightSearchPattern={this.state.editState.rightSearchPattern}
+              rightSearchPatternChanged={(text) => this.rightSearchPatternChanged({text})}
+              onRightSearchInputGotFocus={this.onRightSearchInputGotFocus}
+              onRightCleanSearchPatternPressed={this.onRightCleanSearchPatternPressed}
+            />
+        );
+
         return (
             <View style={styles.editorHeader}>
                 {editorToolbar}
                 {editorLanguageBar}
+                {editorSearchBar}
             </View>
         )
     },
@@ -475,9 +510,6 @@ export const DictionaryEditorView = React.createClass ({
             sortedItems = this.state.items.slice();
         }
 
-        //var leftSearchPattern = this.state.editState.leftSearchPattern;
-        //var rightSearchPattern = this.state.editState.rightSearchPattern;
-
         filteredItems = sortedItems.slice();
         /*
         var filteredItems = sortedItems.filter( (item) => {
@@ -490,27 +522,6 @@ export const DictionaryEditorView = React.createClass ({
 */
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(filteredItems);
-
-        /* does not work in version 0.20
-        stickyIndices = this.state.editState.selectedItem ?
-            sortedItems.findIndex( item => item.id == this.state.editState.selectedItem.id ) :
-            [];*/
-
-        var leftSearchPopup = this.state.editState.leftSearchPopup ? (
-            <SearchItemPopup
-                viewStyle = {styles.leftSearchPopup}
-                value={this.state.editState.leftSearchPattern}
-                onChangeText={(text) => this.leftSearchPatternChanged({text})}
-            />
-        ) : null;
-
-        var rightSearchPopup = this.state.editState.rightSearchPopup ? (
-            <SearchItemPopup
-                viewStyle = {styles.rightSearchPopup}
-                value={this.state.editState.rightSearchPattern}
-                onChangeText={(text) => this.rightSearchPatternChanged({text})}
-            />
-        ) : null;
 
         var sectionHeader = this.renderHeader();
 
@@ -533,10 +544,6 @@ export const DictionaryEditorView = React.createClass ({
                         style={globalStyles.iconAdd}
                     />
                 </TouchableOpacity>
-
-                {leftSearchPopup}
-
-                {rightSearchPopup}
             </View>
         );
     }
@@ -624,30 +631,3 @@ var styles = StyleSheet.create({
         left: 220,
     },
 });
-
-/*
- var styles = StyleSheet.create({
- container: {
- padding:30,
- marginTop: 65,
- alignItems:'center'
- },
- image: {
- width: 217,
- height: 138
- },
- searchInput: {
- height: 36,
- padding: 4,
- marginRight: 5,
- flex: 4,
- fontSize: 18,
- borderWidth: 1,
- borderColor: '#48BBEC',
- borderRadius: 8,
- color: '#48BBEC'
- }
- });
- */
-
-/* module.exports = HomeView; */

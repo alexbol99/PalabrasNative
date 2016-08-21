@@ -57,13 +57,6 @@ export const DictionaryEditorLanguageBar = React.createClass ({
                     onButtonPressed = {this.props.onLeftSortButtonPressed}
                 />
 
-                {/* Left Search button */}
-                <Button
-                    iconName = 'search'
-                    iconStyle = {globalStyles.header.icon}
-                    onButtonPressed = {this.props.onLeftSearchButtonPressed}
-                />
-
                 {/* Right language name title */}
                 <Text style={styles.languageTitle}>
                     {this.props.langRight.get('localName')}
@@ -76,12 +69,6 @@ export const DictionaryEditorLanguageBar = React.createClass ({
                     onButtonPressed = {this.props.onRightSortButtonPressed}
                 />
 
-                {/* Right Search button */}
-                <Button
-                    iconName = 'search'
-                    iconStyle = {globalStyles.header.icon}
-                    onButtonPressed = {this.props.onRightSearchButtonPressed}
-                />
             </View>
 
         );
