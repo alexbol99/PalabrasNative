@@ -628,7 +628,7 @@ var styles = StyleSheet.create({
     addItemButton: {
         position: 'absolute',
         right: 40,
-        bottom: 80
+        bottom: 120
     },
     iconAddItem: {
         width: 50,
