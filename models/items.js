@@ -140,6 +140,23 @@ export class Items extends Parse.Object {
         });
     }
 
+    sortItemsOffline(items, sortedBy, langLeft, langRight) {
+        return items.sort((item1, item2) => {
+            let val1 = sortedBy == "leftLanguage" ? item1[langLeft] : item1[langRight];
+            let val2 = sortedBy == "leftLanguage" ? item2[langLeft] : item2[langRight];
+
+            if (val1 > val2) {
+                return 1;
+            }
+            if (val1 < val2) {
+                return -1;
+            }
+            if (val1 == val2) {
+                return 0;
+            }
+        });
+    }
+
     sayItAndroid(item, language) {
         var langName = language.get('name');
         var voice = language.get('lcid');

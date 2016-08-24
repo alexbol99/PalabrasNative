@@ -55,21 +55,32 @@ export const DictionaryHeaderComponent = React.createClass ({
                 </TouchableOpacity>
 
                 <Text style={styles.dictionaryTitle}>
-                    {this.props.dictionary.get('name') + ' (' + this.state.items.length + ')'}
+                    {`${this.props.name} (${this.state.items.length})`}
                 </Text>
 
-                <Button iconName = 'cog'
-                        onButtonPressed = {this.props.onConfigButtonPressed}
-                />
+                {this.props.isConnected ? (
+                    <Button iconName='cog'
+                            onButtonPressed={this.props.onConfigButtonPressed}
+                    />) : null}
 
-                <TouchableOpacity onPress={this.props.onShareButtonPressed} activeOpacity={1.0}>
-                    <Icon
-                        name='share-alt'
-                        size={20}
-                        color={globalStyles.header.color}
-                        style={styles.icon}
-                    />
-                </TouchableOpacity>
+                {this.props.isConnected ? (
+                    <TouchableOpacity onPress = {this.props.onShareButtonPressed} activeOpacity={1.0}>
+                        <Icon
+                            name='share-alt'
+                            size={20}
+                            color={globalStyles.header.color}
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                    ) : (
+                        <Icon
+                            name='ban'
+                            size={20}
+                            color={globalStyles.header.color}
+                            style={styles.icon}
+                        />
+                    )
+                }
             </View>
         );
     }

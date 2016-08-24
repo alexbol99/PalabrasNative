@@ -47,7 +47,7 @@ export const DictionaryEditorToolbar = React.createClass ({
                 <Button iconName = 'pencil'
                         iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onEditItemButtonPressed}
-                        disabled = {this.props.buttonDisabled}
+                        disabled = {this.props.buttonDisabled || !this.props.isConnected}
                 />
                 <Button iconName = 'volume-up'
                         iconStyle = {iconStyle}
@@ -57,12 +57,12 @@ export const DictionaryEditorToolbar = React.createClass ({
                 <Button iconName = 'globe'
                         iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onGoWebButtonPressed}
-                        disabled = {this.props.buttonDisabled}
+                        disabled = {this.props.buttonDisabled || !this.props.isConnected}
                 />
                 <Button iconName = 'trash-o'
                         iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onDeleteItemButtonPressed}
-                        disabled = {this.props.buttonDisabled}
+                        disabled = {this.props.buttonDisabled || !this.props.isConnected}
                 />
             </View>
 

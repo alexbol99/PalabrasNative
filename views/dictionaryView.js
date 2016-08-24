@@ -21,7 +21,8 @@ import {
     View,
     Platform,
     BackAndroid,
-    Text
+    Text,
+    AsyncStorage
     } from 'react-native';
 
 const LearnButton = () => {
@@ -62,10 +63,17 @@ export const DictionaryView = React.createClass ({
         }
         /* Start fetch items */
         if (this.state.app.needFetchItems) {
+
             this.dispatch({
                 type: ActionTypes.FETCH_ITEMS_STARTED
             });
-            this.fetchItems();
+
+            if (this.state.app.isConnected) {
+                this.fetchItems();
+            }
+            else {
+                this.fetchItemsOffline();
+            }
         }
     },
     componentWillReceiveProps(nextProps) {
@@ -98,8 +106,37 @@ export const DictionaryView = React.createClass ({
                     type: ActionTypes.FETCH_ITEMS_PAGE_SUCCEED,
                     items: items
                 });
+
+                let key = "@Palabras:" + itemsParse.className;
+                AsyncStorage.setItem(key, JSON.stringify(items))
+                    .then((resp) => console.log(resp));
+
+
             }
         });
+    },
+    fetchItemsOffline() {
+        let itemsParse = this.state.app.itemsParse;  /* object represent Parse document */
+        let key = "@Palabras:" + itemsParse.className;
+        AsyncStorage.getItem(key)
+            .then( (resp) => {
+                var items = [];
+                if (resp) {
+                    items = JSON.parse(resp).map( (item) => {
+                        return Object.assign({}, item, {
+                            id: item.objectId,
+                            get : function(prop) { return item[prop] }
+                        })
+                    });
+                }
+                this.dispatch({
+                    type: ActionTypes.FETCH_ITEMS_PAGE_SUCCEED,
+                    items: items
+                });
+                this.dispatch({
+                    type: ActionTypes.FETCH_ITEMS_SUCCEED
+                });
+            });
     },
     onBackHomeButtonPressed() {
         this.dispatch({
@@ -188,10 +225,11 @@ export const DictionaryView = React.createClass ({
             <View style={{flex:1, flexDirection:'column'}}>
                 <DictionaryHeaderComponent
                     {... this.props}
-                    dictionary = {this.state.app.currentDictionary}
+                    name = {this.state.app.currentDictionary.get('name')}
                     onBackHomeButtonPressed = {this.onBackHomeButtonPressed}
                     onConfigButtonPressed = {this.onConfigButtonPressed}
                     onShareButtonPressed = {this.onShareButtonPressed}
+                    isConnected = {this.state.app.isConnected}
                 />
 
                 <Swiper

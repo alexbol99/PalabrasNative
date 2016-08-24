@@ -14,7 +14,8 @@ var GoWebView = require('./views/goWebView').GoWebView;
 import {
     Text,
     StyleSheet,
-    View
+    View,
+    NetInfo
     } from 'react-native';
 
 var App = React.createClass ({
@@ -27,50 +28,63 @@ var App = React.createClass ({
         this.setState(this.props.store.getState());
     },
     componentDidMount() {
+        NetInfo.addEventListener('change', this.checkConnection);
+        this.checkConnection();
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
+    checkConnection() {
+        NetInfo.isConnected.fetch()
+            .then((isConnected) => {
+                this.dispatch({
+                    type: ActionTypes.NETINFO_IS_CONNECTED_REQUEST_SUCCEED,
+                    isConnected: isConnected
+                })
+            })
+    },
     render() {
-        var page;
+        var page = null;
 
-        switch (this.state.app.navigateTo) {
-            case "loginView":
-                page = (
-                    <LoginView {... this.props} />
-                );
-                break;
+        if (this.state.app.isConnected != undefined) {
+            switch (this.state.app.navigateTo) {
+                case "loginView":
+                    page = (
+                        <LoginView {... this.props} />
+                    );
+                    break;
 
-            case "homeView":
-                page = (
-                    <HomeView {... this.props} />
-                );
-                break;
-            case "dictionaryView":
-                page = (
-                    <DictionaryView {... this.props} />
-                );
-                break;
-            case "configView":
-                page = (
-                    <ConfigView {...this.props} />
-                );
-                break;
-            case "addNewDictionaryView":
-                page = (
-                    <AddNewDictionaryView {... this.props} />
-                )
-                break;
-            case "goWebView":
-                page = (
-                    <GoWebView {... this.props} />
-                );
-                break;
-            default:
-                page = (
-                    <HomeView {... this.props} />
-                );
-                break;
+                case "homeView":
+                    page = (
+                        <HomeView {... this.props} />
+                    );
+                    break;
+                case "dictionaryView":
+                    page = (
+                        <DictionaryView {... this.props} />
+                    );
+                    break;
+                case "configView":
+                    page = (
+                        <ConfigView {...this.props} />
+                    );
+                    break;
+                case "addNewDictionaryView":
+                    page = (
+                        <AddNewDictionaryView {... this.props} />
+                    )
+                    break;
+                case "goWebView":
+                    page = (
+                        <GoWebView {... this.props} />
+                    );
+                    break;
+                default:
+                    page = (
+                        <HomeView {... this.props} />
+                    );
+                    break;
+            }
         }
 
         return (

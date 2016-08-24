@@ -72,23 +72,24 @@ export const LearnContentComponent = React.createClass ({
         };
     },
     renderRow(item) {
-        var langLeft = this.props.langLeft.get('name'); // dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.langRight.get('name'); // dictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.props.langLeft; // .get('name'); // dictionary.get('language1').get('name');   // "spanish";
+        var langRight = this.props.langRight; // .get('name'); // dictionary.get('language2').get('name');  // "russian";
         let learnState = this.props.learnState;
         let leftSelected = learnState.selectedLeftItemId == item.left.id;
         let rightSelected = learnState.selectedRightItemId == item.right.id;
         let matched = learnState.selectedLeftItemId == learnState.selectedRightItemId;
+
         return (
             <View
                 style={styles.itemContainer}>
                 <ItemComponent
-                    text = {item.left.get(langLeft)}
+                    text = {item.left.get ? item.left.get(langLeft) : item.left[langLeft]}
                     selected = {leftSelected}
                     matched = {leftSelected && matched}
                     onPress = {() => this.props.onLeftItemSelected(item.left.id)}
                 />
                 <ItemComponent
-                    text = {item.right.get(langRight)}
+                    text = {item.right.get ? item.right.get(langRight) : item.right[langRight]}
                     selected = {rightSelected}
                     matched = {rightSelected && matched}
                     onPress = {() => this.props.onRightItemSelected(item.right.id)}
@@ -109,8 +110,6 @@ export const LearnContentComponent = React.createClass ({
 
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         var dataSource = ds.cloneWithRows(items);
-        var langLeft = this.props.langLeft.get('name'); // dictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.props.langRight.get('name'); // dictionary.get('language2').get('name');  // "russian";
 
         return (
             <Animated.View

@@ -26,7 +26,7 @@ var {Text,
     ActionSheetIOS,
     Platform,
     Linking,
-    Alert
+    AsyncStorage
     } = ReactNative;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -88,15 +88,56 @@ export const HomeView = React.createClass ({
     },
     componentWillMount() {
         this.dispatch = this.props.store.dispatch;
+        var state = this.props.store.getState();
 
-        var user = this.props.store.getState().user;
-        var needFetchData = this.props.store.getState().app.needFetchData;
-        if (user && needFetchData) {
-            this.fetchData(user);
-            this.processLink(user);
+        if (state.user && state.app.needFetchData) {
+
+            if (state.app.isConnected) {
+                this.fetchData(state.user);
+                this.processLink(state.user);
+            }
+            else {
+                AsyncStorage.getItem('@Palabras:state')
+                    .then((resp) => {
+                        let offlineState = JSON.parse(resp);
+                        // augment first language structures, then dictionary structure to avoid closure
+                        offlineState.dictionaries = offlineState.dictionaries.map((dictionary) =>
+                            Object.assign({}, dictionary,
+                            {
+                                language1: Object.assign({}, dictionary.language1, {
+                                    id: dictionary.language1.objectId,
+                                    get: function(prop) { return dictionary.language1[prop] }
+                                }),
+                                language2: Object.assign({}, dictionary.language2, {
+                                    id: dictionary.language2.objectId,
+                                    get: function(prop) { return dictionary.language2[prop] }
+                                }),
+                                createdBy: Object.assign({}, dictionary.createdBy, {
+                                    id: dictionary.createdBy.objectId,
+                                    get: function(prop) { return dictionary.createdBy[prop] }
+                                })
+                            })
+                        );
+
+                        offlineState.dictionaries = offlineState.dictionaries.map((dictionary) =>
+                            Object.assign({}, dictionary,
+                                {
+                                    id: dictionary.objectId,
+                                    get: function(prop) { return dictionary[prop]},
+                                })
+                        );
+
+                        offlineState.user.parseUser.id = offlineState.user.parseUser.objectId;
+                        offlineState.user.parseUser.get = function(prop) { return offlineState.user.parseUser[prop]};
+
+                        this.dispatch({
+                            type: ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED,
+                            offlineState: offlineState
+                        })
+                    });
+            }
         }
 
-        var state = this.props.store.getState();
         this.setState(state);
     },
     componentWillReceiveProps(nextProps) {
@@ -135,6 +176,14 @@ export const HomeView = React.createClass ({
                     type: ActionTypes.TTS_LOCALES_REQUEST_SUCCEED,
                     locales: locales
                 })
+                return AsyncStorage.removeItem('@Palabras:state')
+            })
+            .then((resp) => {
+                let state = this.props.store.getState();
+                return AsyncStorage.setItem('@Palabras:state', JSON.stringify(state))
+            })
+            .then((resp) => {
+                // console.log(resp);
             }),
 
             (error) => {
@@ -204,10 +253,11 @@ export const HomeView = React.createClass ({
     },
     createItems(dictionary) {
         var pref = '';
-        if (dictionary.id.charAt(0) >= '0' && dictionary.id.charAt(0) <= '9') {
+        var id = dictionary.id || dictionary.objectId;
+        if (id.charAt(0) >= '0' && id.charAt(0) <= '9') {
             pref = 'a';
         }
-        var itemsClassName = pref + dictionary.id;
+        var itemsClassName = pref + id;
         return new Items(itemsClassName);
     },
     toggleHomeMenu() {
@@ -257,6 +307,17 @@ export const HomeView = React.createClass ({
         })
     },
     renderRow(dictionary) {
+        let createdBy = dictionary.get('createdBy').get('name');
+
+        if (!createdBy) {
+            if (dictionary.get('createdBy').id == this.state.user.parseUser.id) {
+                createdBy = this.state.user.parseUser.get('name')
+            }
+            else {
+                createdBy = 'unknown';
+            }
+        }
+
         return (
             <TouchableOpacity key={dictionary.id}
                                 onPress={() => this.dictionarySelected(dictionary)} >
@@ -266,7 +327,7 @@ export const HomeView = React.createClass ({
                     </Text>
                     <View style={styles.dictionarySubtitle} >
                         <Text style={styles.createdBy}>
-                            {'Created by ' + dictionary.get('createdBy').get('name')}
+                            {'Created by ' + createdBy}
                         </Text>
 
                         <Text style={styles.languages}>
@@ -279,7 +340,7 @@ export const HomeView = React.createClass ({
         );
     },
     render() {
-        var addDirectoryButton = this.state.ajaxState == "" ? (
+        var addDirectoryButton = this.state.ajaxState == "" && this.state.app.isConnected ? (
             <TouchableOpacity style={styles.addDirectoryButton}
                                 onPress={() => this.addNewDictionaryButtonPressed()}>
                 <Icon

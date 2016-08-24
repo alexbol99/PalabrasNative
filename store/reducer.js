@@ -5,6 +5,7 @@ import * as ActionTypes from '../store/actionTypes';
 var Redux = require('redux');
 
 const initialAppState = {
+    isConnected: undefined,       /* true if connected to internet, false if offline */
     navigateTo: 'loginView',
     currentDictionary: '',
     mode: 'edit',
@@ -49,6 +50,16 @@ const initialUserState = {
 
 function app(state=initialAppState, action) {
     switch (action.type) {
+        case ActionTypes.NETINFO_IS_CONNECTED_REQUEST_SUCCEED:
+            return Object.assign({}, initialAppState, {
+                isConnected: action.isConnected
+            });
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            var isConnected = state.isConnected; // copy all except connection status
+            return Object.assign({}, action.offlineState.app, {
+                isConnected: isConnected
+            });
+
         case ActionTypes.USER_LOGGED_IN_TO_PARSE:
             return Object.assign({}, state, {
                 navigateTo: 'homeView',
@@ -64,9 +75,13 @@ function app(state=initialAppState, action) {
                 navigateTo: 'loginView'
             });
         case ActionTypes.DICTIONARY_SELECTED:
-            var needFetchItems = state.currentDictionary.id != action.dictionary.id;
-            var langLeft = action.dictionary.get('language1');
-            var langRight = action.dictionary.get('language2');
+            var needFetchItems = state.isConnected ?
+                state.currentDictionary.id != action.dictionary.id :
+                state.currentDictionary.objectId != action.dictionary.objectId;
+            var langLeft = state.isConnected ? action.dictionary.get('language1') :
+                action.dictionary.language1;
+            var langRight = state.isConnected ? action.dictionary.get('language2') :
+                action.dictionary.language2;
 
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
@@ -160,6 +175,9 @@ function app(state=initialAppState, action) {
 
 function editState(state=initialAppState.editState, action) {
     switch (action.type) {
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            return Object.assign({}, action.offlineState.editState);
+
         case ActionTypes.DICTIONARY_SELECTED:
             return Object.assign({}, state, {
                 leftSearchPattern: '',
@@ -257,6 +275,9 @@ function editState(state=initialAppState.editState, action) {
 
 function learnState(state=initialAppState.learnState, action) {
     switch (action.type) {
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            return Object.assign({}, action.offlineState.learnState);
+
         case ActionTypes.LEARN_MODE_BUTTON_PRESSED:
             return Object.assign({}, state, {
                 leftItems: action.leftItems,
@@ -308,8 +329,11 @@ function ajaxState( state = "", action ) {
 }
 function dictionaries(state = [], action) {
     switch (action.type) {
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            return action.offlineState.dictionaries;
+
         case ActionTypes.FETCH_DICTIONARIES_REQUEST_SUCCEED:
-            return (action.dictionaries);
+            return action.dictionaries;
 
         case ActionTypes.FETCH_SHARES_REQUEST_SUCCEED:
             var newDictionaries = state.slice();
@@ -347,6 +371,9 @@ function dictionaries(state = [], action) {
 
 function items(state = [], action) {
     switch (action.type) {
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            return action.offlineState.items;
+
         case ActionTypes.FETCH_ITEMS_STARTED:
             return [];
         case ActionTypes.FETCH_ITEMS_PAGE_SUCCEED:
@@ -372,6 +399,10 @@ function items(state = [], action) {
 
 function user(state = initialUserState, action) {
     switch (action.type) {
+        case ActionTypes.NETINFO_IS_CONNECTED_REQUEST_SUCCEED:
+            return Object.assign({}, initialUserState);
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            return Object.assign({}, action.offlineState.user);
         case ActionTypes.USER_LOGGED_IN_TO_PARSE:
             return Object.assign({}, state, {
                 status: action.type,
@@ -395,6 +426,9 @@ function user(state = initialUserState, action) {
 
 function languages(state = [], action) {
     switch (action.type) {
+        case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
+            return action.offlineState.languages;
+
         case ActionTypes.FETCH_LANGUAGES_REQUEST_SUCCEED:
             return action.languages;
         default:

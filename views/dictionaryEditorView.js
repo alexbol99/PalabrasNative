@@ -79,6 +79,7 @@ export const DictionaryEditorView = React.createClass ({
         });
     },
     forceEditItem(item) {
+        if (!this.state.app.isConnected) return;
         this.dispatch({
             type: ActionTypes.FORCE_EDIT_ITEM_PRESSED,
             item: item
@@ -415,8 +416,10 @@ export const DictionaryEditorView = React.createClass ({
         })
     },
     renderHeader() {
-        var langLeft = this.state.app.langLeft; // currentDictionary.get('language1'); // .get('localName');   // "spanish";
-        var langRight = this.state.app.langRight; // currentDictionary.get('language2'); // .get('localName');  // "russian";
+        var langLeftLocalName = this.state.app.langLeft.get('localName');
+        var langRightLocalName = this.state.app.langRight.get('localName');
+        var isLeftRtl = this.state.app.langLeft.get('rtl');
+        var isRightRtl = this.state.app.langRight.get('rtl');
         var iconSortStyleLeft = this.state.editState.sortedBy == "leftLanguage" ?
             styles.iconSortActive : styles.iconSortDimmed;
         var iconSortStyleRight = this.state.editState.sortedBy == "rightLanguage" ?
@@ -426,8 +429,8 @@ export const DictionaryEditorView = React.createClass ({
 
         var editorLanguageBar = (
             <DictionaryEditorLanguageBar
-                langLeft = {langLeft}
-                langRight = {langRight}
+                langLeft = {langLeftLocalName}
+                langRight = {langRightLocalName}
                 iconSortStyleLeft = {iconSortStyleLeft}
                 iconSortStyleRight = {iconSortStyleRight}
                 onLeftSortButtonPressed = {this.onLeftSortButtonPressed}
@@ -444,6 +447,7 @@ export const DictionaryEditorView = React.createClass ({
                 onGoWebButtonPressed = {this.onGoWebButtonPressed}
                 onDeleteItemButtonPressed = {this.onDeleteItemButtonPressed}
                 buttonDisabled = {buttonDisabled}
+                isConnected = {this.state.app.isConnected}
             />
         );
 
@@ -451,14 +455,14 @@ export const DictionaryEditorView = React.createClass ({
             <DictionaryEditorSearchBar
                 leftSearchEnabled={this.state.editState.leftSearchEnabled}
                 leftSearchPattern={this.state.editState.leftSearchPattern}
-                leftRtl = {langLeft.get('rtl')}
+                leftRtl = {isLeftRtl}
                 leftSearchPatternChanged={(text) => this.leftSearchPatternChanged({text})}
                 onLeftSearchInputGotFocus={this.onLeftSearchInputGotFocus}
                 onLeftCleanSearchPatternPressed={this.onLeftCleanSearchPatternPressed}
                 onLeftToggleSearchButtonPressed={this.onLeftToggleSearchButtonPressed}
                 rightSearchEnabled={this.state.editState.rightSearchEnabled}
                 rightSearchPattern={this.state.editState.rightSearchPattern}
-                rightRtl = {langRight.get('rtl')}
+                rightRtl = {isRightRtl}
                 rightSearchPatternChanged={(text) => this.rightSearchPatternChanged({text})}
                 onRightSearchInputGotFocus={this.onRightSearchInputGotFocus}
                 onRightCleanSearchPatternPressed={this.onRightCleanSearchPatternPressed}
@@ -475,13 +479,19 @@ export const DictionaryEditorView = React.createClass ({
         )
     },
     renderRow(item) {
-        var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1'); // .get('name');   // "spanish";
-        var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2'); // .get('name');  // "russian";
-        var style = this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id ?
+        var langLeft = this.state.app.langLeft.get('name');
+        var langRight = this.state.app.langRight.get('name');
+        var isSelectedItem = this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id;
+        var style = isSelectedItem ?
             [styles.itemContainer, styles.itemSelected] : [styles.itemContainer, styles.itemUnselected];
 
-        var leftAlign = this.state.app.langLeft.get('rtl') ? 'right' : 'left';
-        var rightAlign = this.state.app.langRight.get('rtl') ? 'right' : 'left';
+        var isLeftRtl = this.state.app.langLeft.get('rtl');
+        var isRightRtl = this.state.app.langRight.get('rtl');
+        var leftAlign = isLeftRtl ? 'right' : 'left';
+        var rightAlign = isRightRtl ? 'right' : 'left';
+
+        var itemLeftValue = item.get(langLeft);
+        var itemRightValue = item.get(langRight);
 
         return (
             <TouchableOpacity
@@ -489,14 +499,13 @@ export const DictionaryEditorView = React.createClass ({
                 onPress={() => this.toggleSelectItem(item)}
                 onLongPress={() => this.forceEditItem(item)}>
                 {
-                    this.state.editState.selectedItem && item.id == this.state.editState.selectedItem.id &&
-                    this.state.editState.editItem ? (
+                    isSelectedItem && this.state.editState.editItem ? (
                         <View style={style}>
                             <TextInput
                                 style={[styles.editItem, {textAlign: leftAlign}]}
                                 autoCapitalize = 'none'
                                 autoCorrect = {false}
-                                value={item.get(langLeft)}
+                                value={itemLeftValue}
                                 onChangeText={(value) => this.itemLeftChanged({value})}
                                 onBlur = {() => this.itemChangeDone()}
                             />
@@ -504,7 +513,7 @@ export const DictionaryEditorView = React.createClass ({
                                 style={[styles.editItem, {textAlign: rightAlign}]}
                                 autoCapitalize = 'none'
                                 autoCorrect = {false}
-                                value={item.get(langRight)}
+                                value={itemRightValue}
                                 onChangeText={(value) => this.itemRightChanged({value})}
                                 onBlur = {() =>this.itemChangeDone()}
                             />
@@ -512,10 +521,10 @@ export const DictionaryEditorView = React.createClass ({
                     ) : (
                         <View style={style}>
                             <Text style={[styles.item, {textAlign: leftAlign}]}>
-                                {item.get(langLeft)}
+                                {itemLeftValue}
                             </Text>
                             <Text style={[styles.item, {textAlign: rightAlign}]}>
-                                {item.get(langRight)}
+                                {itemRightValue}
                             </Text>
                         </View>
                     )
@@ -524,12 +533,17 @@ export const DictionaryEditorView = React.createClass ({
         )
     },
     render() {
-        var langLeft = this.state.app.langLeft.get('name'); // currentDictionary.get('language1').get('name');   // "spanish";
-        var langRight = this.state.app.langRight.get('name'); // currentDictionary.get('language2').get('name');  // "russian";
+        var langLeft = this.state.app.langLeft.get('name');
+        var langRight = this.state.app.langRight.get('name');
         var sortedBy = this.state.editState.sortedBy;
         var sortedItems = [];
         if (this.state.editState.sortEnabled) {
-            sortedItems = Items.prototype.sortItems(this.state.items, sortedBy, langLeft, langRight);
+            if (this.state.app.isConnected) {
+                sortedItems = Items.prototype.sortItems(this.state.items, sortedBy, langLeft, langRight);
+            }
+            else {
+                sortedItems = Items.prototype.sortItemsOffline(this.state.items, sortedBy, langLeft, langRight);
+            }
         }
         else {
             sortedItems = this.state.items.slice();
@@ -559,16 +573,20 @@ export const DictionaryEditorView = React.createClass ({
                           enableEmptySections = {true}
                     renderRow={(item) => this.renderRow(item)}
                 />
-                <TouchableOpacity style={styles.addItemButton}
-                                  activeOpacity={1.0}
-                    onPress={() => this.onAddNewItemButtonPressed()}>
-                    <Icon
-                        name='plus-circle'
-                        size={50}
-                        color='#81c04d'
-                        style={globalStyles.iconAdd}
-                    />
-                </TouchableOpacity>
+
+                {this.state.app.isConnected ? (
+                    <TouchableOpacity style={styles.addItemButton}
+                                         activeOpacity={1.0}
+                                         onPress={() => this.onAddNewItemButtonPressed()}>
+                        <Icon
+                            name='plus-circle'
+                            size={50}
+                            color='#81c04d'
+                            style={globalStyles.iconAdd}
+                        />
+                    </TouchableOpacity>
+                ) : null
+                }
             </View>
         );
     }

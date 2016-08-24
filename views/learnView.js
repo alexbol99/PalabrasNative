@@ -98,6 +98,8 @@ export const LearnView = React.createClass ({
     },
     render() {
         var state = this.props.store.getState();
+        var langLeft = this.state.app.langLeft.get('name');
+        var langRight = this.state.app.langRight.get('name');
         return (
             <View style={{flex:8}}>
                 <ContentComponent {... this.props}
@@ -108,8 +110,8 @@ export const LearnView = React.createClass ({
                     learnState = {state.learnState}
                     leftItems = {state.learnState.leftItems}
                     rightItems = {state.learnState.rightItems}
-                    langLeft = {state.app.langLeft}
-                    langRight = {state.app.langRight}
+                    langLeft = {langLeft}
+                    langRight = {langRight}
                 />
             </View>
         );

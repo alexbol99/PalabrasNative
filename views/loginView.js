@@ -14,7 +14,8 @@ import {
     TouchableOpacity,
     Platform,
     Image,
-    Alert
+    Alert,
+    AsyncStorage
     } from 'react-native';
 
 // var FBLogin = require('react-native-facebook-login');
@@ -151,11 +152,27 @@ export const LoginView = React.createClass({
             return;
 
         // Login to Parse with obtained credentials
-        if (data.credentials) {  // IOS style
-            this.parseLoginIOS(data.credentials);
+        if (this.state.app.isConnected) {
+            if (data.credentials) {  // IOS style
+                this.parseLoginIOS(data.credentials);
+            }
+            else {                   // Android style
+                this.parseLoginAndroid(data);
+            }
         }
-        else {                   // Android style
-            this.parseLoginAndroid(data);
+        else {
+            AsyncStorage.getItem('@Palabras:state')
+                .then((resp) => {
+                    let offlineState = JSON.parse(resp);
+                    if (offlineState.user.parseUser) {
+                        offlineState.user.parseUser.id = offlineState.user.parseUser.objectId;
+                        offlineState.user.parseUser.get = function(prop) { return offlineState.user.parseUser[prop]};
+                        this.dispatch({
+                            type: ActionTypes.USER_LOGGED_IN_TO_PARSE,
+                            user: offlineState.user.parseUser
+                        });
+                    }
+                });
         }
 
         //this.dispatch({

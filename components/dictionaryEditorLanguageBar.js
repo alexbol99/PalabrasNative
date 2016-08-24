@@ -51,7 +51,7 @@ export const DictionaryEditorLanguageBar = React.createClass ({
                     onPress = {this.props.onLeftSortButtonPressed}
                 >
                     <Text style={styles.languageTitle}>
-                        {this.props.langLeft.get('localName')}
+                        {this.props.langLeft}
                     </Text>
 
                     {/* Left Sort button */}
@@ -76,7 +76,7 @@ export const DictionaryEditorLanguageBar = React.createClass ({
                     onPress = {this.props.onRightSortButtonPressed}
                 >
                     <Text style={styles.languageTitle}>
-                        {this.props.langRight.get('localName')}
+                        {this.props.langRight}
                     </Text>
 
                     {/* Right Sort button */}
