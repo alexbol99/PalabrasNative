@@ -15,7 +15,11 @@ import {
 // use http://fortawesome.github.io/Font-Awesome/icons/
 var Icon = require('react-native-vector-icons/FontAwesome');
 
-var Button = ({iconName, iconStyle, onButtonPressed, disabled}) => {
+var Button = ({iconName, onButtonPressed, disabled}) => {
+
+    var iconStyle = disabled ?
+        [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
+
     return (
         <TouchableOpacity
             style={{flex:1}}
@@ -39,28 +43,21 @@ export const DictionaryEditorToolbar = React.createClass ({
         };
     },
     render() {
-        var iconStyle = this.props.buttonDisabled ?
-            [globalStyles.header.icon, styles.iconButtonDimmed] : [globalStyles.header.icon, styles.iconButtonActive];
-
         return (
             <View style={styles.editToolbar}>
                 <Button iconName = 'pencil'
-                        iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onEditItemButtonPressed}
                         disabled = {this.props.buttonDisabled || !this.props.isConnected}
                 />
                 <Button iconName = 'volume-up'
-                        iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onSayItButtonPressed}
                         disabled = {this.props.buttonDisabled}
                 />
                 <Button iconName = 'globe'
-                        iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onGoWebButtonPressed}
                         disabled = {this.props.buttonDisabled || !this.props.isConnected}
                 />
                 <Button iconName = 'trash-o'
-                        iconStyle = {iconStyle}
                         onButtonPressed = {this.props.onDeleteItemButtonPressed}
                         disabled = {this.props.buttonDisabled || !this.props.isConnected}
                 />

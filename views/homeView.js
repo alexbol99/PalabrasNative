@@ -26,7 +26,8 @@ var {Text,
     ActionSheetIOS,
     Platform,
     Linking,
-    AsyncStorage
+    AsyncStorage,
+    Alert
     } = ReactNative;
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -51,7 +52,7 @@ const LocalMenu = ({sharePressed, logoutPressed}) => {
 };
 
 
-const Header = ({uri, onMenuButtonPressed}) => {
+const Header = ({uri, onMenuButtonPressed, isConnected, onOfflineButtonPressed}) => {
     var userImage = null;
 
     if (uri) {
@@ -70,12 +71,21 @@ const Header = ({uri, onMenuButtonPressed}) => {
                 Dictionaries
             </Text>
 
-            <TouchableOpacity
-                onPress={onMenuButtonPressed}
-                activeOpacity={1.0}>
-                <Icon name='bars' size={20} color='white' style={globalStyles.header.icon}>
-                </Icon>
-            </TouchableOpacity>
+            { isConnected ? (
+                <TouchableOpacity
+                    onPress={onMenuButtonPressed}
+                    activeOpacity={1.0}>
+                    <Icon name='bars' size={20} color='white' style={globalStyles.header.icon}>
+                    </Icon>
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity
+                    onPress={onOfflineButtonPressed}
+                    activeOpacity={1.0}>
+                    <Icon name='ban' size={20} color='white' style={globalStyles.header.icon}>
+                    </Icon>
+                </TouchableOpacity>
+            ) }
         </View>
     )
 };
@@ -306,6 +316,9 @@ export const HomeView = React.createClass ({
             type: ActionTypes.MENU_ITEM_LOGOUT_PRESSED
         })
     },
+    onOfflineButtonPressed() {
+        Alert.alert("You are working in offline mode");
+    },
     renderRow(dictionary) {
         let createdBy = dictionary.get('createdBy').get('name');
 
@@ -382,6 +395,8 @@ export const HomeView = React.createClass ({
         var header = (
             <Header uri={uri}
                     onMenuButtonPressed={() => this.toggleHomeMenu()}
+                    isConnected = {this.state.app.isConnected}
+                    onOfflineButtonPressed = {this.onOfflineButtonPressed}
             /> );
 
         /*renderSectionHeader={() => this.renderHeader()}*/

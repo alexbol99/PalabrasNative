@@ -9,7 +9,8 @@ import {
     Text,
     StyleSheet,
     View,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
     } from 'react-native';
 
 // use http://fortawesome.github.io/Font-Awesome/icons/
@@ -42,6 +43,9 @@ export const DictionaryHeaderComponent = React.createClass ({
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
+    onOfflineButtonPressed() {
+        Alert.alert("You are working in offline mode");
+    },
     render() {
         return (
             <View style={styles.headerContainer}>
@@ -73,12 +77,14 @@ export const DictionaryHeaderComponent = React.createClass ({
                         />
                     </TouchableOpacity>
                     ) : (
+                    <TouchableOpacity onPress = {this.onOfflineButtonPressed} activeOpacity={1.0}>
                         <Icon
                             name='ban'
                             size={20}
                             color={globalStyles.header.color}
                             style={styles.icon}
                         />
+                    </TouchableOpacity>
                     )
                 }
             </View>

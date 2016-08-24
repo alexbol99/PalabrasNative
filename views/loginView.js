@@ -38,7 +38,23 @@ export const LoginView = React.createClass({
             this.onLogout();
         }
 
-        this.fbloginStart();
+        if (this.state.app.isConnected) {
+            this.fbloginStart();
+        }
+        else {       // in offline mode pass around authentication due to some error on Android. TBD: Investigate later
+            AsyncStorage.getItem('@Palabras:state')
+                .then((resp) => {
+                    let offlineState = JSON.parse(resp);
+                    if (offlineState.user.parseUser) {
+                        offlineState.user.parseUser.id = offlineState.user.parseUser.objectId;
+                        offlineState.user.parseUser.get = function(prop) { return offlineState.user.parseUser[prop]};
+                        this.dispatch({
+                            type: ActionTypes.USER_LOGGED_IN_TO_PARSE,
+                            user: offlineState.user.parseUser
+                        });
+                    }
+                });
+        }
 
         /*
         var _this = this;
@@ -251,31 +267,3 @@ var styles = StyleSheet.create({
         alignItems: 'center',
     },
 });
-/*
-<FBLogin style={styles.loginButton}
-         permissions={["email","user_friends"]}
-         loginBehavior={FBLoginManager.LoginBehaviors.SystemAccount}
-         onLogin={(data) => this.onLogin(data)}
-         onLogout={this.onLogout}
-         onLoginFound={(data) => this.onLoginFound(data)}
-         onLoginNotFound={this.onLoginNotFound}
-         onError={(data) => this.onError(data)}
-         onCancel={this.onCancel}
-         onPermissionsMissing={(data) => this.onPermissionMissing(data)}
-/>
-*/
-
-/*
- <FBLogin style={styles.loginButton}
- permissions={["email", "user_friends"]}
- loginBehavior={loginBehaviour}
- onLogin={(data) => this.onLogin(data)}
- onLogout={this.onLogout}
- onLoginFound={(data) => this.onLoginFound(data)}
- onLoginNotFound={this.onLoginNotFound}
- onError={(data) => this.onError(data)}
- onCancel={this.onCancel}
- onPermissionsMissing={(data) => this.onPermissionMissing(data)}
- />
-
- */
