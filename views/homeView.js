@@ -184,22 +184,7 @@ export const HomeView = React.createClass ({
                 // keep current state in AsyncStorage
                 let state = this.props.store.getState();
                 return AsyncStorage.setItem('@Palabras:state', JSON.stringify(state))
-            })
-            .then( (resp) => {
-                // Get available locales for text-to-speech - doesn't work on Android
-                return Languages.getLocales()
-            })
-            .then((locales) => {
-                // alert(locales);  TBD: do something with this locales
-                this.dispatch({
-                    type: ActionTypes.TTS_LOCALES_REQUEST_SUCCEED,
-                    locales: locales
-                })
-            })
-            .then((resp) => {
-                // console.log(resp);
             }),
-
             (error) => {
                 this.dispatch({
                     type: ActionTypes.AJAX_REQUEST_FAILED
@@ -540,38 +525,20 @@ var styles = StyleSheet.create({
     }
 });
 
+
 /*
- var styles = StyleSheet.create({
- container: {
- padding:30,
- marginTop: 65,
- alignItems:'center'
- },
- image: {
- width: 217,
- height: 138
- },
- searchInput: {
- height: 36,
- padding: 4,
- marginRight: 5,
- flex: 4,
- fontSize: 18,
- borderWidth: 1,
- borderColor: '#48BBEC',
- borderRadius: 8,
- color: '#48BBEC'
- }
- });
+ .then( (resp) => {
+ // Get available locales for text-to-speech - doesn't work on Android
+ return Languages.getLocales()
+ })
+ .then((locales) => {
+ // alert(locales);  TBD: do something with this locales
+ this.dispatch({
+ type: ActionTypes.TTS_LOCALES_REQUEST_SUCCEED,
+ locales: locales
+ })
+ })
+ .then((resp) => {
+ // console.log(resp);
+ }),
  */
-
-/* module.exports = HomeView; */
-
-/*
-<Icon
-    name='spinner'
-    size={50}
-    color='darkgray'
-    style={styles.spinner}
-/>
-*/
