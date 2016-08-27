@@ -100,18 +100,14 @@ export const DictionaryView = React.createClass ({
                 this.dispatch({
                     type: ActionTypes.FETCH_ITEMS_SUCCEED
                 });
+                let key = "@Palabras:" + itemsParse.className;
+                AsyncStorage.setItem(key, JSON.stringify(this.state.items))
             }
             else {
                 this.dispatch({
                     type: ActionTypes.FETCH_ITEMS_PAGE_SUCCEED,
                     items: items
                 });
-
-                let key = "@Palabras:" + itemsParse.className;
-                AsyncStorage.setItem(key, JSON.stringify(items))
-                    .then((resp) => console.log(resp));
-
-
             }
         });
     },

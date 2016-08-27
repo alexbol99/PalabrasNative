@@ -7,7 +7,7 @@ var Redux = require('redux');
 const initialAppState = {
     isConnected: undefined,       /* true if connected to internet, false if offline */
     navigateTo: 'loginView',
-    currentDictionary: '',
+    currentDictionary: undefined,
     mode: 'edit',
     showHomeMenu: false,
     needFetchData: true,
@@ -50,7 +50,7 @@ const initialUserState = {
 
 function app(state=initialAppState, action) {
     switch (action.type) {
-        case ActionTypes.NETINFO_IS_CONNECTED_REQUEST_SUCCEED:
+        case ActionTypes.NETINFO_CONNECTION_STATUS_CHANGED:
             return Object.assign({}, initialAppState, {
                 isConnected: action.isConnected
             });
@@ -75,13 +75,9 @@ function app(state=initialAppState, action) {
                 navigateTo: 'loginView'
             });
         case ActionTypes.DICTIONARY_SELECTED:
-            var needFetchItems = state.isConnected ?
-                state.currentDictionary.id != action.dictionary.id :
-                state.currentDictionary.objectId != action.dictionary.objectId;
-            var langLeft = state.isConnected ? action.dictionary.get('language1') :
-                action.dictionary.language1;
-            var langRight = state.isConnected ? action.dictionary.get('language2') :
-                action.dictionary.language2;
+            var needFetchItems = action.needFetchItems;
+            var langLeft = action.dictionary.get('language1');
+            var langRight = action.dictionary.get('language2');
 
             return Object.assign({}, state, {
                 currentDictionary: action.dictionary,
@@ -373,7 +369,8 @@ function items(state = [], action) {
     switch (action.type) {
         case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
             return action.offlineState.items;
-
+        case ActionTypes.DICTIONARY_SELECTED:
+            return action.needFetchItems ? [] : state;
         case ActionTypes.FETCH_ITEMS_STARTED:
             return [];
         case ActionTypes.FETCH_ITEMS_PAGE_SUCCEED:
@@ -399,7 +396,7 @@ function items(state = [], action) {
 
 function user(state = initialUserState, action) {
     switch (action.type) {
-        case ActionTypes.NETINFO_IS_CONNECTED_REQUEST_SUCCEED:
+        case ActionTypes.NETINFO_CONNECTION_STATUS_CHANGED:
             return Object.assign({}, initialUserState);
         case ActionTypes.ASYNC_STORAGE_GET_STATE_SUCCEED:
             return Object.assign({}, action.offlineState.user);

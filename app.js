@@ -29,18 +29,21 @@ var App = React.createClass ({
     },
     componentDidMount() {
         NetInfo.addEventListener('change', this.checkConnection);
-        this.checkConnection();
+        // this.checkConnection();    do not need to call, event is fired anyway first time on load
     },
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps.store.getState());
     },
     checkConnection() {
+        let isConnectedCurrent = this.state.app.isConnected;
         NetInfo.isConnected.fetch()
             .then((isConnected) => {
-                this.dispatch({
-                    type: ActionTypes.NETINFO_IS_CONNECTED_REQUEST_SUCCEED,
-                    isConnected: isConnected
-                })
+                if (isConnectedCurrent != isConnected) {
+                    this.dispatch({
+                        type: ActionTypes.NETINFO_CONNECTION_STATUS_CHANGED,
+                        isConnected: isConnected
+                    })
+                }
             })
     },
     render() {

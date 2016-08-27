@@ -175,22 +175,26 @@ export const HomeView = React.createClass ({
                     languages: languages
                 });
                 this.dispatch({
-                    type:ActionTypes.AJAX_REQUEST_RESET
+                    type: ActionTypes.AJAX_REQUEST_RESET
                 });
-                // Get available locales for text-to-speech
+                // clean AsyncStorage before asking to store the new one
+                return AsyncStorage.removeItem('@Palabras:state');
+            })
+            .then( (resp) => {
+                // keep current state in AsyncStorage
+                let state = this.props.store.getState();
+                return AsyncStorage.setItem('@Palabras:state', JSON.stringify(state))
+            })
+            .then( (resp) => {
+                // Get available locales for text-to-speech - doesn't work on Android
                 return Languages.getLocales()
             })
             .then((locales) => {
-                // alert(locales);
+                // alert(locales);  TBD: do something with this locales
                 this.dispatch({
                     type: ActionTypes.TTS_LOCALES_REQUEST_SUCCEED,
                     locales: locales
                 })
-                return AsyncStorage.removeItem('@Palabras:state')
-            })
-            .then((resp) => {
-                let state = this.props.store.getState();
-                return AsyncStorage.setItem('@Palabras:state', JSON.stringify(state))
             })
             .then((resp) => {
                 // console.log(resp);
@@ -236,7 +240,9 @@ export const HomeView = React.createClass ({
         this.dispatch({
             type: ActionTypes.DICTIONARY_SELECTED,
             dictionary: dictionary,
-            itemsParse: itemsParse
+            itemsParse: itemsParse,
+            needFetchItems: this.state.app.currentDictionary == undefined ||
+                this.state.app.currentDictionary.id != dictionary.id
         });
     },
     addNewDictionaryButtonPressed() {
